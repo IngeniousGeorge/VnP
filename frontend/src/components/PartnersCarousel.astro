@@ -1,0 +1,170 @@
+---
+const partners = [
+  { name: "Valrhona", logo: "valrhona" },
+  { name: "Alain Milliat", logo: "alain-milliat" },
+  { name: "Terre Exotique", logo: "terre-exotique" }
+];
+---
+
+<section class="partners-carousel">
+  <div class="carousel-container">
+    <button class="carousel-btn prev" aria-label="Previous">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <div class="carousel-track-container">
+      <div class="carousel-track">
+        {partners.map((partner) => (
+          <div class="partner-slide">
+            <div class="partner-logo" data-partner={partner.logo}>
+              <span class="partner-name">{partner.name}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <button class="carousel-btn next" aria-label="Next">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<style>
+  .partners-carousel {
+    background-color: var(--color-white);
+    padding: 3rem 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .carousel-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .carousel-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--color-orange);
+    transition: transform 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .carousel-btn:hover {
+    transform: scale(1.2);
+    color: var(--color-orange-dark);
+  }
+
+  .carousel-track-container {
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.3s ease;
+  }
+
+  .partner-slide {
+    flex: 0 0 33.333%;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .partner-logo {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+  }
+
+  .partner-name {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  /* Custom styles for each partner */
+  [data-partner="valrhona"] .partner-name {
+    font-family: 'Georgia', serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8B4513;
+  }
+
+  [data-partner="alain-milliat"] .partner-name {
+    font-family: var(--font-body);
+    font-weight: 400;
+    color: #2c3e50;
+  }
+
+  [data-partner="terre-exotique"] .partner-name {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #8B0000;
+  }
+
+  @media (max-width: 768px) {
+    .partner-slide {
+      flex: 0 0 100%;
+    }
+
+    .partner-name {
+      font-size: 1.2rem;
+    }
+  }
+</style>
+
+<script>
+  const track = document.querySelector('.carousel-track') as HTMLElement;
+  const slides = document.querySelectorAll('.partner-slide');
+  const prevBtn = document.querySelector('.carousel-btn.prev');
+  const nextBtn = document.querySelector('.carousel-btn.next');
+
+  let currentIndex = 0;
+  const totalSlides = slides.length;
+
+  function getVisibleSlides() {
+    return window.innerWidth <= 768 ? 1 : 3;
+  }
+
+  function updateCarousel() {
+    const visibleSlides = getVisibleSlides();
+    const maxIndex = Math.max(0, totalSlides - visibleSlides);
+    currentIndex = Math.min(currentIndex, maxIndex);
+    const offset = -(currentIndex * (100 / visibleSlides));
+    track.style.transform = `translateX(${offset}%)`;
+  }
+
+  prevBtn?.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    const visibleSlides = getVisibleSlides();
+    const maxIndex = totalSlides - visibleSlides;
+    if (currentIndex < maxIndex) {
+      currentIndex++;
+      updateCarousel();
+    }
+  });
+
+  window.addEventListener('resize', updateCarousel);
+</script>

@@ -1,0 +1,68 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Verre et Papilles - Epicerie fine, vins et spiritueux" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-orange: #E8A43A;
+    --color-orange-dark: #D4922F;
+    --color-gray-bg: #6B7280;
+    --color-dark-bg: #374151;
+    --color-white: #FFFFFF;
+    --color-text: #1F2937;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
