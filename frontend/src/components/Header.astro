@@ -6,14 +6,14 @@ import bannerSrc from '../assets/images/banner.jpg';
 const banner = await getImage({ src: bannerSrc, width: 1920 });
 ---
 
-<header class="header" style={`background-image: url(${banner.src});`}>
-  <div class="header-container">
+<header class="banner" style={`background-image: url(${banner.src});`}>
+  <div class="banner-container">
     <a href="/" class="logo">
       <Image src={logo} alt="Verre et Papilles" width={200} height={200} />
     </a>
 
-    <nav class="nav">
-      <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="nav-link social-link" aria-label="Instagram">
+    <nav class="banner-nav">
+      <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Instagram">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="2">
           <defs>
             <linearGradient id="ig-gradient" x1="0" y1="1" x2="1" y2="0">
@@ -27,22 +27,85 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="url(#ig-gradient)"/>
         </svg>
       </a>
-      <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="nav-link social-link" aria-label="Facebook">
+      <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Facebook">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2">
           <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
         </svg>
       </a>
-      <a href="/contact" class="nav-link contact-link">Nous contacter</a>
+      <a href="/contact" class="banner-nav-link banner-cta">Nous contacter</a>
+    </nav>
+
+    <nav class="sticky-navbar">
+      <a href="/" class="navbar-link">Accueil</a>
+      <span class="navbar-separator">|</span>
+      <a href="#bocaux" class="navbar-link">Les bocaux</a>
+      <span class="navbar-separator">|</span>
+      <a href="#crottin" class="navbar-link">Le crottin</a>
+      <span class="navbar-separator">|</span>
+      <a href="#coffrets" class="navbar-link">Les coffrets</a>
+      <span class="navbar-separator">|</span>
+      <a href="/contact" class="navbar-link">Contact</a>
+      <span class="navbar-separator">|</span>
+      <div class="navbar-social">
+        <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <defs>
+              <linearGradient id="ig-gradient-navbar" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stop-color="#F58529"/>
+                <stop offset="50%" stop-color="#DD2A7B"/>
+                <stop offset="100%" stop-color="#8134AF"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig-gradient-navbar)"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="url(#ig-gradient-navbar)"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="url(#ig-gradient-navbar)"/>
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+          </svg>
+        </a>
+      </div>
     </nav>
   </div>
 </header>
+<div class="banner-spacer"></div>
+
+<script>
+  const banner = document.querySelector('.banner') as HTMLElement;
+  const spacer = document.querySelector('.banner-spacer') as HTMLElement;
+  const logoEl = banner.querySelector('.logo') as HTMLElement;
+  const bannerHeight = banner.offsetHeight;
+  const fadeStart = bannerHeight * 0.7;
+  let isSticky = false;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const shouldStick = y > bannerHeight;
+
+    if (!isSticky) {
+      const opacity = y <= fadeStart ? 1 : Math.max(0, 1 - (y - fadeStart) / (bannerHeight - fadeStart));
+      logoEl.style.opacity = String(opacity);
+    }
+
+    if (shouldStick !== isSticky) {
+      isSticky = shouldStick;
+      banner.classList.toggle('sticky', isSticky);
+      spacer.style.height = isSticky ? `${bannerHeight}px` : '0';
+      if (!isSticky) logoEl.style.opacity = '1';
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
 
 <style>
-  .header {
+  /* Banner (expanded state) */
+  .banner {
     padding: 1.1rem 2rem 0.55rem;
-    position: sticky;
+    position: relative;
     isolation: isolate;
-    top: 0;
     z-index: 100;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: visible;
@@ -51,7 +114,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     background-repeat: no-repeat;
   }
 
-  .header::before {
+  .banner::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -59,7 +122,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     z-index: -1;
   }
 
-  .header-container {
+  .banner-container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -81,27 +144,27 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     margin-bottom: -80px;
   }
 
-  .nav {
+  .banner-nav {
     display: flex;
     align-items: center;
     gap: 1.5rem;
   }
 
-  .nav-link {
+  .banner-nav-link {
     transition: color 0.2s, transform 0.2s;
   }
 
-  .nav-link:hover {
+  .banner-nav-link:hover {
     color: var(--color-orange);
     transform: scale(1.1);
   }
 
-  .social-link {
+  .banner-social {
     color: var(--color-white);
     filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
   }
 
-  .contact-link {
+  .banner-cta {
     font-weight: 600;
     font-size: 1.5rem;
     color: var(--color-orange);
@@ -110,14 +173,99 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     border-radius: 4px;
   }
 
-  .contact-link:hover {
+  .banner-cta:hover {
     background-color: var(--color-orange);
     color: var(--color-white);
     transform: none;
   }
 
+  /* Sticky navbar — hidden by default */
+  .sticky-navbar {
+    display: none;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .navbar-link {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.05rem;
+    transition: color 0.2s;
+  }
+
+  .navbar-link:hover {
+    color: var(--color-orange);
+  }
+
+  .navbar-separator {
+    color: #9CA3AF;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+
+  .navbar-social {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .navbar-social a {
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+  }
+
+  .navbar-social a:hover {
+    transform: scale(1.1);
+  }
+
+  .banner-spacer {
+    height: 0;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Sticky state */
+  .banner.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 2rem;
+    background-image: none !important;
+    background-color: #BDBDC0;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .banner.sticky::before {
+    display: none;
+  }
+
+  .banner.sticky .logo {
+    display: none;
+  }
+
+  .banner.sticky .banner-nav {
+    display: none;
+  }
+
+  .banner.sticky .sticky-navbar {
+    display: flex;
+  }
+
+  /* Mobile */
   @media (max-width: 768px) {
-    .header {
+    .banner {
       padding: 1rem;
     }
 
@@ -127,18 +275,36 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
       margin-bottom: -64px;
     }
 
-    .nav {
+    .banner-nav {
       gap: 1rem;
     }
 
-    .social-link svg {
+    .banner-social svg {
       width: 28px;
       height: 28px;
     }
 
-    .contact-link {
+    .banner-cta {
       font-size: 1.2rem;
       padding: 0.4rem 0.8rem;
+    }
+
+    .banner.sticky {
+      padding: 0.4rem 1rem;
+    }
+
+    .sticky-navbar {
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .navbar-link {
+      font-size: 0.85rem;
+    }
+
+    .navbar-social svg {
+      width: 20px;
+      height: 20px;
     }
   }
 </style>
