@@ -14,9 +14,6 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <title>{title}</title>
   </head>
   <body>
@@ -25,15 +22,47 @@ const { title } = Astro.props;
 </html>
 
 <style is:global>
+  @font-face {
+    font-family: 'Glacial Indifference';
+    src: url('/fonts/GlacialIndifference-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Glacial Indifference';
+    src: url('/fonts/GlacialIndifference-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Crimson';
+    src: url('/fonts/crimson-bolditalic-webfont.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Dancing Script';
+    src: url('/fonts/DancingScript-Bold.woff2') format('woff2');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
   :root {
-    --color-orange: #E8A43A;
+    --color-orange: #F29D37;
     --color-orange-dark: #D4922F;
     --color-gray-bg: #6B7280;
     --color-dark-bg: #374151;
     --color-white: #FFFFFF;
     --color-text: #1F2937;
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Open Sans', sans-serif;
+    --font-heading: 'Crimson', serif;
+    --font-body: 'Glacial Indifference', sans-serif;
   }
 
   * {
@@ -54,6 +83,8 @@ const { title } = Astro.props;
 
   h1, h2, h3, h4 {
     font-family: var(--font-heading);
+    font-weight: 700;
+    font-style: italic;
   }
 
   a {

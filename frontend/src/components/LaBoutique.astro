@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import boutique from '../assets/images/boutique.jpg';
 ---
 
 <section class="la-boutique">
@@ -27,19 +29,8 @@
       <p class="brands-intro"><strong>Nos marques en épicerie fine :</strong></p>
     </div>
 
-    <div class="images-grid">
-      <div class="placeholder-image">
-        <span>Photo boutique 1</span>
-      </div>
-      <div class="placeholder-image">
-        <span>Photo boutique 2</span>
-      </div>
-      <div class="placeholder-image">
-        <span>Photo boutique 3</span>
-      </div>
-      <div class="placeholder-image">
-        <span>Photo boutique 4</span>
-      </div>
+    <div class="image-container">
+      <Image src={boutique} alt="La boutique Verre et Papilles" width={800} class="boutique-photo" />
     </div>
   </div>
 </section>
@@ -90,22 +81,11 @@
     margin-top: 1.5rem;
   }
 
-  .images-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .placeholder-image {
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, #8b9199 0%, #6b7280 100%);
+  .boutique-photo {
+    width: 100%;
+    height: auto;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.7);
-    font-style: italic;
-    font-size: 0.9rem;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
@@ -114,7 +94,7 @@
       gap: 2rem;
     }
 
-    .images-grid {
+    .image-container {
       order: -1;
     }
 

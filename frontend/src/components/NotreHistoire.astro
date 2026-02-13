@@ -1,12 +1,12 @@
 ---
+import { Image } from 'astro:assets';
+import owners from '../assets/images/owners.jpg';
 ---
 
 <section class="notre-histoire">
   <div class="container">
     <div class="image-container">
-      <div class="placeholder-image">
-        <span>Photo Anne-Marie et Fabrice</span>
-      </div>
+      <Image src={owners} alt="Anne-Marie et Fabrice Sorin" width={800} class="owners-photo" />
     </div>
     <div class="content">
       <h2>Notre histoire</h2>
@@ -46,20 +46,11 @@
     align-items: center;
   }
 
-  .image-container {
-    position: relative;
-  }
-
-  .placeholder-image {
+  .owners-photo {
     width: 100%;
-    aspect-ratio: 4/5;
-    background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+    height: auto;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-style: italic;
+    object-fit: cover;
   }
 
   .content {
