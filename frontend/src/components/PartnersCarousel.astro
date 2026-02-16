@@ -30,9 +30,8 @@ const partners = [
 ---
 
 <section class="partners-carousel" aria-label="Nos partenaires">
-  <div class="carousel-title">
-    <h2>Nos partenaires</h2>
-  </div>
+  <h2 class="carousel-title">Nos partenaires</h2>
+
   <div class="carousel-container">
     <button class="carousel-btn carousel-btn--prev" aria-label="Partenaire précédent">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -66,10 +65,9 @@ const partners = [
   .partners-carousel {
     background-color: #FAF0EE;
     padding: 3rem 2rem;
-    position: relative;
   }
 
-  .carousel-title h2 {
+  .carousel-title {
     font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
@@ -108,7 +106,6 @@ const partners = [
 
   .carousel-track {
     display: flex;
-    will-change: transform;
   }
 
   .carousel-slide {
@@ -166,10 +163,12 @@ const partners = [
   const SLIDE_DURATION = 800;
   const AUTOPLAY_INTERVAL = 2000;
   const TOOLTIP_DELAY = 500;
+  const TRANSITION = `transform ${SLIDE_DURATION}ms ease-in-out`;
 
   const section = document.querySelector('.partners-carousel') as HTMLElement;
   const track = section.querySelector('.carousel-track') as HTMLElement;
   const tooltip = section.querySelector('.carousel-tooltip') as HTMLElement;
+  const viewport = section.querySelector('.carousel-viewport')!;
   const mobileQuery = window.matchMedia('(max-width: 768px)');
 
   let isTransitioning = false;
@@ -187,7 +186,7 @@ const partners = [
     const percent = getSlidePercent();
 
     if (direction === 'next') {
-      track.style.transition = `transform ${SLIDE_DURATION}ms ease-in-out`;
+      track.style.transition = TRANSITION;
       track.style.transform = `translateX(-${percent}%)`;
       track.addEventListener('transitionend', () => {
         track.style.transition = 'none';
@@ -200,7 +199,7 @@ const partners = [
       track.insertBefore(track.lastElementChild!, track.firstElementChild);
       track.style.transform = `translateX(-${percent}%)`;
       track.offsetHeight; // force reflow before animating
-      track.style.transition = `transform ${SLIDE_DURATION}ms ease-in-out`;
+      track.style.transition = TRANSITION;
       track.style.transform = 'translateX(0)';
       track.addEventListener('transitionend', () => {
         isTransitioning = false;
@@ -208,7 +207,7 @@ const partners = [
     }
   }
 
-  // Autoplay with visibility-aware pause
+  // Autoplay — pauses on hover and when tab is hidden
   function startAutoplay() {
     stopAutoplay();
     if (!isHovered && !document.hidden) {
@@ -223,8 +222,6 @@ const partners = [
   document.addEventListener('visibilitychange', () => {
     document.hidden ? stopAutoplay() : startAutoplay();
   });
-
-  const viewport = section.querySelector('.carousel-viewport')!;
 
   viewport.addEventListener('mouseenter', () => {
     isHovered = true;
@@ -263,6 +260,13 @@ const partners = [
     clearTimeout(tooltipTimer);
     tooltip.classList.remove('visible');
   });
+
+  // Shuffle slide order on each page visit
+  const slides = [...track.children];
+  for (let i = slides.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    track.appendChild(slides[j]);
+  }
 
   startAutoplay();
 </script>
