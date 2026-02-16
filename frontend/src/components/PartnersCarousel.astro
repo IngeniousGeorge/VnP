@@ -1,44 +1,82 @@
 ---
+import { Image } from 'astro:assets';
+import hangar from '../assets/images/p_1_hangar.png';
+import valrhona from '../assets/images/p_2_valrhona.png';
+import montgillet from '../assets/images/p_3_montgillet.png';
+import sablesienne from '../assets/images/p_4_sablesienne.png';
+import sillery from '../assets/images/p_5_sillery.png';
+import epicurien from '../assets/images/p_6_epicurien.png';
+import poisson from '../assets/images/p_7_poisson.png';
+import silvain from '../assets/images/p_8_silvain.png';
+import milliat from '../assets/images/p_9_milliat.png';
+import secrets from '../assets/images/p_10_secrets.png';
+import vie from '../assets/images/p_11_vie.png';
+import comptoir from '../assets/images/p_12_comptoir.png';
+
 const partners = [
-  { name: "Valrhona", logo: "valrhona" },
-  { name: "Alain Milliat", logo: "alain-milliat" },
-  { name: "Terre Exotique", logo: "terre-exotique" }
+  { name: "Le Hangar - Artisan biscuitier", logo: hangar, url: "https://laled.eu/" },
+  { name: "Valrhona - Chocolats d'exception", logo: valrhona, url: "https://www.valrhona.com/fr-FR" },
+  { name: "Montgillet - Domaine familial", logo: montgillet, url: "https://www.montgilet.com/" },
+  { name: "La Sablésienne - Biscuiterie depuis 1962", logo: sablesienne, url: "https://sablesienne.com/en" },
+  { name: "Les Délices de Sillery - Biscuiterie Bretonne & inclusive", logo: sillery, url: "https://lesdelicesdesillery.fr/" },
+  { name: "L'Épicurien - Artisan du goût", logo: epicurien, url: "https://epicurien.com/en/pages/nous" },
+  { name: "Poisson d'Ouest - Fabrication artisanale", logo: poisson, url: "https://www.poissondouest.com/" },
+  { name: "Silvain - Nougat d'exception", logo: silvain, url: "https://nougats-silvain.fr/" },
+  { name: "Alain Milliat - Jus de dégustation", logo: milliat, url: "https://alain-milliat.com/" },
+  { name: "Secrets de Famille - Conserverie artisanale Bretonne", logo: secrets, url: "https://conserverie-artisanale-bretonne.com/" },
+  { name: "Vie Vin D'Homme - Marchand de vin", logo: vie, url: "https://www.vievindhomme.fr/" },
+  { name: "Comptoir Français du Thé - Fabricant engagé", logo: comptoir, url: "https://comptoir-francais-du-the.fr/" },
 ];
 ---
 
-<section class="partners-carousel">
+<section class="partners-carousel" aria-label="Nos partenaires">
+  <div class="carousel-title">
+    <h2>Nos partenaires</h2>
+  </div>
   <div class="carousel-container">
-    <button class="carousel-btn prev" aria-label="Previous">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <button class="carousel-btn carousel-btn--prev" aria-label="Partenaire précédent">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 18l-6-6 6-6"/>
       </svg>
     </button>
 
-    <div class="carousel-track-container">
+    <div class="carousel-viewport">
       <div class="carousel-track">
         {partners.map((partner) => (
-          <div class="partner-slide">
-            <div class="partner-logo" data-partner={partner.logo}>
-              <span class="partner-name">{partner.name}</span>
-            </div>
+          <div class="carousel-slide">
+            <a href={partner.url} target="_blank" rel="noopener noreferrer" class="carousel-link" data-tooltip={partner.name}>
+              <Image src={partner.logo} alt={partner.name} height={100} class="carousel-logo" />
+            </a>
           </div>
         ))}
       </div>
     </div>
 
-    <button class="carousel-btn next" aria-label="Next">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <button class="carousel-btn carousel-btn--next" aria-label="Partenaire suivant">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18l6-6-6-6"/>
       </svg>
     </button>
   </div>
+
+  <div class="carousel-tooltip" aria-hidden="true"></div>
 </section>
 
 <style>
   .partners-carousel {
-    background-color: var(--color-white);
+    background-color: #FAF0EE;
     padding: 3rem 2rem;
-    border-top: 1px solid #e5e7eb;
+    position: relative;
+  }
+
+  .carousel-title h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--color-text);
+    text-align: center;
+    margin-bottom: 2rem;
   }
 
   .carousel-container {
@@ -55,116 +93,176 @@ const partners = [
     cursor: pointer;
     padding: 0.5rem;
     color: var(--color-orange);
-    transition: transform 0.2s, color 0.2s;
+    transition: color 0.2s;
     flex-shrink: 0;
   }
 
   .carousel-btn:hover {
-    transform: scale(1.2);
     color: var(--color-orange-dark);
   }
 
-  .carousel-track-container {
+  .carousel-viewport {
     overflow: hidden;
     flex: 1;
   }
 
   .carousel-track {
     display: flex;
-    transition: transform 0.3s ease;
+    will-change: transform;
   }
 
-  .partner-slide {
+  .carousel-slide {
     flex: 0 0 33.333%;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .partner-logo {
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  .partner-name {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text);
-    white-space: nowrap;
+  .carousel-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Custom styles for each partner */
-  [data-partner="valrhona"] .partner-name {
-    font-family: 'Georgia', serif;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #8B4513;
+  .carousel-logo {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
   }
 
-  [data-partner="alain-milliat"] .partner-name {
+  .carousel-tooltip {
+    position: fixed;
+    z-index: 1000;
+    background-color: var(--color-text);
+    color: var(--color-white);
+    font-size: 0.75rem;
     font-family: var(--font-body);
-    font-weight: 400;
-    color: #2c3e50;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  [data-partner="terre-exotique"] .partner-name {
-    font-family: 'Georgia', serif;
-    font-style: italic;
-    color: #8B0000;
+  .carousel-tooltip.visible {
+    opacity: 1;
   }
 
   @media (max-width: 768px) {
-    .partner-slide {
+    .carousel-slide {
       flex: 0 0 100%;
+      padding: 1rem;
     }
 
-    .partner-name {
-      font-size: 1.2rem;
+    .carousel-logo {
+      height: 70px;
     }
   }
 </style>
 
 <script>
-  const track = document.querySelector('.carousel-track') as HTMLElement;
-  const slides = document.querySelectorAll('.partner-slide');
-  const prevBtn = document.querySelector('.carousel-btn.prev');
-  const nextBtn = document.querySelector('.carousel-btn.next');
+  const SLIDE_DURATION = 800;
+  const AUTOPLAY_INTERVAL = 2000;
+  const TOOLTIP_DELAY = 500;
 
-  let currentIndex = 0;
-  const totalSlides = slides.length;
+  const section = document.querySelector('.partners-carousel') as HTMLElement;
+  const track = section.querySelector('.carousel-track') as HTMLElement;
+  const tooltip = section.querySelector('.carousel-tooltip') as HTMLElement;
+  const mobileQuery = window.matchMedia('(max-width: 768px)');
 
-  function getVisibleSlides() {
-    return window.innerWidth <= 768 ? 1 : 3;
+  let isTransitioning = false;
+  let isHovered = false;
+  let autoplayTimer: ReturnType<typeof setInterval>;
+  let tooltipTimer: ReturnType<typeof setTimeout>;
+
+  function getSlidePercent() {
+    return mobileQuery.matches ? 100 : 100 / 3;
   }
 
-  function updateCarousel() {
-    const visibleSlides = getVisibleSlides();
-    const maxIndex = Math.max(0, totalSlides - visibleSlides);
-    currentIndex = Math.min(currentIndex, maxIndex);
-    const offset = -(currentIndex * (100 / visibleSlides));
-    track.style.transform = `translateX(${offset}%)`;
+  function slide(direction: 'next' | 'prev') {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    const percent = getSlidePercent();
+
+    if (direction === 'next') {
+      track.style.transition = `transform ${SLIDE_DURATION}ms ease-in-out`;
+      track.style.transform = `translateX(-${percent}%)`;
+      track.addEventListener('transitionend', () => {
+        track.style.transition = 'none';
+        track.appendChild(track.firstElementChild!);
+        track.style.transform = 'translateX(0)';
+        isTransitioning = false;
+      }, { once: true });
+    } else {
+      track.style.transition = 'none';
+      track.insertBefore(track.lastElementChild!, track.firstElementChild);
+      track.style.transform = `translateX(-${percent}%)`;
+      track.offsetHeight; // force reflow before animating
+      track.style.transition = `transform ${SLIDE_DURATION}ms ease-in-out`;
+      track.style.transform = 'translateX(0)';
+      track.addEventListener('transitionend', () => {
+        isTransitioning = false;
+      }, { once: true });
+    }
   }
 
-  prevBtn?.addEventListener('click', () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateCarousel();
+  // Autoplay with visibility-aware pause
+  function startAutoplay() {
+    stopAutoplay();
+    if (!isHovered && !document.hidden) {
+      autoplayTimer = setInterval(() => slide('next'), AUTOPLAY_INTERVAL);
     }
+  }
+
+  function stopAutoplay() {
+    clearInterval(autoplayTimer);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    document.hidden ? stopAutoplay() : startAutoplay();
   });
 
-  nextBtn?.addEventListener('click', () => {
-    const visibleSlides = getVisibleSlides();
-    const maxIndex = totalSlides - visibleSlides;
-    if (currentIndex < maxIndex) {
-      currentIndex++;
-      updateCarousel();
-    }
+  const viewport = section.querySelector('.carousel-viewport')!;
+
+  viewport.addEventListener('mouseenter', () => {
+    isHovered = true;
+    stopAutoplay();
   });
 
-  window.addEventListener('resize', updateCarousel);
+  viewport.addEventListener('mouseleave', () => {
+    isHovered = false;
+    startAutoplay();
+  });
+
+  // Navigation buttons (event delegation)
+  section.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.carousel-btn');
+    if (!btn) return;
+    slide(btn.classList.contains('carousel-btn--next') ? 'next' : 'prev');
+  });
+
+  // Tooltip (event delegation on the viewport)
+  viewport.addEventListener('mouseover', (e) => {
+    const link = (e.target as HTMLElement).closest('.carousel-link') as HTMLElement | null;
+    if (!link) return;
+    const text = link.dataset.tooltip || '';
+    tooltipTimer = setTimeout(() => {
+      const rect = link.getBoundingClientRect();
+      tooltip.textContent = text;
+      tooltip.style.left = `${rect.left + rect.width / 2 - tooltip.offsetWidth / 2}px`;
+      tooltip.style.top = `${rect.bottom + 8}px`;
+      tooltip.classList.add('visible');
+    }, TOOLTIP_DELAY);
+  });
+
+  viewport.addEventListener('mouseout', (e) => {
+    const link = (e.target as HTMLElement).closest('.carousel-link');
+    if (!link) return;
+    clearTimeout(tooltipTimer);
+    tooltip.classList.remove('visible');
+  });
+
+  startAutoplay();
 </script>
