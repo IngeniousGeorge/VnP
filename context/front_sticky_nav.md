@@ -119,12 +119,50 @@ On each scroll event (`passive: true` listener):
 
 3. The `isSticky` flag prevents redundant DOM updates on every scroll tick — the class toggle and spacer update only happen on state change.
 
-## Mobile (max-width: 768px)
+## Mobile Behavior (max-width: 768px)
 
-- Sticky padding: `0.4rem 1rem`
-- Navbar wraps with `flex-wrap: wrap; gap: 0.8rem`
+On mobile, the sticky navbar is **always visible from page load** — there is no scroll-triggered transition. The desktop scroll handler (logo fade-out, class toggle, spacer) is completely bypassed.
+
+### How it works
+
+The navbar is `position: fixed; top: 0` from the start, with its own opaque background. It acts as the primary (and only) navigation on mobile, since the banner nav and hero navigation cards are both hidden.
+
+### Styling
+- `position: fixed; top: 0; left: 0; right: 0; z-index: 200`
+- `background-color: #BDBDC0` — same grey as the desktop sticky state
+- `padding: 0.5rem 1rem`
+- `box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08)`
+- `display: flex; flex-wrap: wrap; justify-content: center; align-items: center`
+- `gap: 0.5rem 0.8rem` (row and column gap for wrapped lines)
 - Link font size: `0.85rem`
 - Social SVGs: 20x20
+
+### JavaScript (mobile branch)
+
+The script detects mobile via `window.matchMedia('(max-width: 768px)')` at page load. On mobile:
+
+1. Measures the navbar's rendered height (`nav.offsetHeight`)
+2. Sets a CSS custom property on `<html>`: `--mobile-nav-height: {height}px`
+3. Does **not** attach a scroll listener — no fade-out, no class toggle, no spacer logic
+
+The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3rem) + 0.5rem)`. The `3rem` fallback prevents layout flash before JS runs. The `0.5rem` adds breathing room between the nav and the logo below.
+
+### Interaction with other components
+
+- **Banner** (`Header.astro`): The banner nav (social icons, CTA) is hidden on mobile. The logo is centered. The banner becomes a purely visual element (photo + logo) below the fixed nav.
+- **Hero cards** (`HeroCircles.astro`): Hidden on mobile (`display: none` at 768px breakpoint). Their navigation links (bocaux, crottin, coffrets) are redundant with the sticky navbar.
+- **Page flow**: As the user scrolls, the banner and subsequent content scroll naturally under the fixed navbar. No spacer or class toggling is needed.
+
+### Key difference from desktop
+
+| | Desktop | Mobile |
+|---|---|---|
+| Initial state | Hidden (`display: none`) | Visible, `position: fixed` at top |
+| Trigger | Scroll past banner height | Always visible from page load |
+| Background | Inherits from `.banner.sticky` | Own `background-color: #BDBDC0` |
+| JS behavior | Scroll handler, class toggle, spacer | Measures nav height, sets CSS variable |
+| Banner nav | Visible until sticky | Hidden (`display: none`) |
+| Hero cards | Visible | Hidden (`display: none`) |
 
 ## CSS Variables Referenced
 
@@ -141,3 +179,6 @@ On each scroll event (`passive: true` listener):
 - **Logo fade-out** provides a smooth visual transition before the sticky bar appears, rather than an abrupt switch
 - **`passive: true`** on the scroll listener for better scroll performance
 - **Separate gradient IDs** for sticky navbar SVGs (`ig-gradient-navbar`) to avoid SVG rendering conflicts when both the banner and sticky navbar SVGs exist in the DOM simultaneously
+- **Mobile uses `position: fixed`** (not `position: sticky`) because the navbar is nested inside the `<header>` — `position: sticky` would only keep it pinned while the banner is in view, then it would scroll away with its parent. `position: fixed` keeps it pinned for the entire page.
+- **CSS custom property for nav height** (`--mobile-nav-height`) — JS measures the dynamic height (which varies with text wrapping) and exposes it as a variable. CSS uses it for the banner's `padding-top`. This keeps layout logic in CSS and avoids a magic pixel value in JS.
+- **`matchMedia` gate at page load** — the mobile/desktop branch is chosen once. Device rotation during a session is an accepted edge case (page refresh resolves it).

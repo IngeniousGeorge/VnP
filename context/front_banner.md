@@ -90,9 +90,29 @@ Create a sticky header/banner for an Astro website. The banner features a backgr
 
 These should be defined in the global layout/stylesheet.
 
+## Mobile Behavior (max-width: 768px)
+
+On mobile, the banner is a **purely visual element** — all navigation is handled by the sticky navbar (see `context/front_sticky_nav.md`).
+
+### Layout Changes
+- **Banner nav hidden**: The social icons and "Nous contacter" CTA (`banner-nav`) are `display: none`. These links are available in the sticky navbar instead.
+- **Logo centered**: `.banner-container` uses `justify-content: center` (instead of `space-between`) since only the logo remains in the flow.
+- **Padding clears the fixed nav**: The banner's `padding-top` is set to `calc(var(--mobile-nav-height, 3rem) + 0.5rem)`, where `--mobile-nav-height` is a CSS custom property set by JS at page load (see sticky nav spec). The `3rem` fallback provides a reasonable default before JS runs. The `0.5rem` adds breathing room between the fixed nav and the logo.
+
+### Logo
+- Sized at 160x160px (vs 200x200px on desktop)
+- `margin-bottom: -64px` (vs -80px on desktop) — same proportional overflow effect
+- Centered horizontally in the banner
+
+### What stays the same
+- Background photo with dark overlay
+- The logo's overflow/overlap behavior below the banner edge
+- The `z-index: 10` on the logo to sit above the overlay
+
 ## Key Technical Decisions
 - Logo kept as PNG in the repo (not on Cloudinary) since it's a static asset that rarely changes
 - Banner served as JPEG (no transparency needed) for much smaller file size vs PNG
 - Astro's `<Image />` used for the logo (automatic optimization), `getImage()` for the banner (needed as CSS background-image URL)
 - Dark overlay uses `::before` + `isolation: isolate` pattern to avoid affecting child element stacking
 - Social links use inline SVGs with branded colors rather than icon libraries, to avoid extra dependencies
+- On mobile, the banner has no interactive elements — navigation is fully delegated to the sticky navbar, avoiding duplicate links

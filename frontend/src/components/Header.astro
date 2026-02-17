@@ -76,28 +76,38 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
   const banner = document.querySelector('.banner') as HTMLElement;
   const spacer = document.querySelector('.banner-spacer') as HTMLElement;
   const logoEl = banner.querySelector('.logo') as HTMLElement;
-  const bannerHeight = banner.offsetHeight;
-  const fadeStart = bannerHeight * 0.7;
-  let isSticky = false;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
-  function onScroll() {
-    const y = window.scrollY;
-    const shouldStick = y > bannerHeight;
+  if (isMobile) {
+    // Mobile: sticky navbar is fixed at top from page load.
+    // Expose nav height as a CSS variable so the banner can add padding to clear it.
+    const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
+    document.documentElement.style.setProperty('--mobile-nav-height', nav.offsetHeight + 'px');
+  } else {
+    // Desktop: scroll-triggered sticky behavior
+    const bannerHeight = banner.offsetHeight;
+    const fadeStart = bannerHeight * 0.7;
+    let isSticky = false;
 
-    if (!isSticky) {
-      const opacity = y <= fadeStart ? 1 : Math.max(0, 1 - (y - fadeStart) / (bannerHeight - fadeStart));
-      logoEl.style.opacity = String(opacity);
+    function onScroll() {
+      const y = window.scrollY;
+      const shouldStick = y > bannerHeight;
+
+      if (!isSticky) {
+        const opacity = y <= fadeStart ? 1 : Math.max(0, 1 - (y - fadeStart) / (bannerHeight - fadeStart));
+        logoEl.style.opacity = String(opacity);
+      }
+
+      if (shouldStick !== isSticky) {
+        isSticky = shouldStick;
+        banner.classList.toggle('sticky', isSticky);
+        spacer.style.height = isSticky ? `${bannerHeight}px` : '0';
+        if (!isSticky) logoEl.style.opacity = '1';
+      }
     }
 
-    if (shouldStick !== isSticky) {
-      isSticky = shouldStick;
-      banner.classList.toggle('sticky', isSticky);
-      spacer.style.height = isSticky ? `${bannerHeight}px` : '0';
-      if (!isSticky) logoEl.style.opacity = '1';
-    }
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
 </script>
 
 <style>
@@ -265,37 +275,42 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
 
   /* Mobile */
   @media (max-width: 768px) {
+    /* Fixed navigation bar at top on page load */
+    .sticky-navbar {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #BDBDC0;
+      padding: 0.5rem 1rem;
+      z-index: 200;
+      gap: 0.5rem 0.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Hide desktop banner nav */
+    .banner-nav {
+      display: none;
+    }
+
+    /* Banner: photo background with centered logo */
     .banner {
       padding: 1rem;
+      padding-top: calc(var(--mobile-nav-height, 3rem) + 0.5rem);
+    }
+
+    .banner-container {
+      justify-content: center;
     }
 
     .logo img {
       width: 160px;
       height: 160px;
       margin-bottom: -64px;
-    }
-
-    .banner-nav {
-      gap: 1rem;
-    }
-
-    .banner-social svg {
-      width: 28px;
-      height: 28px;
-    }
-
-    .banner-cta {
-      font-size: 1.2rem;
-      padding: 0.4rem 0.8rem;
-    }
-
-    .banner.sticky {
-      padding: 0.4rem 1rem;
-    }
-
-    .sticky-navbar {
-      gap: 0.8rem;
-      flex-wrap: wrap;
     }
 
     .navbar-link {
