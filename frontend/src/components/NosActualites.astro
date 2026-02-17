@@ -1,44 +1,117 @@
 ---
-const actualites = [
+import { Image } from 'astro:assets';
+import actu1 from '../assets/images/actu_1.jpg';
+import actu2 from '../assets/images/actu_2.jpg';
+import actu3 from '../assets/images/actu_3.jpg';
+import actu4 from '../assets/images/actu_4.jpg';
+import actu5 from '../assets/images/actu_5.jpg';
+import actu6 from '../assets/images/actu_6.jpg';
+
+const posts = [
   {
-    title: "Bon Dici",
-    subtitle: "Alimentation Locale & Artisanale",
-    image: "bondici"
+    date: "14 février 2026",
+    text: "Il reste encore quelques menus Saint Valentin ! N'hésitez pas à appeler au 02 43 07 89 05.",
+    image: actu1,
+    url: "https://www.facebook.com/verreetpapilles",
   },
   {
-    title: "Ouest France",
-    subtitle: "Article de presse",
-    image: "ouest-france"
+    date: "12 février 2026",
+    text: "Modification des horaires d'ouverture : Samedi 14 février (Saint Valentin)...",
+    image: actu2,
+    url: "https://www.facebook.com/verreetpapilles",
   },
   {
-    title: "Verre et Papilles",
-    subtitle: "Notre page Facebook",
-    image: "facebook"
-  }
+    date: "11 février 2026",
+    text: "Menu Saint Valentin 2026 — 55€ pour 2 personnes. Quantité limitée, pensez à réserver !",
+    image: actu3,
+    url: "https://www.facebook.com/verreetpapilles",
+  },
+  {
+    date: "6 février 2026",
+    text: "Pensez à réserver votre menu Saint Valentin !",
+    image: actu4,
+    url: "https://www.facebook.com/verreetpapilles",
+  },
+  {
+    date: "30 décembre 2025",
+    text: "Il vous manque du foie gras pour le réveillon ? Il est encore possible de passer chez Verre et Papilles !",
+    image: actu5,
+    url: "https://www.facebook.com/verreetpapilles",
+  },
+  {
+    date: "29 décembre 2025",
+    text: "Les horaires d'ouverture de la semaine : retrouvez nos produits du terroir et nos coffrets gourmands.",
+    image: actu6,
+    url: "https://www.facebook.com/verreetpapilles",
+  },
 ];
 ---
 
 <section class="nos-actualites">
-  <div class="container">
-    <h2>Nos actualités</h2>
+  <h2 class="actu-title">Nos actualités</h2>
 
-    <div class="actualites-grid">
-      {actualites.map((actu) => (
-        <article class="actualite-card">
-          <div class="actualite-image">
-            <div class="placeholder-image">
-              <span>Image {actu.title}</span>
+  <div class="actu-carousel">
+    <button class="actu-btn actu-btn--prev" aria-label="Publication précédente" disabled>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <div class="actu-viewport">
+      <div class="actu-track">
+        {posts.map((post) => (
+          <article class="actu-card">
+            <div class="actu-card-header">
+              <svg class="fb-icon" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <div class="actu-card-meta">
+                <span class="actu-card-page">Verre et Papilles</span>
+                <span class="actu-card-date">{post.date}</span>
+              </div>
             </div>
-          </div>
-          <div class="actualite-content">
-            <div class="actualite-logo" data-logo={actu.image}>
-              <span class="logo-text">{actu.title}</span>
+            <div class="actu-card-image">
+              <Image src={post.image} alt={post.text} width={450} />
             </div>
-            <p class="actualite-subtitle">{actu.subtitle}</p>
+            <div class="actu-card-body">
+              <p class="actu-card-text">{post.text}</p>
+              <a href={post.url} target="_blank" rel="noopener noreferrer" class="actu-card-link">
+                Voir sur Facebook
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+
+        <!-- CTA card -->
+        <article class="actu-card actu-card--cta">
+          <div class="actu-cta-content">
+            <svg class="actu-cta-icon" width="56" height="56" viewBox="0 0 24 24" fill="white">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <p class="actu-cta-text">Retrouvez toutes nos actualités sur Facebook</p>
+            <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="actu-cta-btn">
+              Suivez-nous
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
           </div>
         </article>
-      ))}
+      </div>
     </div>
+
+    <button class="actu-btn actu-btn--next" aria-label="Publication suivante">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
   </div>
 </section>
 
@@ -46,90 +119,236 @@ const actualites = [
   .nos-actualites {
     background-color: var(--color-dark-bg);
     padding: 4rem 2rem;
-    color: var(--color-white);
   }
 
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  h2 {
+  .actu-title {
+    font-family: var(--font-heading);
     font-size: 2rem;
-    margin-bottom: 2rem;
     font-weight: 700;
+    font-style: italic;
+    color: var(--color-white);
+    text-align: center;
+    margin-bottom: 2rem;
   }
 
-  .actualites-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+  .actu-carousel {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
-  .actualite-card {
-    background-color: var(--color-white);
-    border-radius: 8px;
+  .actu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--color-orange);
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .actu-btn:hover:not(:disabled) {
+    color: var(--color-orange-dark);
+  }
+
+  .actu-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .actu-viewport {
     overflow: hidden;
+    flex: 1;
+  }
+
+  .actu-track {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+  }
+
+  /* Post card */
+  .actu-card {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .actu-card > :first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .actu-card > :last-child {
+    border-radius: 0 0 8px 8px;
+  }
+
+  .actu-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-white);
+    border-bottom: 1px solid #E4E6EB;
+  }
+
+  .fb-icon {
+    flex-shrink: 0;
+  }
+
+  .actu-card-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+
+  .actu-card-page {
+    font-weight: 700;
+    font-size: 0.85rem;
     color: var(--color-text);
   }
 
-  .actualite-image {
-    aspect-ratio: 4/3;
+  .actu-card-date {
+    font-size: 0.75rem;
+    color: #65676B;
+  }
+
+  .actu-card-image {
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background-color: #F0F2F5;
+  }
+
+  .actu-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .actu-card-body {
+    padding: 1rem;
+    background-color: var(--color-white);
+  }
+
+  .actu-card-text {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .placeholder-image {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+  .actu-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1877F2;
+    transition: color 0.2s;
+  }
+
+  .actu-card-link:hover {
+    color: #145dbf;
+  }
+
+  /* CTA card */
+  .actu-card--cta {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #666;
-    font-style: italic;
   }
 
-  .actualite-content {
-    padding: 1rem;
+  .actu-cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    padding: 3rem 2rem;
+    background-color: #1877F2;
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
   }
 
-  .actualite-logo {
-    margin-bottom: 0.5rem;
+  .actu-cta-icon {
+    margin-bottom: 1.5rem;
   }
 
-  .logo-text {
+  .actu-cta-text {
+    color: var(--color-white);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    max-width: 280px;
+  }
+
+  .actu-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--color-white);
+    color: #1877F2;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    padding: 0.65rem 1.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.2s;
   }
 
-  [data-logo="bondici"] .logo-text {
-    color: #c0392b;
-  }
-
-  [data-logo="ouest-france"] .logo-text {
-    color: #e74c3c;
-  }
-
-  [data-logo="facebook"] .logo-text {
-    color: #3b5998;
-  }
-
-  .actualite-subtitle {
-    font-size: 0.85rem;
-    color: #666;
-    font-style: italic;
+  .actu-cta-btn:hover {
+    background-color: #E4E6EB;
   }
 
   @media (max-width: 768px) {
-    .actualites-grid {
-      grid-template-columns: 1fr;
-      max-width: 400px;
-      margin: 0 auto;
+    .nos-actualites {
+      padding: 3rem 1rem;
     }
 
-    h2 {
+    .actu-title {
       font-size: 1.75rem;
+    }
+
+    .actu-carousel {
+      max-width: 100%;
+      gap: 0.5rem;
+    }
+
+    .actu-btn svg {
+      width: 22px;
+      height: 22px;
     }
   }
 </style>
+
+<script>
+  const section = document.querySelector('.nos-actualites') as HTMLElement;
+  const track = section.querySelector('.actu-track') as HTMLElement;
+  const prevBtn = section.querySelector('.actu-btn--prev') as HTMLButtonElement;
+  const nextBtn = section.querySelector('.actu-btn--next') as HTMLButtonElement;
+  const totalSlides = track.children.length;
+  let current = 0;
+
+  function updateCarousel() {
+    track.style.transform = `translateX(-${current * 100}%)`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === totalSlides - 1;
+  }
+
+  section.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.actu-btn') as HTMLButtonElement | null;
+    if (!btn || btn.disabled) return;
+
+    if (btn.classList.contains('actu-btn--next')) {
+      current = Math.min(current + 1, totalSlides - 1);
+    } else {
+      current = Math.max(current - 1, 0);
+    }
+    updateCarousel();
+  });
+</script>
