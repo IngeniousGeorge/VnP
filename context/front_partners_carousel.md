@@ -80,7 +80,7 @@ Each partner has a name (used as alt text and tooltip), a logo image, and a URL:
 - Appears 500ms after hover, positioned centered below the hovered logo (8px gap)
 
 ### Background
-- `#FAF0EE` — matches the logo image backgrounds so they blend seamlessly
+- `var(--color-warm-bg)` (`#FAF0EE`) — matches the logo image backgrounds so they blend seamlessly
 
 ## JavaScript Behavior
 

@@ -64,7 +64,7 @@ The card titles use **Dancing Script Bold**. This font must be available before 
 
 ### Structure
 ```
-<section.hero-circles>                — white background, padding 3rem 2rem
+<section.hero-circles>                — warm beige background, padding 3rem 2rem
   <div.circles-container>             — flex row, centered, 2rem gap, max-width 1140px
     <a.circle href="/">               — left card (bocaux)
       <span.circle-title.circle-title-nowrap>  "Les bocaux du jour"
@@ -108,6 +108,7 @@ The card titles use **Dancing Script Bold**. This font must be available before 
 ### CSS Variables Referenced
 - `--color-orange` (`#F29D37`)
 - `--color-white`
+- `--color-warm-bg` (`#FAF0EE`) — section background
 
 These should be defined in the global layout/stylesheet.
 

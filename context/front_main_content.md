@@ -61,7 +61,7 @@ conditionnés en bocaux.
 
 ### Styling
 
-- **Section**: `background-color: var(--color-white)`, `padding: 4rem 2rem`
+- **Section**: `background-color: var(--color-warm-bg)`, `padding: 4rem 2rem`
 - **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
 - **Photo**: `width: 100%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`
 - **Content**: `padding: 1rem`
@@ -140,7 +140,7 @@ Both sections use the same grid pattern but mirrored:
 
 | | Left column | Right column | Background |
 |---|---|---|---|
-| Notre Histoire | Photo | Text | `var(--color-white)` |
+| Notre Histoire | Photo | Text | `var(--color-warm-bg)` |
 | La Boutique | Text | Photo | `var(--color-gray-bg)` |
 
 This alternating layout creates visual rhythm on the page. The grid column order handles the mirroring — no CSS `order` property needed on desktop.
@@ -149,7 +149,7 @@ This alternating layout creates visual rhythm on the page. The grid column order
 
 | Property | Notre Histoire | La Boutique |
 |---|---|---|
-| Background | white | `--color-gray-bg` (#6B7280) |
+| Background | `--color-warm-bg` (#FAF0EE) | `--color-gray-bg` (#6B7280) |
 | Text color | default (`--color-text`) | `var(--color-white)` |
 | h2 font-weight | 400 | 700 |
 | h2 margin-bottom | 1.5rem | 0.5rem |
@@ -160,7 +160,8 @@ This alternating layout creates visual rhythm on the page. The grid column order
 
 ## CSS Variables Referenced
 
-- `--color-white` — Notre Histoire background, La Boutique text
+- `--color-warm-bg` — Notre Histoire background
+- `--color-white` — La Boutique text
 - `--color-text` — Notre Histoire text, h2 color
 - `--color-gray-bg` — La Boutique background
 - `--color-orange-dark` — highlight text in Notre Histoire
