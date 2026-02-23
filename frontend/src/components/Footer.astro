@@ -3,11 +3,7 @@
 
 <footer class="footer">
   <div class="container">
-    <nav class="footer-nav">
-      <a href="/" class="footer-link">À propos</a>
-      <span class="separator">|</span>
-      <a href="/" class="footer-link">Nous contacter</a>
-    </nav>
+    <p class="footer-credit">Site réalisé par <a href="https://github.com/IngeniousGeorge" target="_blank" rel="noopener noreferrer" class="footer-link">Ingenious George</a></p>
   </div>
 </footer>
 
@@ -23,31 +19,19 @@
     margin: 0 auto;
   }
 
-  .footer-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+  .footer-credit {
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
   }
 
   .footer-link {
-    color: var(--color-orange);
-    font-weight: 600;
-    transition: color 0.2s, text-decoration 0.2s;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.2s;
   }
 
   .footer-link:hover {
     color: var(--color-white);
-    text-decoration: underline;
-  }
-
-  .separator {
-    color: rgba(255, 255, 255, 0.3);
-  }
-
-  @media (max-width: 768px) {
-    .footer-nav {
-      justify-content: center;
-    }
   }
 </style>
