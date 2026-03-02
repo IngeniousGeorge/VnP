@@ -1,27 +1,31 @@
 ---
-import { Image } from 'astro:assets';
-import owners from '../assets/images/owners.jpg';
+import { STRAPI_URL, blocksToHtml } from '../lib/strapi';
+
+let data;
+try {
+  const res = await fetch(`${STRAPI_URL}/api/notre-histoire?populate=Photo`);
+  const json = await res.json();
+  data = json.data;
+} catch (e) {
+  console.error('Failed to fetch Notre Histoire from Strapi:', e);
+}
+
+const titre        = data?.Titre            ?? 'Notre histoire';
+const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
+const miseEnValeur = data?.Mise_en_valeur   ?? '';
+const photoUrl     = data?.Photo?.url       ? `${STRAPI_URL}${data.Photo.url}` : null;
+const photoAlt     = data?.Description_photo ?? '';
 ---
 
 <section class="notre-histoire">
   <div class="container">
     <div class="image-container">
-      <Image src={owners} alt="Anne-Marie et Fabrice Sorin" width={800} class="owners-photo" />
+      {photoUrl && <img src={photoUrl} alt={photoAlt} class="owners-photo" />}
     </div>
     <div class="content">
-      <h2>Notre histoire</h2>
-      <p>
-        Bienvenue au magasin « Verre et Papilles » situé à Craon en Mayenne.
-      </p>
-      <p>
-        Anne-Marie et Fabrice Sorin, anciens restaurateurs, amoureux des vins et de la gastronomie ont créé un commerce de proximité ou vous pourrez découvrir des produits d’épicerie fine, vins et spiritueux.
-      </p>
-      <p>
-        Le chef Fabrice vous propose également des plats cuisinés à emporter, conditionnés en bocaux.
-      </p>
-      <p class="highlight">
-        Depuis 2023, le couple a repris la fabrication de la spécialité Mayennaise le « Crottin Craonnais ». Ce chocolat emblématique des années 80 fait son retour gourmand.
-      </p>
+      <h2>{titre}</h2>
+      <Fragment set:html={texteHtml} />
+      {miseEnValeur && <p class="highlight">{miseEnValeur}</p>}
     </div>
   </div>
 </section>
@@ -61,8 +65,9 @@ import owners from '../assets/images/owners.jpg';
     font-weight: 400;
   }
 
-  p {
-    margin-bottom: 1rem;
+  /* set:html bypasses Astro scoping — :global() required */
+  .content :global(p) {
+    margin-bottom: 1.4rem;
     line-height: 1.8;
     text-align: justify;
   }
