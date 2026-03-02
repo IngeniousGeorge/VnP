@@ -1,5 +1,7 @@
 ---
 import { Image } from 'astro:assets';
+
+const externalLinkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 import actu1 from '../assets/images/actu_1.jpg';
 import actu2 from '../assets/images/actu_2.jpg';
 import actu3 from '../assets/images/actu_3.jpg';
@@ -77,11 +79,7 @@ const posts = [
               <p class="actu-card-text">{post.text}</p>
               <a href={post.url} target="_blank" rel="noopener noreferrer" class="actu-card-link">
                 Voir sur Facebook
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
+                <Fragment set:html={externalLinkIcon} />
               </a>
             </div>
           </article>
@@ -96,11 +94,7 @@ const posts = [
             <p class="actu-cta-text">Retrouvez-nous sur Facebook</p>
             <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="actu-cta-btn">
               Suivez-nous
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
+              <Fragment set:html={externalLinkIcon} />
             </a>
           </div>
           <div class="actu-cta-ig">
@@ -112,11 +106,7 @@ const posts = [
             <p class="actu-cta-text">Ou sur Instagram</p>
             <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="actu-cta-btn actu-cta-btn--ig">
               Suivez-nous
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
+              <Fragment set:html={externalLinkIcon} />
             </a>
           </div>
         </article>
@@ -205,7 +195,7 @@ const posts = [
     gap: 0.6rem;
     padding: 0.75rem 1rem;
     background-color: var(--color-white);
-    border-bottom: 1px solid #E4E6EB;
+    border-bottom: 1px solid var(--color-facebook-light);
   }
 
   .fb-icon {
@@ -226,13 +216,13 @@ const posts = [
 
   .actu-card-date {
     font-size: 0.75rem;
-    color: #65676B;
+    color: var(--color-facebook-text);
   }
 
   .actu-card-image {
     overflow: hidden;
     aspect-ratio: 4 / 3;
-    background-color: #F0F2F5;
+    background-color: var(--color-facebook-bg);
   }
 
   .actu-card-image img {
@@ -263,12 +253,12 @@ const posts = [
     gap: 0.35rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #1877F2;
+    color: var(--color-facebook);
     transition: color 0.2s;
   }
 
   .actu-card-link:hover {
-    color: #145dbf;
+    color: var(--color-facebook-hover);
   }
 
   /* CTA card */
@@ -291,11 +281,11 @@ const posts = [
   }
 
   .actu-cta-fb {
-    background-color: #1877F2;
+    background-color: var(--color-facebook);
   }
 
   .actu-cta-ig {
-    background: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%);
+    background: var(--gradient-instagram);
   }
 
   .actu-cta-icon {
@@ -315,7 +305,7 @@ const posts = [
     align-items: center;
     gap: 0.4rem;
     background-color: var(--color-white);
-    color: #1877F2;
+    color: var(--color-facebook);
     font-weight: 700;
     font-size: 0.85rem;
     padding: 0.5rem 1.2rem;
@@ -324,11 +314,11 @@ const posts = [
   }
 
   .actu-cta-btn:hover {
-    background-color: #E4E6EB;
+    background-color: var(--color-facebook-light);
   }
 
   .actu-cta-btn--ig {
-    color: #DD2A7B;
+    color: var(--color-instagram-pink);
   }
 
   @media (max-width: 768px) {

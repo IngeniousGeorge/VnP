@@ -35,44 +35,45 @@ Astro's `<Image />` handles further optimization (WebP, resizing) at build time.
 <section.notre-histoire>              — white background, padding 4rem 2rem
   <div.container>                     — max-width 1100px, 2-column grid, 3rem gap
     <div.image-container>
-      <Image owners.jpg />            — width 800, border-radius 8px
+      <Image owners.jpg />            — width 800, 82% width, centered, border-radius 8px
     <div.content>
       <h2>                            "Notre histoire"
-      <p>                             Intro paragraph (Anne-Marie et Fabrice, sommelière/chef)
+      <p>                             Intro paragraph
       <p>                             Commerce de proximité, épicerie fine
       <p>                             Plats cuisinés à emporter en bocaux
-      <p.highlight>                   Italic call-to-action line
+      <p.highlight>                   Italic call-to-action line (orange-dark)
 ```
 
 ### Text Content
 ```
-Gourmets et gourmands, **Anne-Marie et Fabrice Sorin** possèdent une double
-expérience professionnelle, de **sommelière** et **chef de cuisine**.
+Bienvenue au magasin « Verre et Papilles » situé à Craon en Mayenne.
 
-Amoureux des vins et de gastronomie, ils ont tout naturellement créé un
-**commerce de proximité** où vous pourrez découvrir des produits d'**épicerie
-fine, vins et spiritueux**.
+Anne-Marie et Fabrice Sorin, anciens restaurateurs, amoureux des vins et de la
+gastronomie ont créé un commerce de proximité ou vous pourrez découvrir des
+produits d'épicerie fine, vins et spiritueux.
 
-Le chef Fabrice vous propose également des **plats cuisinés à emporter**
+Le chef Fabrice vous propose également des plats cuisinés à emporter,
 conditionnés en bocaux.
 
-*Commander les bocaux du jour, goûter et vous serez conquis !*
+Depuis 2023, le couple a repris la fabrication de la spécialité Mayennaise le
+« Crottin Craonnais ». Ce chocolat emblématique des années 80 fait son retour
+gourmand.
 ```
+(The last paragraph uses class `.highlight`.)
 
 ### Styling
 
-- **Section**: `background-color: var(--color-warm-bg)`, `padding: 4rem 2rem`
+- **Section**: `background-color: var(--color-white)`, `padding: 4rem 2rem`
 - **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
-- **Photo**: `width: 100%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`
+- **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `display: block`, `margin: 0 auto`
 - **Content**: `padding: 1rem`
 - **h2**: `font-size: 2rem`, `color: var(--color-text)`, `margin-bottom: 1.5rem`, `font-weight: 400`
 - **p**: `margin-bottom: 1rem`, `line-height: 1.8`, `text-align: justify`
-- **strong**: `font-weight: 700`
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
 
 ### Mobile (max-width: 768px)
 - Grid collapses to single column
-- Image moves above text via `order: -1` on `.image-container`
+- Text moves above image via `order: -1` on `.content`
 - h2 font size: `1.75rem`
 - Gap: `2rem`
 
@@ -90,19 +91,18 @@ conditionnés en bocaux.
       <p>                             Product range intro
       <p>                             Product list
       <p>                             Quality promise
-      <p.brands-intro>                "Nos marques en épicerie fine :"
     <div.image-container>
-      <Image boutique.jpg />          — width 800, border-radius 8px
+      <Image boutique.jpg />          — width 800, 82% width, centered, border-radius 8px
 ```
 
 ### Text Content
 ```
-**La boutique**
-*Produits du terroir, de France et d'ailleurs*
+La boutique
+Produits du terroir, de France et d'ailleurs
 
-Nous vous proposons un large choix de **spécialités régionales** et de
-nombreuses idées cadeaux ou compositions à votre convenance pour **tous
-les budgets**.
+Nous vous proposons un large choix de spécialités régionales
+et de nombreuses idées cadeaux ou compositions à votre convenance pour
+tous les budgets.
 
 Terrines terre et mer, tartinades, épices, condiments, huiles, vinaigres,
 produits Italiens et Espagnols, confitures, bonbons, chocolats, guimauves,
@@ -110,25 +110,20 @@ nougats, pâtes de fruits, biscuits, caramels, thés ...
 
 Les maisons les plus réputées côtoient les petits producteurs afin de vous
 garantir le plaisir des papilles.
-
-**Nos marques en épicerie fine :**
 ```
 
 ### Styling
 
 - **Section**: `background-color: var(--color-gray-bg)`, `color: var(--color-white)`, `padding: 4rem 2rem`
 - **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: start`
-- **Photo**: `width: 100%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`
+- **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `display: block`, `margin: 0 auto`
 - **Content**: `padding: 1rem 0`
 - **h2**: `font-size: 2rem`, `margin-bottom: 0.5rem`, `font-weight: 700`
 - **`.subtitle`**: `font-style: italic`, `margin-bottom: 1.5rem`, `opacity: 0.9`
 - **p**: `margin-bottom: 1rem`, `line-height: 1.8`, `text-align: justify`
-- **strong**: `font-weight: 700`
-- **`.brands-intro`**: `margin-top: 1.5rem`
 
 ### Mobile (max-width: 768px)
 - Grid collapses to single column
-- Image moves above text via `order: -1` on `.image-container`
 - h2 font size: `1.75rem`
 - Gap: `2rem`
 
@@ -140,7 +135,7 @@ Both sections use the same grid pattern but mirrored:
 
 | | Left column | Right column | Background |
 |---|---|---|---|
-| Notre Histoire | Photo | Text | `var(--color-warm-bg)` |
+| Notre Histoire | Photo | Text | `var(--color-white)` |
 | La Boutique | Text | Photo | `var(--color-gray-bg)` |
 
 This alternating layout creates visual rhythm on the page. The grid column order handles the mirroring — no CSS `order` property needed on desktop.
@@ -149,19 +144,18 @@ This alternating layout creates visual rhythm on the page. The grid column order
 
 | Property | Notre Histoire | La Boutique |
 |---|---|---|
-| Background | `--color-warm-bg` (#FAF0EE) | `--color-gray-bg` (#6B7280) |
+| Background | `--color-white` (#FFFFFF) | `--color-gray-bg` (#6B7280) |
 | Text color | default (`--color-text`) | `var(--color-white)` |
 | h2 font-weight | 400 | 700 |
 | h2 margin-bottom | 1.5rem | 0.5rem |
 | Subtitle | none | italic, 0.9 opacity |
 | Content padding | 1rem | 1rem 0 |
 | Grid align-items | center | start |
-| Closing element | `.highlight` (italic, orange-dark) | `.brands-intro` (bold) |
+| Closing element | `.highlight` (italic, orange-dark) | none |
 
 ## CSS Variables Referenced
 
-- `--color-warm-bg` — Notre Histoire background
-- `--color-white` — La Boutique text
+- `--color-white` — Notre Histoire background; La Boutique text
 - `--color-text` — Notre Histoire text, h2 color
 - `--color-gray-bg` — La Boutique background
 - `--color-orange-dark` — highlight text in Notre Histoire
@@ -174,5 +168,6 @@ This alternating layout creates visual rhythm on the page. The grid column order
 - **CSS Grid** (not flexbox) for the two-column layout — grid handles equal-height columns and alignment more cleanly
 - **`align-items: center`** for Notre Histoire (vertically centers shorter text next to taller photo), **`align-items: start`** for La Boutique (text is longer, top-alignment reads more naturally)
 - **`text-align: justify`** on paragraphs for a polished, editorial feel consistent with the boutique brand
-- **Image on top in mobile** (`order: -1`) for both sections — photo provides visual context before the text
+- **Photos at 82% width**, centered with `margin: 0 auto` — slightly smaller than the full column to give visual breathing room and better proportion against the text
+- **Image on top in mobile** for both sections — photo provides visual context before the text
 - **No JavaScript** — these are pure static content sections

@@ -2,12 +2,12 @@
 
 ## Overview
 
-Create a sticky header/banner for an Astro website. The banner features a background photo of the shop, an overflowing circular logo on the left, and navigation links (Instagram, Facebook, contact page) on the right.
+Create a sticky header/banner for an Astro website. The banner features a background photo of the shop, an overflowing circular logo on the left, and navigation links (Instagram, Facebook, contact page) on the right, aligned to the bottom of the banner.
 
 ## Source Files
 
 - **Logo**: `misc/elements/logo_vp.png` (2000x2000 PNG, circular logo on white background)
-- **Banner photo**: `misc/banner/banner-2.png` (4378x759 PNG, photo of the shop shelves)
+- **Banner photo**: `misc/banner/montage.png` (1310x165 PNG, photo montage of the shop)
 
 ## Image Processing
 
@@ -24,31 +24,46 @@ Create a sticky header/banner for an Astro website. The banner features a backgr
 2. Save as PNG (transparency required) to `frontend/src/assets/images/logo_vp.png`
 3. Astro's `<Image />` component handles further optimization (resizing, WebP conversion) at build time
 
-### Banner photo (`banner-2.png`)
-1. Resize to 1920px wide (height scales proportionally, ~333px) and convert to JPEG at 80% quality:
+### Banner photo (`montage.png`)
+1. The source is 1310px wide — smaller than 1920px, so do **not** upscale. Convert to JPEG at 80% quality only:
    ```
-   convert <input> -resize 1920x -quality 80 <output>
+   convert <input> -resize '1920x>' -quality 80 <output>
    ```
+   (The `>` flag prevents upscaling.)
 2. Save as `frontend/src/assets/images/banner.jpg`
 3. Use Astro's `getImage()` to serve the optimized version at runtime
 
 ## Component: `Header.astro`
 
+### Shared SVG Definitions
+
+Before the `<header>` element, include a hidden `<svg>` that defines the Instagram gradient once. Both icon instances in the component reference it by ID:
+
+```html
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <linearGradient id="ig-gradient" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F58529"/>
+      <stop offset="50%" stop-color="#DD2A7B"/>
+      <stop offset="100%" stop-color="#8134AF"/>
+    </linearGradient>
+  </defs>
+</svg>
+```
+
 ### Structure
 ```
-<header>                          — sticky, background-image = banner photo
-  ::before                        — semi-transparent dark overlay (rgba 0,0,0,0.3)
-  <div.header-container>          — max-width 1200px, flex row, space-between
-    <a.logo href="/">             — links to home
-      <Image />                   — logo, 200x200, overflows below header
-    </a>
-    <nav.nav>
-      <a> Instagram SVG icon      — links to https://www.instagram.com/verre_et_papilles (new tab)
-      <a> Facebook SVG icon       — links to https://www.facebook.com/verreetpapilles (new tab)
-      <a> "Nous contacter"        — links to /contact
-    </nav>
-  </div>
-</header>
+<svg aria-hidden="true" ...>        — hidden shared SVG defs (Instagram gradient)
+<header.banner>                     — sticky, background-image = banner photo
+  ::before                          — semi-transparent dark overlay (rgba 0,0,0,0.33)
+  <div.banner-container>            — max-width 1200px, flex row, space-between
+    <a.logo href="/">               — links to home
+      <Image />                     — logo, 200x200, overflows below header
+    <nav.banner-nav>                — align-self: flex-end, padding-bottom: 0.4rem
+      <a> Instagram SVG icon        — links to https://www.instagram.com/verre_et_papilles (new tab)
+      <a> Facebook SVG icon         — links to https://www.facebook.com/verreetpapilles (new tab)
+      <a> "Nous contacter"          — links to /contact
+    <nav.sticky-navbar>             — hidden by default, shown in sticky state
 ```
 
 ### Logo Behavior
@@ -60,19 +75,22 @@ Create a sticky header/banner for an Astro website. The banner features a backgr
 ### Banner Background
 - Applied as inline `background-image` style using Astro's `getImage()` for optimization
 - CSS: `background-size: cover; background-position: center; background-repeat: no-repeat`
-- Dark overlay via `::before` pseudo-element: `position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.3); z-index: -1`
+- Dark overlay via `::before` pseudo-element: `position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.33); z-index: -1`
 - The header uses `isolation: isolate` to create a stacking context, and `overflow: visible` to allow the logo to extend beyond
 
 ### Header Sizing
-- Padding: `1.1rem 2rem` (desktop), `1rem` (mobile)
+- Padding: `1.1rem 2rem 0.55rem` (desktop), `1rem` (mobile)
 - The header height is determined by the padding + the logo's visible portion (120px, since 80px overflows). Do NOT let the full 200px logo stretch the header — the negative margin handles this.
 
 ### Navigation Links
 
+#### Banner Nav Positioning
+- `.banner-nav`: `align-self: flex-end; padding-bottom: 0.4rem` — pushes the row of links to the bottom of the banner
+
 #### Social Icons (Instagram & Facebook)
 - SVG icons at 36x36px (desktop), 28x28px (mobile)
-- Instagram: stroke uses a `<linearGradient>` from `#F58529` (orange) through `#DD2A7B` (pink) to `#8134AF` (purple)
-- Facebook: stroke color `#1877F2`
+- Instagram: `stroke="url(#ig-gradient)"` — references the shared gradient defined in the hidden SVG above the header
+- Facebook: `stroke="var(--color-facebook)"`
 - Both have `filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6))` for visibility against the banner
 - Both open in new tab: `target="_blank" rel="noopener noreferrer"`
 - Hover: `transform: scale(1.1)`
@@ -83,12 +101,24 @@ Create a sticky header/banner for an Astro website. The banner features a backgr
 - Hover: orange background, white text, no scale transform
 - Links to `/contact` (internal page)
 
+### JavaScript Behavior
+
+```js
+const FADE_THRESHOLD = 0.7; // fraction of banner height at which logo starts fading
+const bannerHeight = banner.offsetHeight;
+const fadeStart = bannerHeight * FADE_THRESHOLD;
+```
+
+See `context/front_sticky_nav.md` for full JS details.
+
 ### CSS Variables Referenced
 - `--color-white`
 - `--color-orange`
 - `--color-text`
-
-These should be defined in the global layout/stylesheet.
+- `--color-nav-bg` — sticky/mobile navbar background (`#BDBDC0`)
+- `--color-separator` — navbar separator color (`#9CA3AF`)
+- `--color-facebook` — Facebook icon stroke (`#1877F2`)
+- `--shadow-sm` — `0 2px 4px rgba(0, 0, 0, 0.1)`
 
 ## Mobile Behavior (max-width: 768px)
 
@@ -114,5 +144,7 @@ On mobile, the banner is a **purely visual element** — all navigation is handl
 - Banner served as JPEG (no transparency needed) for much smaller file size vs PNG
 - Astro's `<Image />` used for the logo (automatic optimization), `getImage()` for the banner (needed as CSS background-image URL)
 - Dark overlay uses `::before` + `isolation: isolate` pattern to avoid affecting child element stacking
+- Instagram gradient defined once in a hidden `<svg>` before the `<header>` — both icon instances reference `url(#ig-gradient)`. This avoids duplicating the gradient definition.
 - Social links use inline SVGs with branded colors rather than icon libraries, to avoid extra dependencies
 - On mobile, the banner has no interactive elements — navigation is fully delegated to the sticky navbar, avoiding duplicate links
+- Banner nav aligned to the bottom of the header (`align-self: flex-end`) so links sit close to the lower edge of the banner photo

@@ -27,13 +27,13 @@ The sticky navbar is a second `<nav>` inside the banner container, hidden by def
       <a.navbar-link>           "Contact"         → /contact
       <span.navbar-separator>   "|"
       <div.navbar-social>
-        <a> Instagram SVG (24x24)
-        <a> Facebook SVG (24x24)
+        <a> Instagram SVG (24x24) — stroke="url(#ig-gradient)"
+        <a> Facebook SVG (24x24)  — stroke="var(--color-facebook)"
 </header>
 <div.banner-spacer>             — placeholder to prevent content jump
 ```
 
-The social SVGs in the sticky navbar use unique gradient IDs (`ig-gradient-navbar`) to avoid conflicts with the banner's SVGs.
+The Instagram gradient (`ig-gradient`) is defined **once** in a hidden `<svg>` placed before the `<header>` element (see `context/front_banner.md`). Both the banner nav icon and the sticky navbar icon reference it by the same ID. No duplicate gradient definitions needed.
 
 ## Sticky Navbar Styling
 
@@ -51,14 +51,15 @@ The social SVGs in the sticky navbar use unique gradient IDs (`ig-gradient-navba
 - Transition: `color 0.2s`
 
 ### Separators (`.navbar-separator`)
-- Color: `#9CA3AF`
+- Color: `var(--color-separator)` (`#9CA3AF`)
 - Font size: `1.1rem`
 - `user-select: none`
 
 ### Social Icons (`.navbar-social`)
 - Flex row, `gap: 0.75rem`
 - SVGs at 24x24 (desktop), 20x20 (mobile)
-- Same branded colors as the banner (Instagram gradient, Facebook blue `#1877F2`)
+- Instagram: `stroke="url(#ig-gradient)"` — references shared gradient defined before the header
+- Facebook: `stroke="var(--color-facebook)"` (`#1877F2`)
 - Hover: `transform: scale(1.1)`, transition `0.2s ease`
 
 ## Sticky State CSS (`.banner.sticky`)
@@ -66,11 +67,11 @@ The social SVGs in the sticky navbar use unique gradient IDs (`ig-gradient-navba
 When the `.sticky` class is toggled on the `<header>`:
 
 - `position: fixed; top: 0; left: 0; right: 0`
-- `padding: 0.5rem 2rem` (desktop), `0.4rem 1rem` (mobile)
+- `padding: 0.5rem 2rem`
 - `background-image: none !important` — removes the banner photo
-- `background-color: #BDBDC0` — solid grey
+- `background-color: var(--color-nav-bg)` (`#BDBDC0`) — solid grey
 - `overflow: hidden` — hides any overflow (logo is hidden anyway)
-- `box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08)` — subtle shadow
+- `box-shadow: var(--shadow-sm)` — subtle shadow
 - `animation: slideDown 0.3s ease-out` — slides down from top
 
 ### Elements hidden in sticky state
@@ -98,11 +99,9 @@ A `<div class="banner-spacer">` sits immediately after the `<header>`. When the 
 ### Scroll Handler
 
 ```js
-const banner = document.querySelector('.banner');
-const spacer = document.querySelector('.banner-spacer');
-const logoEl = banner.querySelector('.logo');
+const FADE_THRESHOLD = 0.7; // fraction of banner height at which logo starts fading
 const bannerHeight = banner.offsetHeight;
-const fadeStart = bannerHeight * 0.7;
+const fadeStart = bannerHeight * FADE_THRESHOLD;
 let isSticky = false;
 ```
 
@@ -129,9 +128,9 @@ The navbar is `position: fixed; top: 0` from the start, with its own opaque back
 
 ### Styling
 - `position: fixed; top: 0; left: 0; right: 0; z-index: 200`
-- `background-color: #BDBDC0` — same grey as the desktop sticky state
+- `background-color: var(--color-nav-bg)` — same grey as the desktop sticky state
 - `padding: 0.5rem 1rem`
-- `box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08)`
+- `box-shadow: var(--shadow-sm)`
 - `display: flex; flex-wrap: wrap; justify-content: center; align-items: center`
 - `gap: 0.5rem 0.8rem` (row and column gap for wrapped lines)
 - Link font size: `0.85rem`
@@ -159,7 +158,7 @@ The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3r
 |---|---|---|
 | Initial state | Hidden (`display: none`) | Visible, `position: fixed` at top |
 | Trigger | Scroll past banner height | Always visible from page load |
-| Background | Inherits from `.banner.sticky` | Own `background-color: #BDBDC0` |
+| Background | Inherits from `.banner.sticky` | Own `background-color: var(--color-nav-bg)` |
 | JS behavior | Scroll handler, class toggle, spacer | Measures nav height, sets CSS variable |
 | Banner nav | Visible until sticky | Hidden (`display: none`) |
 | Hero cards | Visible | Hidden (`display: none`) |
@@ -168,6 +167,10 @@ The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3r
 
 - `--color-text` — navbar link color
 - `--color-orange` — navbar link hover color
+- `--color-nav-bg` — navbar background (`#BDBDC0`)
+- `--color-separator` — separator color (`#9CA3AF`)
+- `--color-facebook` — Facebook icon stroke (`#1877F2`)
+- `--shadow-sm` — `0 2px 4px rgba(0, 0, 0, 0.1)`
 - `--font-heading` — navbar link font (Crimson)
 
 ## Key Technical Decisions
@@ -178,7 +181,8 @@ The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3r
 - **Spacer div** prevents the content jump that would occur when the header leaves normal flow to become fixed
 - **Logo fade-out** provides a smooth visual transition before the sticky bar appears, rather than an abrupt switch
 - **`passive: true`** on the scroll listener for better scroll performance
-- **Separate gradient IDs** for sticky navbar SVGs (`ig-gradient-navbar`) to avoid SVG rendering conflicts when both the banner and sticky navbar SVGs exist in the DOM simultaneously
+- **Shared Instagram gradient** (`#ig-gradient`) defined once before the `<header>` in a hidden `<svg>` — referenced by both the banner nav icon and the sticky navbar icon via `url(#ig-gradient)`. No duplicate gradient IDs needed.
 - **Mobile uses `position: fixed`** (not `position: sticky`) because the navbar is nested inside the `<header>` — `position: sticky` would only keep it pinned while the banner is in view, then it would scroll away with its parent. `position: fixed` keeps it pinned for the entire page.
 - **CSS custom property for nav height** (`--mobile-nav-height`) — JS measures the dynamic height (which varies with text wrapping) and exposes it as a variable. CSS uses it for the banner's `padding-top`. This keeps layout logic in CSS and avoids a magic pixel value in JS.
 - **`matchMedia` gate at page load** — the mobile/desktop branch is chosen once. Device rotation during a session is an accepted edge case (page refresh resolves it).
+- **`FADE_THRESHOLD = 0.7`** extracted as a named constant so the scroll fade behaviour is self-documenting and easy to adjust.

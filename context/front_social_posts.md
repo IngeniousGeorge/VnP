@@ -2,7 +2,7 @@
 
 ## Overview
 
-Display Facebook and Instagram posts from the shop's page on the website. Posts are synced from Meta's Graph API into Strapi for editorial control, then fetched by the Astro frontend at build time.
+Display Facebook posts from the shop's page on the website. Posts are synced from Meta's Graph API into Strapi for editorial control, then fetched by the Astro frontend at build time.
 
 ## Architecture
 
@@ -90,4 +90,71 @@ Steps 1–2 can be done immediately. Steps 3–4 depend on Meta's review timelin
 
 ## Current State (Static Fallback)
 
-Until the API pipeline is in place, the section uses 6 hardcoded posts with images cropped from Facebook screenshots (`frontend/src/assets/images/actu_*.jpg`). The carousel component (`NosActualites.astro`) is fully built and will only need its data source swapped from the hardcoded array to the Strapi fetch.
+Until the API pipeline is in place, the section uses 6 hardcoded posts with images cropped from Facebook screenshots (`frontend/src/assets/images/actu_*.jpg`). The component (`NosActualites.astro`) is fully built and will only need its data source swapped.
+
+### Component: `NosActualites.astro`
+
+#### Structure
+```
+<section.nos-actualites>            — dark background (#374151), padding 4rem 2rem
+  <h2.actu-title>                   — "Nos actualités", centered, white
+  <div.actu-carousel>               — max-width 1100px, flex row
+    <button.actu-btn--prev>         — orange chevron, disabled at start
+    <div.actu-viewport>             — overflow: hidden
+      <div.actu-track>              — flex row, translateX via JS
+        <article.actu-card> × 6    — each 33.333% width (100% on mobile)
+        <article.actu-card--cta>   — last card: Facebook + Instagram follow CTAs
+    <button.actu-btn--next>         — orange chevron
+```
+
+#### Post Card Structure
+Each post card has three stacked sections (border-radius 8px top and bottom):
+1. **Header**: white background, Facebook icon + page name + date
+2. **Image**: `aspect-ratio: 4/3`, `object-fit: cover`
+3. **Body**: white background, truncated text (3 lines), "Voir sur Facebook" link
+
+#### CTA Card
+The last card (`.actu-card--cta`) has two stacked halves:
+- **Facebook half**: `background-color: var(--color-facebook)`, white icon + "Retrouvez-nous sur Facebook" + "Suivez-nous" button
+- **Instagram half**: `background: var(--gradient-instagram)`, white Instagram icon + "Ou sur Instagram" + "Suivez-nous" button
+
+#### External Link Icon (Deduplication)
+The external-link SVG icon appears in three places (post card link, Facebook CTA button, Instagram CTA button). Define it once as a string in the frontmatter and reuse via `<Fragment set:html={...} />`:
+
+```js
+const externalLinkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+```
+
+Usage:
+```html
+<Fragment set:html={externalLinkIcon} />
+```
+
+#### CSS Variables Used
+- `--color-dark-bg` — section background
+- `--color-white` — title, card backgrounds, CTA text
+- `--color-text` — card text
+- `--color-orange` / `--color-orange-dark` — nav button colors
+- `--color-facebook` (`#1877F2`) — Facebook CTA background, link color, button text color
+- `--color-facebook-hover` (`#145dbf`) — Facebook link hover
+- `--color-facebook-light` (`#E4E6EB`) — card header border, CTA button hover background
+- `--color-facebook-text` (`#65676B`) — post date color
+- `--color-facebook-bg` (`#F0F2F5`) — post image placeholder background
+- `--gradient-instagram` — Instagram CTA background
+- `--color-instagram-pink` (`#DD2A7B`) — Instagram CTA button text color
+
+#### JavaScript (linear carousel, not infinite loop)
+Unlike the partners carousel, this one is **not** an infinite loop — it has a defined start and end, with the prev button disabled at position 0 and the next button disabled at the last position.
+
+```js
+let current = 0;
+function getSlidePercent() { return mobileQuery.matches ? 100 : 100 / 3; }
+function getMaxIndex() { return totalSlides - (mobileQuery.matches ? 1 : 3); }
+function updateCarousel() {
+  track.style.transform = `translateX(-${current * getSlidePercent()}%)`;
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current >= getMaxIndex();
+}
+```
+
+Navigation via event delegation on the section element.

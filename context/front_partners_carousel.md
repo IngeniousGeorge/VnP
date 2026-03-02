@@ -42,13 +42,13 @@ Each partner has a name (used as alt text and tooltip), a logo image, and a URL:
 <section.partners-carousel>         — #FAF0EE background, padding 3rem 2rem
   <h2.carousel-title>               — "Nos partenaires"
   <div.carousel-container>           — max-width 900px, flex row, centered
-    <button.carousel-btn--prev>      — orange chevron SVG (28x28)
+    <button.carousel-btn--prev>      — orange chevron SVG (56x56)
     <div.carousel-viewport>          — overflow: hidden, flex: 1
       <div.carousel-track>           — flex row, slides moved via JS
         <div.carousel-slide> × 12    — each 33.333% width (100% on mobile)
           <a.carousel-link>          — target="_blank", data-tooltip={name}
             <Image />                — height 100px, object-fit: contain
-    <button.carousel-btn--next>      — orange chevron SVG (28x28)
+    <button.carousel-btn--next>      — orange chevron SVG (56x56)
   <div.carousel-tooltip>             — fixed-position tooltip element
 ```
 
@@ -59,7 +59,7 @@ Each partner has a name (used as alt text and tooltip), a logo image, and a URL:
 - Centered, with `margin-bottom: 2rem`
 
 ### Navigation Buttons
-- Inline SVG chevrons, 28x28, `stroke-width: 2.5`, `stroke-linecap: round`, `stroke-linejoin: round`
+- Inline SVG chevrons, **56x56**, `stroke-width: 2.5`, `stroke-linecap: round`, `stroke-linejoin: round`
 - Color: `var(--color-orange)`, hover: `var(--color-orange-dark)`
 - Transition: `color 0.2s`
 - `flex-shrink: 0` to prevent compression
