@@ -128,7 +128,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     content: '';
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.33);
     z-index: -1;
   }
 
@@ -158,6 +158,8 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    align-self: flex-end;
+    padding-bottom: 0.4rem;
   }
 
   .banner-nav-link {
