@@ -1,16 +1,9 @@
 ---
 import { Image } from 'astro:assets';
-import { STRAPI_URL, blocksToHtml } from '../lib/strapi';
+import { STRAPI_URL, fetchStrapiData, blocksToHtml } from '../lib/strapi';
 import type { StrapiBlock } from '../lib/strapi';
 
-let data;
-try {
-  const res = await fetch(`${STRAPI_URL}/api/le-menu?populate[Carte][populate]=Photo`);
-  const json = await res.json();
-  data = json.data;
-} catch (e) {
-  console.error('Failed to fetch Le Menu from Strapi:', e);
-}
+const data = await fetchStrapiData('/api/le-menu?populate[Carte][populate]=Photo');
 
 const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
 

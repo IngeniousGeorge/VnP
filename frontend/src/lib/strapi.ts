@@ -8,6 +8,21 @@ export type StrapiBlock = {
   children: StrapiChild[];
 };
 
+export async function fetchStrapiData(endpoint: string) {
+  try {
+    const res = await fetch(`${STRAPI_URL}${endpoint}`);
+    const json = await res.json();
+    return json.data ?? null;
+  } catch (e) {
+    console.error(`Failed to fetch ${endpoint} from Strapi:`, e);
+    return null;
+  }
+}
+
+export function buildPhotoUrl(photoObj?: { url: string } | null): string | null {
+  return photoObj?.url ? `${STRAPI_URL}${photoObj.url}` : null;
+}
+
 export function blocksToHtml(blocks: StrapiBlock[]): string {
   return blocks
     .map(block => {

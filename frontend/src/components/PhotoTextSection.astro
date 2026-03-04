@@ -1,0 +1,99 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  titre: string;
+  texteHtml: string;
+  photoUrl: string | null;
+  photoAlt: string;
+  miseEnValeur?: string;
+  withOffset?: boolean;
+}
+
+const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false } = Astro.props;
+---
+
+<section class:list={['photo-text-section', { 'with-offset': withOffset }]}>
+  <div class="container">
+    <div class="image-container">
+      {photoUrl && <Image src={photoUrl} width={800} inferSize alt={photoAlt} class="section-photo" />}
+    </div>
+    <div class="content">
+      <h2>{titre}</h2>
+      <Fragment set:html={texteHtml} />
+      {miseEnValeur && <p class="highlight">{miseEnValeur}</p>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .photo-text-section {
+    background-color: var(--color-white);
+    padding: 4rem 2rem;
+  }
+
+  .photo-text-section.with-offset {
+    padding-top: calc(4rem + 24px);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .section-photo {
+    width: 82%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  /* set:html bypasses Astro scoping — :global() required */
+  .content :global(p) {
+    margin-bottom: 1.4rem;
+    line-height: 1.8;
+    text-align: justify;
+  }
+
+  .highlight {
+    font-style: italic;
+    color: var(--color-orange-dark);
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .content {
+      order: -1;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

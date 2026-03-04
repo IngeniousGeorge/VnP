@@ -1,19 +1,12 @@
 ---
 import { Image } from 'astro:assets';
-import { STRAPI_URL } from '../lib/strapi';
+import { fetchStrapiData, buildPhotoUrl } from '../lib/strapi';
 
-let data;
-try {
-  const res = await fetch(`${STRAPI_URL}/api/les-revendeurs?populate[Revendeur]=true&populate[Photo]=true`);
-  const json = await res.json();
-  data = json.data;
-} catch (e) {
-  console.error('Failed to fetch Les Revendeurs from Strapi:', e);
-}
+const data = await fetchStrapiData('/api/les-revendeurs?populate[Revendeur]=true&populate[Photo]=true');
 
 const titreSec   = data?.Titre_section ?? 'Où le trouver';
 const revendeurs = data?.Revendeur ?? [];
-const photoUrl   = data?.Photo?.url ? `${STRAPI_URL}${data.Photo.url}` : null;
+const photoUrl   = buildPhotoUrl(data?.Photo);
 const photoAlt   = data?.Description_photo ?? '';
 
 type Revendeur = {
