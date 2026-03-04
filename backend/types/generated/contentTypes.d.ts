@@ -430,6 +430,77 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBocauxAEmporterBocauxAEmporter
+  extends Struct.SingleTypeSchema {
+  collectionName: 'bocaux_a_emporters';
+  info: {
+    displayName: 'Bocaux \u00E0 emporter';
+    pluralName: 'bocaux-a-emporters';
+    singularName: 'bocaux-a-emporter';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description_photo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::bocaux-a-emporter.bocaux-a-emporter'
+    > &
+      Schema.Attribute.Private;
+    Mise_en_valeur: Schema.Attribute.String;
+    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Texte: Schema.Attribute.Blocks;
+    Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiBocauxCartesBocauxCartes extends Struct.SingleTypeSchema {
+  collectionName: 'bocaux_cartes';
+  info: {
+    displayName: 'Bocaux Cartes';
+    mainField: 'Titre';
+    pluralName: 'bocaux-cartes-list';
+    singularName: 'bocaux-cartes';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Cartes: Schema.Attribute.Component<'bocaux.carte-flip', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+          min: 3;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::bocaux-cartes.bocaux-cartes'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Titre: Schema.Attribute.String;
+    Titre_section: Schema.Attribute.Blocks;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNotreHistoireNotreHistoire extends Struct.SingleTypeSchema {
   collectionName: 'notre_histoires';
   info: {
@@ -973,6 +1044,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::bocaux-a-emporter.bocaux-a-emporter': ApiBocauxAEmporterBocauxAEmporter;
+      'api::bocaux-cartes.bocaux-cartes': ApiBocauxCartesBocauxCartes;
       'api::notre-histoire.notre-histoire': ApiNotreHistoireNotreHistoire;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

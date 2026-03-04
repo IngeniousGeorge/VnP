@@ -1,0 +1,29 @@
+{
+  "kind": "singleType",
+  "collectionName": "bocaux_cartes",
+  "info": {
+    "singularName": "bocaux-cartes",
+    "pluralName": "bocaux-cartes-list",
+    "displayName": "Bocaux Cartes",
+    "mainField": "Titre"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre": {
+      "type": "string"
+    },
+    "Titre_section": {
+      "type": "blocks"
+    },
+    "Cartes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "bocaux.carte-flip",
+      "min": 3,
+      "max": 3
+    }
+  }
+}

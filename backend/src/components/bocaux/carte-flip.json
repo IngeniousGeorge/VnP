@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_bocaux_carte_flips",
+  "info": {
+    "displayName": "Carte flip",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "Texte": {
+      "type": "blocks"
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Description_photo": {
+      "type": "string"
+    },
+    "Plat": {
+      "type": "string"
+    }
+  }
+}
