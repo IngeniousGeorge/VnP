@@ -1,0 +1,35 @@
+{
+  "kind": "singleType",
+  "collectionName": "les_revendeurs_list",
+  "info": {
+    "singularName": "les-revendeurs",
+    "pluralName": "les-revendeurs-list",
+    "displayName": "Les Revendeurs"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre_section": {
+      "type": "string"
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "Description_photo": {
+      "type": "string"
+    },
+    "Revendeur": {
+      "type": "component",
+      "component": "revendeurs.revendeur",
+      "repeatable": true
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_revendeurs_revendeurs",
+  "info": {
+    "displayName": "Revendeur"
+  },
+  "options": {},
+  "attributes": {
+    "Nom": {
+      "type": "string"
+    },
+    "Lien": {
+      "type": "string"
+    },
+    "Lieu": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -13,10 +13,24 @@ export interface BocauxCarte extends Struct.ComponentSchema {
   };
 }
 
+export interface RevendeursRevendeur extends Struct.ComponentSchema {
+  collectionName: 'components_revendeurs_revendeurs';
+  info: {
+    displayName: 'Revendeur';
+  };
+  attributes: {
+    Description: Schema.Attribute.String;
+    Lien: Schema.Attribute.String;
+    Lieu: Schema.Attribute.String;
+    Nom: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'bocaux.carte': BocauxCarte;
+      'revendeurs.revendeur': RevendeursRevendeur;
     }
   }
 }

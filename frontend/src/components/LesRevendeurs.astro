@@ -1,0 +1,170 @@
+---
+import { Image } from 'astro:assets';
+import { STRAPI_URL } from '../lib/strapi';
+
+let data;
+try {
+  const res = await fetch(`${STRAPI_URL}/api/les-revendeurs?populate[Revendeur]=true&populate[Photo]=true`);
+  const json = await res.json();
+  data = json.data;
+} catch (e) {
+  console.error('Failed to fetch Les Revendeurs from Strapi:', e);
+}
+
+const titreSec   = data?.Titre_section ?? 'Où le trouver';
+const revendeurs = data?.Revendeur ?? [];
+const photoUrl   = data?.Photo?.url ? `${STRAPI_URL}${data.Photo.url}` : null;
+const photoAlt   = data?.Description_photo ?? '';
+
+type Revendeur = {
+  Nom: string;
+  Lien: string;
+  Lieu?: string;
+  Description?: string;
+};
+---
+
+<section class="les-revendeurs">
+  <div class="section-header">
+    <div class="accent" aria-hidden="true"></div>
+    <h2>{titreSec}</h2>
+  </div>
+
+  <div class="content-container">
+    {revendeurs.length > 0 && (
+      <div class="grid">
+        {revendeurs.map((r: Revendeur) => (
+          <a href={r.Lien} class="card" target="_blank" rel="noopener noreferrer">
+            <div class="card-body">
+              <div>
+                <p class="retailer-name">{r.Nom}</p>
+                {r.Description && <p class="retailer-description">{r.Description}</p>}
+                {r.Lieu && <p class="retailer-location">{r.Lieu}</p>}
+              </div>
+              <span class="retailer-arrow" aria-hidden="true">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    {photoUrl && (
+      <div class="image-container">
+        <Image src={photoUrl} width={600} inferSize alt={photoAlt} class="section-photo" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .les-revendeurs {
+    background-color: var(--color-dark-bg);
+    padding: 4rem 2rem;
+  }
+
+  .section-header {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+    text-align: center;
+  }
+
+  .accent {
+    width: 3rem;
+    height: 2px;
+    background-color: var(--color-orange);
+    margin: 0 auto 1.5rem;
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--color-white);
+  }
+
+  .content-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    display: block;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color 250ms ease, box-shadow 250ms ease;
+  }
+
+  .card:hover {
+    border-color: var(--color-orange);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .retailer-name {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--color-white);
+    margin-bottom: 0.35rem;
+  }
+
+  .retailer-description {
+    font-size: 0.875rem;
+    color: var(--color-orange);
+    margin-bottom: 0.35rem;
+  }
+
+  .retailer-location {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .retailer-arrow {
+    font-size: 1.2rem;
+    color: var(--color-orange);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .section-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .content-container {
+      grid-template-columns: 1fr;
+    }
+
+    .image-container {
+      max-width: 320px;
+    }
+
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -430,6 +430,38 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLeCrottinLeCrottin extends Struct.SingleTypeSchema {
+  collectionName: 'le_crottin_list';
+  info: {
+    displayName: 'Le Crottin';
+    pluralName: 'le-crottin-list';
+    singularName: 'le-crottin';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description_photo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::le-crottin.le-crottin'
+    > &
+      Schema.Attribute.Private;
+    Mise_en_valeur: Schema.Attribute.String;
+    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Texte: Schema.Attribute.Blocks;
+    Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLeMenuLeMenu extends Struct.SingleTypeSchema {
   collectionName: 'le_menu_list';
   info: {
@@ -485,6 +517,37 @@ export interface ApiLesBocauxLesBocaux extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     Texte: Schema.Attribute.Blocks;
     Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLesRevendeursLesRevendeurs extends Struct.SingleTypeSchema {
+  collectionName: 'les_revendeurs_list';
+  info: {
+    displayName: 'Les Revendeurs';
+    pluralName: 'les-revendeurs-list';
+    singularName: 'les-revendeurs';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description_photo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::les-revendeurs.les-revendeurs'
+    > &
+      Schema.Attribute.Private;
+    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Revendeur: Schema.Attribute.Component<'revendeurs.revendeur', true>;
+    Titre_section: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1034,8 +1097,10 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::le-crottin.le-crottin': ApiLeCrottinLeCrottin;
       'api::le-menu.le-menu': ApiLeMenuLeMenu;
       'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
+      'api::les-revendeurs.les-revendeurs': ApiLesRevendeursLesRevendeurs;
       'api::notre-histoire.notre-histoire': ApiNotreHistoireNotreHistoire;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
