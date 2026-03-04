@@ -3,11 +3,11 @@ import { STRAPI_URL, blocksToHtml } from '../lib/strapi';
 
 let data;
 try {
-  const res = await fetch(`${STRAPI_URL}/api/bocaux-cartes?populate[Cartes][populate]=Photo`);
+  const res = await fetch(`${STRAPI_URL}/api/le-menu?populate[Carte][populate]=Photo`);
   const json = await res.json();
   data = json.data;
 } catch (e) {
-  console.error('Failed to fetch Bocaux Cartes from Strapi:', e);
+  console.error('Failed to fetch Le Menu from Strapi:', e);
 }
 
 const today = new Intl.DateTimeFormat('fr-FR', {
@@ -19,14 +19,14 @@ const titreHtml = data?.Titre_section
   : '';
 
 const cartes: Array<{
+  Etape?: string;
   Texte?: any[];
   Photo?: { url: string };
   Description_photo?: string;
-  Plat?: string;
-}> = data?.Cartes ?? [];
+}> = data?.Carte ?? [];
 ---
 
-<section class="bocaux-cartes">
+<section class="le-menu">
   {titreHtml && (
     <div class="section-header">
       <Fragment set:html={titreHtml} />
@@ -35,7 +35,7 @@ const cartes: Array<{
   <div class="cards-container">
     {cartes.map((carte) => (
       <div class="card-wrapper">
-        {carte.Plat && <span class="card-label">{carte.Plat}</span>}
+        {carte.Etape && <span class="card-label">{carte.Etape}</span>}
         <div class="card-inner">
           <div class="card-front">
             {carte.Texte && <Fragment set:html={blocksToHtml(carte.Texte)} />}
@@ -56,7 +56,7 @@ const cartes: Array<{
 </section>
 
 <style>
-  .bocaux-cartes {
+  .le-menu {
     background-color: var(--color-gray-bg);
     padding: 4rem 2rem;
   }
@@ -79,7 +79,6 @@ const cartes: Array<{
     color: var(--color-white);
     line-height: 1.8;
   }
-
 
   .cards-container {
     max-width: 900px;

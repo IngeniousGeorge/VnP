@@ -430,13 +430,41 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiBocauxAEmporterBocauxAEmporter
-  extends Struct.SingleTypeSchema {
-  collectionName: 'bocaux_a_emporters';
+export interface ApiLeMenuLeMenu extends Struct.SingleTypeSchema {
+  collectionName: 'le_menu_list';
   info: {
-    displayName: 'Bocaux \u00E0 emporter';
-    pluralName: 'bocaux-a-emporters';
-    singularName: 'bocaux-a-emporter';
+    displayName: 'Le Menu';
+    pluralName: 'le-menu-list';
+    singularName: 'le-menu';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Carte: Schema.Attribute.Component<'bocaux.carte', true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::le-menu.le-menu'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Titre_section: Schema.Attribute.Blocks;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLesBocauxLesBocaux extends Struct.SingleTypeSchema {
+  collectionName: 'les_bocaux_list';
+  info: {
+    displayName: 'Les Bocaux';
+    pluralName: 'les-bocaux-list';
+    singularName: 'les-bocaux';
   };
   options: {
     draftAndPublish: true;
@@ -449,52 +477,14 @@ export interface ApiBocauxAEmporterBocauxAEmporter
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::bocaux-a-emporter.bocaux-a-emporter'
+      'api::les-bocaux.les-bocaux'
     > &
       Schema.Attribute.Private;
     Mise_en_valeur: Schema.Attribute.String;
-    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Photo: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
     Texte: Schema.Attribute.Blocks;
     Titre: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiBocauxCartesBocauxCartes extends Struct.SingleTypeSchema {
-  collectionName: 'bocaux_cartes';
-  info: {
-    displayName: 'Bocaux Cartes';
-    mainField: 'Titre';
-    pluralName: 'bocaux-cartes-list';
-    singularName: 'bocaux-cartes';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    Cartes: Schema.Attribute.Component<'bocaux.carte-flip', true> &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 3;
-          min: 3;
-        },
-        number
-      >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::bocaux-cartes.bocaux-cartes'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    Titre: Schema.Attribute.String;
-    Titre_section: Schema.Attribute.Blocks;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1044,8 +1034,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::bocaux-a-emporter.bocaux-a-emporter': ApiBocauxAEmporterBocauxAEmporter;
-      'api::bocaux-cartes.bocaux-cartes': ApiBocauxCartesBocauxCartes;
+      'api::le-menu.le-menu': ApiLeMenuLeMenu;
+      'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
       'api::notre-histoire.notre-histoire': ApiNotreHistoireNotreHistoire;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

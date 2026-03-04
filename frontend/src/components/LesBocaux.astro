@@ -3,24 +3,24 @@ import { STRAPI_URL, blocksToHtml } from '../lib/strapi';
 
 let data;
 try {
-  const res = await fetch(`${STRAPI_URL}/api/bocaux-a-emporter?populate=Photo`);
+  const res = await fetch(`${STRAPI_URL}/api/les-bocaux?populate=Photo`);
   const json = await res.json();
   data = json.data;
 } catch (e) {
-  console.error('Failed to fetch Bocaux à emporter from Strapi:', e);
+  console.error('Failed to fetch Les Bocaux from Strapi:', e);
 }
 
-const titre        = data?.Titre            ?? 'Bocaux à emporter';
+const titre        = data?.Titre            ?? 'Les Bocaux';
 const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
 const miseEnValeur = data?.Mise_en_valeur   ?? '';
 const photoUrl     = data?.Photo?.url       ? `${STRAPI_URL}${data.Photo.url}` : null;
 const photoAlt     = data?.Description_photo ?? '';
 ---
 
-<section class="bocaux-a-emporter">
+<section class="les-bocaux">
   <div class="container">
     <div class="image-container">
-      {photoUrl && <img src={photoUrl} alt={photoAlt} class="section-photo" />}
+      {photoUrl && <img src={photoUrl} alt={photoAlt} class="les-bocaux-photo" />}
     </div>
     <div class="content">
       <h2>{titre}</h2>
@@ -31,11 +31,9 @@ const photoAlt     = data?.Description_photo ?? '';
 </section>
 
 <style>
-  .bocaux-a-emporter {
+  .les-bocaux {
     background-color: var(--color-white);
-    color: var(--color-text);
     padding: 4rem 2rem;
-    margin-top: 1em;
   }
 
   .container {
@@ -47,7 +45,7 @@ const photoAlt     = data?.Description_photo ?? '';
     align-items: center;
   }
 
-  .section-photo {
+  .les-bocaux-photo {
     width: 82%;
     height: auto;
     border-radius: 8px;
@@ -66,6 +64,7 @@ const photoAlt     = data?.Description_photo ?? '';
     font-weight: 400;
   }
 
+  /* set:html bypasses Astro scoping — :global() required */
   .content :global(p) {
     margin-bottom: 1.4rem;
     line-height: 1.8;

@@ -1,10 +1,10 @@
 {
   "kind": "singleType",
-  "collectionName": "bocaux_a_emporters",
+  "collectionName": "les_bocaux_list",
   "info": {
-    "singularName": "bocaux-a-emporter",
-    "pluralName": "bocaux-a-emporters",
-    "displayName": "Bocaux à emporter"
+    "singularName": "les-bocaux",
+    "pluralName": "les-bocaux-list",
+    "displayName": "Les Bocaux"
   },
   "options": {
     "draftAndPublish": true
@@ -25,9 +25,7 @@
       "multiple": false,
       "allowedTypes": [
         "images",
-        "files",
-        "videos",
-        "audios"
+        "files"
       ]
     },
     "Description_photo": {

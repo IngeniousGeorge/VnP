@@ -1,11 +1,13 @@
 {
-  "collectionName": "components_bocaux_carte_flips",
+  "collectionName": "components_bocaux_cartes",
   "info": {
-    "displayName": "Carte flip",
-    "icon": "layer"
+    "displayName": "Carte"
   },
   "options": {},
   "attributes": {
+    "Etape": {
+      "type": "string"
+    },
     "Texte": {
       "type": "blocks"
     },
@@ -13,14 +15,14 @@
       "type": "media",
       "multiple": false,
       "allowedTypes": [
-        "images"
+        "images",
+        "files",
+        "videos"
       ]
     },
     "Description_photo": {
       "type": "string"
-    },
-    "Plat": {
-      "type": "string"
     }
-  }
+  },
+  "config": {}
 }

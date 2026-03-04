@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "le_menu_list",
+  "info": {
+    "singularName": "le-menu",
+    "pluralName": "le-menu-list",
+    "displayName": "Le Menu"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre_section": {
+      "type": "blocks"
+    },
+    "Carte": {
+      "type": "component",
+      "component": "bocaux.carte",
+      "repeatable": true
+    }
+  }
+}
