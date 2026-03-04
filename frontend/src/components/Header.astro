@@ -190,9 +190,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
 
   .navbar-link {
     color: var(--color-text);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-style: italic;
+    font-family: 'Bellefair', serif;
     font-size: 1.05rem;
     transition: color 0.2s;
   }
@@ -259,7 +257,11 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
   }
 
   .banner.sticky .navbar-link {
-    font-size: 1.26rem;
+    font-size: 1.575rem;
+  }
+
+  .banner.sticky .navbar-logo-link {
+    margin-left: -0.75rem;
   }
 
   .banner.sticky .navbar-separator {
