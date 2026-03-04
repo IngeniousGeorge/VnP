@@ -2,7 +2,7 @@ export const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 
 type StrapiChild = { type: 'hardBreak' } | { type: string; text: string };
 
-type StrapiBlock = {
+export type StrapiBlock = {
   type: string;
   level?: number;
   children: StrapiChild[];
