@@ -1,0 +1,174 @@
+---
+import { fetchStrapiData, blocksToHtml } from '../lib/strapi';
+
+const data = await fetchStrapiData('/api/contact-info');
+
+const titre        = data?.Titre     ?? 'Nous contacter';
+const introHtml    = data?.Intro     ? blocksToHtml(data.Intro) : '';
+const adresseHtml  = data?.Adresse   ? blocksToHtml(data.Adresse) : '';
+const telephone    = data?.Telephone ?? '';
+const email        = data?.Email     ?? '';
+const horairesHtml = data?.Horaires  ? blocksToHtml(data.Horaires) : '';
+const urlCarte     = data?.Lien_carte ?? '';
+---
+
+<section class="contact">
+  <div class="section-header">
+    <div class="accent"></div>
+    <h2>{titre}</h2>
+    {introHtml && <div class="intro" set:html={introHtml} />}
+  </div>
+
+  <div class:list={['content', { 'no-map': !urlCarte }]}>
+    <div class="info-block">
+      {horairesHtml && (
+        <div class="info-group">
+          <p class="info-label">Horaires</p>
+          <div class="info-value" set:html={horairesHtml} />
+        </div>
+      )}
+      {adresseHtml && (
+        <div class="info-group">
+          <p class="info-label">Adresse</p>
+          <div class="info-value" set:html={adresseHtml} />
+        </div>
+      )}
+      {telephone && (
+        <div class="info-group">
+          <p class="info-label">Téléphone</p>
+          <a class="info-value info-link" href={`tel:${telephone}`}>{telephone}</a>
+        </div>
+      )}
+      {email && (
+        <div class="info-group">
+          <p class="info-label">Email</p>
+          <a class="info-value info-link" href={`mailto:${email}`}>{email}</a>
+        </div>
+      )}
+    </div>
+
+    {urlCarte && (
+      <div class="map-container">
+        <iframe
+          src={urlCarte}
+          style="border:0;"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .contact {
+    background-color: var(--color-white);
+    padding: 4rem 2rem;
+    padding-top: calc(4rem + 24px);
+  }
+
+  .section-header {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    text-align: center;
+  }
+
+  .accent {
+    width: 3rem;
+    height: 2px;
+    background-color: var(--color-orange);
+    margin: 0 auto 1.5rem;
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+  }
+
+  .intro :global(p) {
+    color: var(--color-text);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .content.no-map {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+
+  .info-group {
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .info-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .info-label {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--color-orange-dark);
+    margin-bottom: 0.4rem;
+  }
+
+  .info-value {
+    color: var(--color-text);
+    line-height: 1.7;
+  }
+
+  .info-value :global(p) {
+    margin-bottom: 0.4rem;
+    line-height: 1.7;
+  }
+
+  .info-link {
+    display: block;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .info-link:hover {
+    color: var(--color-orange);
+  }
+
+  .map-container iframe {
+    width: 100%;
+    height: 459px;
+    border-radius: 8px;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .map-container iframe {
+      height: 328px;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

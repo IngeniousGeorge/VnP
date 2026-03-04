@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "contact_info_list",
+  "info": {
+    "singularName": "contact-info",
+    "pluralName": "contact-info-list",
+    "displayName": "Contact Info"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre": {
+      "type": "string"
+    },
+    "Intro": {
+      "type": "blocks"
+    },
+    "Adresse": {
+      "type": "blocks"
+    },
+    "Telephone": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "string"
+    },
+    "Horaires": {
+      "type": "blocks"
+    },
+    "Lien_carte": {
+      "type": "string"
+    }
+  }
+}

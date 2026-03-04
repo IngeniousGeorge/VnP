@@ -493,6 +493,40 @@ export interface ApiCoffretsGourmandsCoffretsGourmands
   };
 }
 
+export interface ApiContactInfoContactInfo extends Struct.SingleTypeSchema {
+  collectionName: 'contact_info_list';
+  info: {
+    displayName: 'Contact Info';
+    pluralName: 'contact-info-list';
+    singularName: 'contact-info';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Adresse: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Email: Schema.Attribute.String;
+    Horaires: Schema.Attribute.Blocks;
+    Intro: Schema.Attribute.Blocks;
+    Lien_carte: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::contact-info.contact-info'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Telephone: Schema.Attribute.String;
+    Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLeCrottinLeCrottin extends Struct.SingleTypeSchema {
   collectionName: 'le_crottin_list';
   info: {
@@ -1162,6 +1196,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::catalogue-coffrets.catalogue-coffrets': ApiCatalogueCoffretsCatalogueCoffrets;
       'api::coffrets-gourmands.coffrets-gourmands': ApiCoffretsGourmandsCoffretsGourmands;
+      'api::contact-info.contact-info': ApiContactInfoContactInfo;
       'api::le-crottin.le-crottin': ApiLeCrottinLeCrottin;
       'api::le-menu.le-menu': ApiLeMenuLeMenu;
       'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
