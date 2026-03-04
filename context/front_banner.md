@@ -140,7 +140,7 @@ On mobile, the banner is a **purely visual element** — all navigation is handl
 - The `z-index: 10` on the logo to sit above the overlay
 
 ## Key Technical Decisions
-- Logo kept as PNG in the repo (not on Cloudinary) since it's a static asset that rarely changes
+- Logo kept as PNG in the repo since it's a static asset that rarely changes (not a CMS-managed image)
 - Banner served as JPEG (no transparency needed) for much smaller file size vs PNG
 - Astro's `<Image />` used for the logo (automatic optimization), `getImage()` for the banner (needed as CSS background-image URL)
 - Dark overlay uses `::before` + `isolation: isolate` pattern to avoid affecting child element stacking

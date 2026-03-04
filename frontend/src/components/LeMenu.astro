@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { STRAPI_URL, blocksToHtml } from '../lib/strapi';
 
 let data;
@@ -42,8 +43,10 @@ const cartes: Array<{
           </div>
           <div class="card-back">
             {carte.Photo?.url && (
-              <img
+              <Image
                 src={`${STRAPI_URL}${carte.Photo.url}`}
+                width={500}
+                inferSize
                 alt={carte.Description_photo ?? ''}
                 class="card-photo"
               />

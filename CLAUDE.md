@@ -20,7 +20,7 @@ misc/                  — Raw source assets (large photos, logos, design files)
 
 - **Frontend**: Astro 4 (static HTML), deployed on Netlify
 - **Backend**: Strapi on Railway (Node.js + PostgreSQL) — not yet implemented
-- **Media**: Cloudinary for CMS-uploaded images; static assets in `frontend/src/assets/images/`
+- **Media**: Strapi media library with Railway persistent volume (`/public/uploads`) for CMS-uploaded images; static assets in `frontend/src/assets/images/`. Astro's `<Image inferSize>` optimizes remote Strapi images at build time — no Cloudinary needed.
 - **Fonts**: Self-hosted in `frontend/public/fonts/` (Glacial Indifference, Crimson, Dancing Script)
 
 ## Commands
