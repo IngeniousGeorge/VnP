@@ -11,13 +11,7 @@ try {
   console.error('Failed to fetch Le Menu from Strapi:', e);
 }
 
-const today = new Intl.DateTimeFormat('fr-FR', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-}).format(new Date());
-
-const titreHtml = data?.Titre_section
-  ? blocksToHtml(data.Titre_section).replace('{{date}}', today)
-  : '';
+const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
 
 const cartes: Array<{
   Etape?: string;
@@ -99,7 +93,6 @@ const cartes: Array<{
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
-    perspective: 1000px;
     flex-shrink: 0;
   }
 
@@ -114,6 +107,7 @@ const cartes: Array<{
     position: absolute;
     inset: 0;
     border-radius: 12px;
+    transition: opacity 350ms ease, transform 350ms ease;
   }
 
   .card-front {
@@ -124,6 +118,9 @@ const cartes: Array<{
     justify-content: center;
     padding: 1.5rem;
     text-align: center;
+    opacity: 0;
+    transform: scale(0.97);
+    z-index: 1;
   }
 
   .card-front :global(p) {
@@ -133,7 +130,20 @@ const cartes: Array<{
   }
 
   .card-back {
+    opacity: 1;
+    transform: scale(1);
     z-index: 1;
+  }
+
+  .card-inner.show-text .card-front {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 2;
+  }
+
+  .card-inner.show-text .card-back {
+    opacity: 0;
+    transform: scale(0.97);
   }
 
   .card-label {
@@ -153,3 +163,49 @@ const cartes: Array<{
     border-radius: 12px;
   }
 </style>
+
+<script>
+  const today = new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  }).format(new Date());
+
+  document.querySelector('.le-menu .section-header')?.querySelectorAll('*').forEach(el => {
+    el.childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent?.includes('{{date}}')) {
+        node.textContent = node.textContent.replace('{{date}}', today);
+      }
+    });
+  });
+
+  const wrappers = Array.from(document.querySelectorAll<HTMLElement>('.le-menu .card-wrapper'));
+  const hovered = new WeakMap<Element, boolean>();
+  wrappers.forEach(w => hovered.set(w, false));
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      wrappers.forEach((wrapper, i) => {
+        const inner = wrapper.querySelector('.card-inner') as HTMLElement;
+        inner.classList.add('show-text');
+        setTimeout(() => {
+          if (!hovered.get(wrapper)) inner.classList.remove('show-text');
+        }, 1000 + i * 230);
+      });
+      observer.disconnect();
+    }
+  }, { threshold: 0.3 });
+
+  const container = document.querySelector('.le-menu .cards-container');
+  if (container) observer.observe(container);
+
+  wrappers.forEach(wrapper => {
+    const inner = wrapper.querySelector('.card-inner') as HTMLElement;
+    wrapper.addEventListener('mouseenter', () => {
+      hovered.set(wrapper, true);
+      inner.classList.add('show-text');
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      hovered.set(wrapper, false);
+      inner.classList.remove('show-text');
+    });
+  });
+</script>
