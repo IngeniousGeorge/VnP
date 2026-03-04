@@ -40,8 +40,9 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     </nav>
 
     <nav class="sticky-navbar">
-      <a href="/" class="navbar-link">Accueil</a>
-      <span class="navbar-separator">|</span>
+      <a href="/" class="navbar-logo-link">
+        <Image src={logo} alt="Accueil" width={80} height={80} class="navbar-logo" />
+      </a>
       <a href="/bocaux" class="navbar-link">Les bocaux</a>
       <span class="navbar-separator">|</span>
       <a href="/crottin" class="navbar-link">Le crottin</a>
@@ -49,7 +50,6 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
       <a href="/coffrets" class="navbar-link">Les coffrets</a>
       <span class="navbar-separator">|</span>
       <a href="/contact" class="navbar-link">Contact</a>
-      <span class="navbar-separator">|</span>
       <div class="navbar-social">
         <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -182,7 +182,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
   .sticky-navbar {
     display: none;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
@@ -227,6 +227,18 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     height: 0;
   }
 
+  .navbar-logo-link {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-logo {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    margin-bottom: -36px;
+  }
+
   @keyframes slideDown {
     from { transform: translateY(-100%); }
     to { transform: translateY(0); }
@@ -238,12 +250,20 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
     top: 0;
     left: 0;
     right: 0;
-    padding: 0.5rem 2rem;
+    padding: 0.96rem 2rem;
     background-image: none !important;
     background-color: var(--color-nav-bg);
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow-sm);
     animation: slideDown 0.3s ease-out;
+  }
+
+  .banner.sticky .navbar-link {
+    font-size: 1.26rem;
+  }
+
+  .banner.sticky .navbar-separator {
+    font-size: 1.32rem;
   }
 
   .banner.sticky .logo {
@@ -296,6 +316,12 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
       width: 160px;
       height: 160px;
       margin-bottom: -64px;
+    }
+
+    .navbar-logo {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 0;
     }
 
     .navbar-link {
