@@ -1,35 +1,26 @@
 ---
 import { Image } from 'astro:assets';
-import boutique from '../assets/images/boutique.jpg';
+import { fetchStrapiData, buildPhotoUrl, blocksToHtml } from '../lib/strapi';
+
+const data = await fetchStrapiData('/api/la-boutique?populate=Photo');
+
+const titre        = data?.Titre            ?? 'La boutique';
+const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
+const miseEnValeur = data?.Mise_en_valeur   ?? '';
+const photoUrl     = buildPhotoUrl(data?.Photo);
+const photoAlt     = data?.Description_photo ?? '';
 ---
 
 <section class="la-boutique">
   <div class="container">
     <div class="content">
-      <h2>La boutique</h2>
-      <p class="subtitle">Produits du terroir, de France et d'ailleurs</p>
-
-      <p>
-        Nous vous proposons un large choix de spécialités régionales
-        et de nombreuses idées cadeaux ou compositions à votre convenance pour
-        tous les budgets.
-      </p>
-
-      <p>
-        Terrines terre et mer, tartinades, épices, condiments, huiles, vinaigres,
-        produits Italiens et Espagnols, confitures, bonbons, chocolats, guimauves,
-        nougats, pâtes de fruits, biscuits, caramels, thés ...
-      </p>
-
-      <p>
-        Les maisons les plus réputées côtoient les petits producteurs afin de vous
-        garantir le plaisir des papilles.
-      </p>
-
+      <h2>{titre}</h2>
+      <Fragment set:html={texteHtml} />
+      {miseEnValeur && <p class="highlight">{miseEnValeur}</p>}
     </div>
 
     <div class="image-container">
-      <Image src={boutique} alt="La boutique Verre et Papilles" width={800} class="boutique-photo" />
+      {photoUrl && <Image src={photoUrl} width={800} inferSize alt={photoAlt} class="boutique-photo" />}
     </div>
   </div>
 </section>
@@ -60,13 +51,8 @@ import boutique from '../assets/images/boutique.jpg';
     font-weight: 700;
   }
 
-  .subtitle {
-    font-style: italic;
-    margin-bottom: 1.5rem;
-    opacity: 0.9;
-  }
-
-  p {
+  /* set:html bypasses Astro scoping — :global() required */
+  .content :global(p) {
     margin-bottom: 1rem;
     line-height: 1.8;
     text-align: justify;
@@ -74,6 +60,12 @@ import boutique from '../assets/images/boutique.jpg';
 
   strong {
     font-weight: 700;
+  }
+
+  .highlight {
+    font-style: italic;
+    color: var(--color-orange-dark);
+    margin-top: 1.5rem;
   }
 
   .boutique-photo {

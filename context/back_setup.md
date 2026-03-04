@@ -69,6 +69,18 @@ All CMS-editable page sections are created as **Single Types** (one instance, no
 
 ---
 
+### La Boutique
+
+| Field | Type |
+|---|---|
+| `Titre` | Short text |
+| `Texte` | Rich Text (Blocks) |
+| `Mise_en_valeur` | Short text (optional) |
+| `Photo` | Media (single) |
+| `Description_photo` | Short text |
+
+---
+
 ## Public API Permissions
 
 By default all API endpoints require authentication. To allow the Astro build to fetch content without a token:
@@ -110,6 +122,12 @@ Example response (abbreviated):
 ```
 
 **Note:** Photo `url` is a relative path. Prepend `STRAPI_URL` to get the full URL.
+
+### La Boutique
+
+```
+GET /api/la-boutique?populate=Photo
+```
 
 ### Strapi v5 specifics
 
