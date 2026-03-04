@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "coffrets_gourmands_list",
+  "info": {
+    "singularName": "coffrets-gourmands",
+    "pluralName": "coffrets-gourmands-list",
+    "displayName": "Coffrets Gourmands"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre": {
+      "type": "string"
+    },
+    "Texte": {
+      "type": "blocks"
+    },
+    "Mise_en_valeur": {
+      "type": "string"
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "Description_photo": {
+      "type": "string"
+    }
+  }
+}

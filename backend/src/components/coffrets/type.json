@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_coffrets_types",
+  "info": {
+    "displayName": "Type"
+  },
+  "options": {},
+  "attributes": {
+    "Type": {
+      "type": "string"
+    },
+    "Texte": {
+      "type": "blocks"
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "Description_photo": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "catalogue_coffrets_list",
+  "info": {
+    "singularName": "catalogue-coffrets",
+    "pluralName": "catalogue-coffrets-list",
+    "displayName": "Catalogue Coffrets"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre_section": {
+      "type": "blocks"
+    },
+    "Coffret": {
+      "type": "component",
+      "component": "coffrets.type",
+      "repeatable": true
+    }
+  }
+}

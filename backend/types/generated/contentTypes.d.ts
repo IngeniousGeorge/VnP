@@ -430,6 +430,69 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCatalogueCoffretsCatalogueCoffrets
+  extends Struct.SingleTypeSchema {
+  collectionName: 'catalogue_coffrets_list';
+  info: {
+    displayName: 'Catalogue Coffrets';
+    pluralName: 'catalogue-coffrets-list';
+    singularName: 'catalogue-coffrets';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Coffret: Schema.Attribute.Component<'coffrets.type', true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::catalogue-coffrets.catalogue-coffrets'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Titre_section: Schema.Attribute.Blocks;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCoffretsGourmandsCoffretsGourmands
+  extends Struct.SingleTypeSchema {
+  collectionName: 'coffrets_gourmands_list';
+  info: {
+    displayName: 'Coffrets Gourmands';
+    pluralName: 'coffrets-gourmands-list';
+    singularName: 'coffrets-gourmands';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description_photo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::coffrets-gourmands.coffrets-gourmands'
+    > &
+      Schema.Attribute.Private;
+    Mise_en_valeur: Schema.Attribute.String;
+    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Texte: Schema.Attribute.Blocks;
+    Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLeCrottinLeCrottin extends Struct.SingleTypeSchema {
   collectionName: 'le_crottin_list';
   info: {
@@ -1097,6 +1160,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::catalogue-coffrets.catalogue-coffrets': ApiCatalogueCoffretsCatalogueCoffrets;
+      'api::coffrets-gourmands.coffrets-gourmands': ApiCoffretsGourmandsCoffretsGourmands;
       'api::le-crottin.le-crottin': ApiLeCrottinLeCrottin;
       'api::le-menu.le-menu': ApiLeMenuLeMenu;
       'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
