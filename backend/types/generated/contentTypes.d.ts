@@ -430,6 +430,36 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAnnonceAnnonce extends Struct.SingleTypeSchema {
+  collectionName: 'annonce_list';
+  info: {
+    displayName: 'Annonce';
+    pluralName: 'annonce-list';
+    singularName: 'annonce';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Adresse_du_lien: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::annonce.annonce'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Texte: Schema.Attribute.Blocks;
+    Texte_du_lien: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCatalogueCoffretsCatalogueCoffrets
   extends Struct.SingleTypeSchema {
   collectionName: 'catalogue_coffrets_list';
@@ -1226,6 +1256,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::annonce.annonce': ApiAnnonceAnnonce;
       'api::catalogue-coffrets.catalogue-coffrets': ApiCatalogueCoffretsCatalogueCoffrets;
       'api::coffrets-gourmands.coffrets-gourmands': ApiCoffretsGourmandsCoffretsGourmands;
       'api::contact-info.contact-info': ApiContactInfoContactInfo;

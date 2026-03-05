@@ -1,9 +1,14 @@
 ---
 import { Image, getImage } from 'astro:assets';
+import { fetchStrapiData, blocksToHtml } from '../lib/strapi';
 import logo from '../assets/images/logo_vp.png';
 import bannerSrc from '../assets/images/banner.jpg';
 
 const banner = await getImage({ src: bannerSrc, width: 1920 });
+const annonce = await fetchStrapiData('/api/annonce');
+const texteHtml     = annonce?.Texte            ? blocksToHtml(annonce.Texte) : '';
+const lienLibelle   = annonce?.Texte_du_lien    ?? '';
+const lienUrl       = annonce?.Adresse_du_lien  ?? '';
 ---
 
 <!-- Shared SVG defs: Instagram gradient referenced by both icons below -->
@@ -36,7 +41,7 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
           <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
         </svg>
       </a>
-      <a href="/contact" class="banner-nav-link banner-cta">Nous contacter</a>
+      <a href="/contact" class="banner-nav-link banner-cta">02 43 07 89 05</a>
     </nav>
 
     <nav class="sticky-navbar">
@@ -68,6 +73,18 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
   </div>
 </header>
 <div class="banner-spacer"></div>
+{texteHtml ? (
+  <div class="announcement-bar">
+    <div class="announcement-content">
+      <div class="announcement-text" set:html={texteHtml} />
+      {lienLibelle && lienUrl && (
+        <a href={lienUrl} class="announcement-link">{lienLibelle}</a>
+      )}
+    </div>
+  </div>
+) : (
+  <div class="announcement-spacer"></div>
+)}
 
 <script>
   const banner = document.querySelector('.banner') as HTMLElement;
@@ -344,5 +361,50 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
       width: 20px;
       height: 20px;
     }
+  }
+
+  /* Announcement bar */
+  .announcement-spacer {
+    height: 1.5rem;
+  }
+
+  .announcement-bar {
+    background-color: var(--color-white);
+    border-top: 8px solid var(--color-orange);
+    border-bottom: 8px solid var(--color-orange);
+  }
+
+  .announcement-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.4rem 2rem;
+    color: var(--color-dark-bg);
+    text-align: center;
+  }
+
+  .announcement-content :global(p) {
+    margin: 0;
+    line-height: 1.6;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+  }
+
+  .announcement-content :global(strong) { font-weight: bold; }
+  .announcement-content :global(em)     { font-style: italic; }
+  .announcement-content :global(u)      { text-decoration: underline; }
+  .announcement-content :global(s)      { text-decoration: line-through; }
+  .announcement-content :global(a)      { color: var(--color-orange); text-decoration: underline; }
+
+  .announcement-content :global(p + p) {
+    margin-top: 0.25rem;
+  }
+
+  .announcement-link {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--color-orange);
+    text-decoration: underline;
+    font-style: italic;
+    font-size: 1.2rem;
   }
 </style>

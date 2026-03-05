@@ -2,7 +2,8 @@ export const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 
 type StrapiChild =
   | { type: 'hardBreak' }
-  | { type: 'text'; text: string; bold?: boolean; italic?: boolean; underline?: boolean; strikethrough?: boolean; code?: boolean };
+  | { type: 'text'; text: string; bold?: boolean; italic?: boolean; underline?: boolean; strikethrough?: boolean; code?: boolean }
+  | { type: 'link'; url: string; children: StrapiChild[] };
 
 export type StrapiBlock = {
   type: string;
@@ -28,6 +29,7 @@ export function buildPhotoUrl(photoObj?: { url: string } | null): string | null 
 function renderChildren(children: StrapiChild[]): string {
   return children.map(child => {
     if (child.type === 'hardBreak') return '<br>';
+    if (child.type === 'link') return `<a href="${child.url}">${renderChildren(child.children)}</a>`;
     let text = child.text.replace(/\n/g, '<br>');
     if (child.code)          text = `<code>${text}</code>`;
     if (child.bold)          text = `<strong>${text}</strong>`;
