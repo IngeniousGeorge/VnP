@@ -8,7 +8,8 @@ the same `Header` component as the home page and contains two sections:
 - **Les Bocaux** — white background, intro text + photo (mirrors `NotreHistoire` layout). CMS-driven.
 - **Le Menu** — grey background, section heading + 3 interactive flip cards showing the day's dishes. CMS-driven.
 
-No hero cards, no partners carousel, no social posts section on this page.
+No hero cards, no partners carousel, no social posts section on this page. The shared `Footer`
+component is included with `variant="gray"` to match the grey background of `LeMenu` above it.
 
 ---
 
@@ -35,6 +36,7 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import LesBocaux from '../components/LesBocaux.astro';
 import LeMenu from '../components/LeMenu.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Les Bocaux — Verre et Papilles">
@@ -43,6 +45,7 @@ import LeMenu from '../components/LeMenu.astro';
     <LesBocaux />
     <LeMenu />
   </main>
+  <Footer variant="gray" />
 </Layout>
 ```
 

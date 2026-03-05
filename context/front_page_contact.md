@@ -57,11 +57,11 @@ import Footer from '../components/Footer.astro';
   <main>
     <Contact />
   </main>
-  <Footer />
+  <Footer variant="light" />
 </Layout>
 ```
 
-This is the only inner page that includes `Footer`. It is the natural end of the navigation flow.
+`variant="light"` matches the white background of the `Contact` section above the footer.
 
 ---
 

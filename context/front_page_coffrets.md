@@ -11,7 +11,9 @@ A dedicated page at `/coffrets` for the shop's gift boxes ("coffrets gourmands")
   available gift boxes. CMS-driven. Same card layout and fade/scale interaction as Le Menu on
   the bocaux page.
 
-No hero cards, no partners carousel, no social posts section on this page.
+No hero cards, no partners carousel, no social posts section on this page. The shared `Footer`
+component is included with `variant="gray"` to match the grey background of `CatalogueCoffrets`
+above it.
 
 ---
 
@@ -63,6 +65,7 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import CoffretsGourmands from '../components/CoffretsGourmands.astro';
 import CatalogueCoffrets from '../components/CatalogueCoffrets.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Coffrets Gourmands — Verre et Papilles">
@@ -71,6 +74,7 @@ import CatalogueCoffrets from '../components/CatalogueCoffrets.astro';
     <CoffretsGourmands />
     <CatalogueCoffrets />
   </main>
+  <Footer variant="gray" />
 </Layout>
 ```
 

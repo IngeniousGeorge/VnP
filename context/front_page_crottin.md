@@ -10,7 +10,8 @@ A dedicated page at `/crottin` for the shop's signature chocolate specialty. It 
 - **Les Revendeurs** — dark background, section heading + two-column layout: retailer card grid
   on the left, tall portrait photo on the right. CMS-driven.
 
-No hero cards, no partners carousel, no social posts section on this page.
+No hero cards, no partners carousel, no social posts section on this page. The shared `Footer`
+component is included with `variant="dark"` to match the dark background of `LesRevendeurs` above it.
 
 ---
 
@@ -58,6 +59,7 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import LeCrottin from '../components/LeCrottin.astro';
 import LesRevendeurs from '../components/LesRevendeurs.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Le Crottin Craonnais — Verre et Papilles">
@@ -66,6 +68,7 @@ import LesRevendeurs from '../components/LesRevendeurs.astro';
     <LeCrottin />
     <LesRevendeurs />
   </main>
+  <Footer variant="dark" />
 </Layout>
 ```
 
