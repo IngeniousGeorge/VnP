@@ -360,17 +360,22 @@ const posts = [
     return mobileQuery.matches ? 100 : 100 / 3;
   }
 
+  // The last valid index ensures the final viewport is always full —
+  // i.e. we stop scrolling when the last slide reaches the right edge.
   function getMaxIndex() {
     const visible = mobileQuery.matches ? 1 : 3;
     return totalSlides - visible;
   }
 
+  // Move the track and sync button disabled states in one place
   function updateCarousel() {
     track.style.transform = `translateX(-${current * getSlidePercent()}%)`;
     prevBtn.disabled = current === 0;
     nextBtn.disabled = current >= getMaxIndex();
   }
 
+  // Event delegation — disabled check guards against clicks on a visually-disabled button
+  // that the browser hasn't yet reflected as `.disabled` (e.g. during rapid clicks)
   section.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.actu-btn') as HTMLButtonElement | null;
     if (!btn || btn.disabled) return;

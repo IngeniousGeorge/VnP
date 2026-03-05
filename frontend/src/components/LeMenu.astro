@@ -7,12 +7,14 @@ const data = await fetchStrapiData('/api/le-menu?populate[Carte][populate]=Photo
 
 const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
 
-const cartes: Array<{
+type Carte = {
   Etape?: string;
   Texte?: StrapiBlock[];
   Photo?: { url: string };
   Description_photo?: string;
-}> = data?.Carte ?? [];
+};
+
+const cartes: Carte[] = data?.Carte ?? [];
 ---
 
 <section class="le-menu">

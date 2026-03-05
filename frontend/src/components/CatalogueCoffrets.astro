@@ -7,12 +7,14 @@ const data = await fetchStrapiData('/api/catalogue-coffrets?populate[Coffret][po
 
 const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
 
-const cartes: Array<{
+type Carte = {
   Type?: string;
   Texte?: StrapiBlock[];
   Photo?: { url: string };
   Description_photo?: string;
-}> = data?.Coffret ?? [];
+};
+
+const cartes: Carte[] = data?.Coffret ?? [];
 ---
 
 <section class="catalogue-coffrets">

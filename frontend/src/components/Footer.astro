@@ -1,15 +1,42 @@
 ---
+type FooterVariant = 'dark' | 'gray' | 'light';
+
+interface Props {
+  variant?: FooterVariant;
+}
+
+const { variant = 'dark' } = Astro.props;
+
+const rawPath = Astro.url.pathname;
+const pathname = rawPath === '/' ? '/' : rawPath.replace(/\/$/, '');
+
+const allLinks = [
+  { label: 'Verre & Papilles', href: '/' },
+  { label: 'Les bocaux', href: '/bocaux' },
+  { label: 'Le crottin', href: '/crottin' },
+  { label: 'Les coffrets', href: '/coffrets' },
+  { label: 'Contact', href: '/contact' },
+];
+
+const links = allLinks.filter(l => l.href !== pathname);
 ---
 
-<footer class="footer">
+<footer class={`footer footer--${variant}`}>
   <div class="container">
-    <p class="footer-credit">Site réalisé par <a href="https://github.com/IngeniousGeorge" target="_blank" rel="noopener noreferrer" class="footer-link">Ingenious George</a></p>
+    <nav class="footer-nav">
+      {links.map((link, i) => (
+        <>
+          {i > 0 && <span class="footer-sep">|</span>}
+          <a href={link.href} class="footer-link">{link.label}</a>
+        </>
+      ))}
+    </nav>
+    <p class="footer-credit">Site réalisé par <a href="https://github.com/IngeniousGeorge" target="_blank" rel="noopener noreferrer" class="footer-credit-link">Ingenious George</a></p>
   </div>
 </footer>
 
 <style>
   .footer {
-    background-color: var(--color-dark-bg);
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -17,21 +44,127 @@
   .container {
     max-width: 1100px;
     margin: 0 auto;
+    text-align: center;
   }
 
-  .footer-credit {
-    text-align: center;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.45);
-    margin: 0;
+  .footer-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 0.6rem;
+    margin-bottom: 0.4rem;
   }
 
   .footer-link {
-    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    text-decoration: none;
     transition: color 0.2s;
   }
 
-  .footer-link:hover {
+  .footer-sep {
+    font-size: 0.875rem;
+    user-select: none;
+  }
+
+  .footer-credit {
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .footer-credit-link {
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  /* Dark variant (#374151) */
+  .footer--dark {
+    background-color: var(--color-dark-bg);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .footer--dark .footer-link {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .footer--dark .footer-link:hover {
+    color: var(--color-orange);
+  }
+
+  .footer--dark .footer-sep {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  .footer--dark .footer-credit {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .footer--dark .footer-credit-link {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .footer--dark .footer-credit-link:hover {
     color: var(--color-white);
+  }
+
+  /* Gray variant (#6B7280) */
+  .footer--gray {
+    background-color: var(--color-gray-bg);
+    border-top-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .footer--gray .footer-link {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .footer--gray .footer-link:hover {
+    color: var(--color-orange);
+  }
+
+  .footer--gray .footer-sep {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .footer--gray .footer-credit {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .footer--gray .footer-credit-link {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .footer--gray .footer-credit-link:hover {
+    color: var(--color-white);
+  }
+
+  /* Light variant (white) */
+  .footer--light {
+    background-color: var(--color-white);
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .footer--light .footer-link {
+    color: var(--color-text);
+  }
+
+  .footer--light .footer-link:hover {
+    color: var(--color-orange-dark);
+  }
+
+  .footer--light .footer-sep {
+    color: var(--color-separator);
+  }
+
+  .footer--light .footer-credit {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .footer--light .footer-credit-link {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .footer--light .footer-credit-link:hover {
+    color: var(--color-text);
   }
 </style>

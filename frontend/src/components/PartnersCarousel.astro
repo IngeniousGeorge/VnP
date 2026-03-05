@@ -180,6 +180,13 @@ const partners = [
     return mobileQuery.matches ? 100 : 100 / 3;
   }
 
+  // Infinite-loop slide animation.
+  // "next": animate the track left, then instantly move the first slide to the end
+  //         and snap back to position 0 — the seam is invisible because it happens
+  //         after the CSS transition completes.
+  // "prev": move the last slide to the front without animation, jump to the offset
+  //         where it now sits (so the view is unchanged), force a reflow so the
+  //         browser registers the non-animated position, then animate back to 0.
   function slide(direction: 'next' | 'prev') {
     if (isTransitioning) return;
     isTransitioning = true;
@@ -198,7 +205,7 @@ const partners = [
       track.style.transition = 'none';
       track.insertBefore(track.lastElementChild!, track.firstElementChild);
       track.style.transform = `translateX(-${percent}%)`;
-      track.offsetHeight; // force reflow before animating
+      track.offsetHeight; // force reflow so the browser registers the jump before we animate
       track.style.transition = TRANSITION;
       track.style.transform = 'translateX(0)';
       track.addEventListener('transitionend', () => {
@@ -207,7 +214,7 @@ const partners = [
     }
   }
 
-  // Autoplay — pauses on hover and when tab is hidden
+  // Autoplay — pauses on hover and when the tab is backgrounded
   function startAutoplay() {
     stopAutoplay();
     if (!isHovered && !document.hidden) {
@@ -233,14 +240,14 @@ const partners = [
     startAutoplay();
   });
 
-  // Navigation buttons (event delegation)
+  // Navigation buttons — event delegation avoids attaching two separate listeners
   section.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.carousel-btn');
     if (!btn) return;
     slide(btn.classList.contains('carousel-btn--next') ? 'next' : 'prev');
   });
 
-  // Tooltip (event delegation on the viewport)
+  // Tooltip — shown after a short delay to avoid flickering during fast mouse movement
   viewport.addEventListener('mouseover', (e) => {
     const link = (e.target as HTMLElement).closest('.carousel-link') as HTMLElement | null;
     if (!link) return;
@@ -261,7 +268,7 @@ const partners = [
     tooltip.classList.remove('visible');
   });
 
-  // Shuffle slide order on each page visit
+  // Randomize slide order on each page load so the same partners aren't always shown first
   const slides = [...track.children];
   for (let i = slides.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

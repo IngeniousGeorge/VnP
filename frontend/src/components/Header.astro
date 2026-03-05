@@ -76,13 +76,15 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
   if (isMobile) {
-    // Mobile: sticky navbar is fixed at top from page load.
-    // Expose nav height as a CSS variable so the banner can add padding to clear it.
+    // Mobile: the sticky navbar is always visible at the top of the screen.
+    // We measure its rendered height and expose it as a CSS variable so the
+    // banner can add matching top padding to avoid being hidden beneath it.
     const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
     document.documentElement.style.setProperty('--mobile-nav-height', nav.offsetHeight + 'px');
   } else {
-    // Desktop: scroll-triggered sticky behavior
-    const FADE_THRESHOLD = 0.7; // fraction of banner height at which logo starts fading
+    // Desktop: the navbar is hidden inside the banner and becomes sticky only
+    // after the user has scrolled past the full banner height.
+    const FADE_THRESHOLD = 0.7; // logo starts fading at 70% of banner height scrolled
     const bannerHeight = banner.offsetHeight;
     const fadeStart = bannerHeight * FADE_THRESHOLD;
     let isSticky = false;
@@ -91,14 +93,18 @@ const banner = await getImage({ src: bannerSrc, width: 1920 });
       const y = window.scrollY;
       const shouldStick = y > bannerHeight;
 
+      // Fade the logo out linearly between fadeStart and the bottom of the banner.
+      // Once sticky, the logo is hidden via CSS so we skip the calculation.
       if (!isSticky) {
         const opacity = y <= fadeStart ? 1 : Math.max(0, 1 - (y - fadeStart) / (bannerHeight - fadeStart));
         logoEl.style.opacity = String(opacity);
       }
 
+      // Toggle sticky state only on transition to avoid redundant DOM writes on every scroll event.
       if (shouldStick !== isSticky) {
         isSticky = shouldStick;
         banner.classList.toggle('sticky', isSticky);
+        // Hold the layout space the banner occupied so page content doesn't jump.
         spacer.style.height = isSticky ? `${bannerHeight}px` : '0';
         if (!isSticky) logoEl.style.opacity = '1';
       }
