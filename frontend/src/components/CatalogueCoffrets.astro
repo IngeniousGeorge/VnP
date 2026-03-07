@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { STRAPI_URL, fetchStrapiData, blocksToHtml } from '../lib/strapi';
-import type { StrapiBlock } from '../lib/strapi';
 
 const data = await fetchStrapiData('/api/catalogue-coffrets?populate[Coffret][populate]=Photo');
 
@@ -9,7 +8,6 @@ const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
 
 type Carte = {
   Type?: string;
-  Texte?: StrapiBlock[];
   Photo?: { url: string };
   Description_photo?: string;
 };
@@ -27,26 +25,25 @@ const cartes: Carte[] = data?.Coffret ?? [];
     {cartes.map((carte) => (
       <div class="card-wrapper">
         {carte.Type && <span class="card-label">{carte.Type}</span>}
-        <div class="card-inner">
-          <div class="card-front">
-            {carte.Texte && <Fragment set:html={blocksToHtml(carte.Texte)} />}
-          </div>
-          <div class="card-back">
-            {carte.Photo?.url && (
-              <Image
-                src={`${STRAPI_URL}${carte.Photo.url}`}
-                width={500}
-                inferSize
-                alt={carte.Description_photo ?? ''}
-                class="card-photo"
-              />
-            )}
-          </div>
+        <div class="card-inner" data-full-src={carte.Photo?.url ? `${STRAPI_URL}${carte.Photo.url}` : undefined} data-alt={carte.Description_photo ?? ''}>
+          {carte.Photo?.url && (
+            <Image
+              src={`${STRAPI_URL}${carte.Photo.url}`}
+              width={500}
+              inferSize
+              alt={carte.Description_photo ?? ''}
+              class="card-photo"
+            />
+          )}
         </div>
       </div>
     ))}
   </div>
 </section>
+
+<dialog id="coffret-lightbox">
+  <img id="coffret-lightbox-img" src="" alt="" />
+</dialog>
 
 <style>
   .catalogue-coffrets {
@@ -74,7 +71,7 @@ const cartes: Carte[] = data?.Coffret ?? [];
   }
 
   .cards-container {
-    max-width: 900px;
+    max-width: 62rem;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -91,53 +88,39 @@ const cartes: Carte[] = data?.Coffret ?? [];
     flex-shrink: 0;
   }
 
+  /* Card dimensions: 275×315px (17.1875rem × 19.6875rem at 16px base) */
   .card-inner {
-    width: 250px;
-    height: 350px;
-    position: relative;
+    width: 17.1875rem;
+    height: 19.6875rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
   }
 
-  .card-front,
-  .card-back {
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    transition: opacity 350ms ease, transform 350ms ease;
+  #coffret-lightbox {
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 90vw;
+    height: 90vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
-  .card-front {
-    background-color: var(--color-orange);
-    color: var(--color-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    text-align: center;
-    z-index: 2;
+  #coffret-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
   }
 
-  .card-front :global(p) {
-    line-height: 1.7;
-    font-size: 1rem;
-    margin: 0;
-  }
-
-  .card-back {
-    opacity: 0;
-    transform: scale(0.97);
-    z-index: 1;
-  }
-
-  .card-inner.show-image .card-back {
-    opacity: 1;
-    transform: scale(1);
-    z-index: 2;
-  }
-
-  .card-inner.show-image .card-front {
-    opacity: 0;
-    transform: scale(0.97);
-    z-index: 1;
+  #coffret-lightbox img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
   }
 
   .card-label {
@@ -154,49 +137,22 @@ const cartes: Carte[] = data?.Coffret ?? [];
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 12px;
   }
 </style>
 
 <script>
-  const today = new Intl.DateTimeFormat('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-  }).format(new Date());
+  const dialog = document.getElementById('coffret-lightbox') as HTMLDialogElement;
+  const lightboxImg = document.getElementById('coffret-lightbox-img') as HTMLImageElement;
 
-  document.querySelector('.catalogue-coffrets .section-header')?.querySelectorAll('*').forEach(el => {
-    el.childNodes.forEach(node => {
-      if (node.nodeType === Node.TEXT_NODE && node.textContent?.includes('{{date}}')) {
-        node.textContent = node.textContent.replace('{{date}}', today);
-      }
+  document.querySelectorAll('.catalogue-coffrets .card-inner').forEach(card => {
+    card.addEventListener('click', () => {
+      const fullSrc = (card as HTMLElement).dataset.fullSrc;
+      if (!fullSrc) return;
+      lightboxImg.src = fullSrc;
+      lightboxImg.alt = (card as HTMLElement).dataset.alt ?? '';
+      dialog.showModal();
     });
   });
 
-  const wrappers = Array.from(document.querySelectorAll<HTMLElement>('.catalogue-coffrets .card-wrapper'));
-  const triggered = new WeakMap<Element, boolean>();
-
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      wrappers.forEach((wrapper, i) => {
-        const inner = wrapper.querySelector('.card-inner') as HTMLElement;
-        setTimeout(() => {
-          triggered.set(wrapper, true);
-          inner.classList.add('show-image');
-        }, 1000 + i * 230);
-      });
-      observer.disconnect();
-    }
-  }, { threshold: 0.3 });
-
-  const container = document.querySelector('.catalogue-coffrets .cards-container');
-  if (container) observer.observe(container);
-
-  wrappers.forEach(wrapper => {
-    const inner = wrapper.querySelector('.card-inner') as HTMLElement;
-    wrapper.addEventListener('mouseenter', () => {
-      inner.classList.remove('show-image');
-    });
-    wrapper.addEventListener('mouseleave', () => {
-      if (triggered.get(wrapper)) inner.classList.add('show-image');
-    });
-  });
+  dialog.addEventListener('click', () => dialog.close());
 </script>

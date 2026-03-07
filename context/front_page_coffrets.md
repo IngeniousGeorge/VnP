@@ -110,9 +110,11 @@ API endpoint: `GET /api/catalogue-coffrets?populate[Coffret][populate]=Photo`
 | Field | Type | Notes |
 |---|---|---|
 | `Type` | Short text | Card label displayed above the card |
-| `Texte` | Rich text (Blocks) | Text shown on the card front (orange face) |
-| `Photo` | Media — single image | Photo shown on the card back |
+| `Photo` | Media — single image | Photo displayed directly on the card |
 | `Description_photo` | Short text | Alt text for the photo |
+
+Note: a `Texte` (Rich text) field exists in Strapi but is not rendered — cards show only the
+photo, with no text face or flip interaction.
 
 ### Strapi permissions
 
@@ -162,9 +164,8 @@ differences are:
 | Label above card | `carte.Etape` | `carte.Type` |
 | Label below card | `carte.Infos` (optional) | — (not implemented) |
 | Section footer | `Informations_complementaires` (optional) | — (not implemented) |
-| Text field | `carte.Texte` | `carte.Texte` |
+| Card content | Text face + photo face (flip interaction) | Photo only — no text face, no interaction |
 | Root CSS class | `.le-menu` | `.catalogue-coffrets` |
-| Mouse-out behavior | Text persists (no flip-back) | Image returns (flip-back via `mouseleave`) |
 
 All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 
@@ -172,27 +173,19 @@ All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 ```
 <section.catalogue-coffrets>      — grey background, padding 4rem 2rem
   <div.section-header>            — max-width 900px, centered, text-align center
-    <Fragment set:html />          Titre_section blocks (may contain {{date}} placeholder)
+    <Fragment set:html />          Titre_section blocks
   <div.cards-container>           — max-width 900px, flex row, gap 4rem, flex-wrap, centered
     <div.card-wrapper> × n        — flex column, align-items center, gap 0.6rem
       <span.card-label>           Type field (label above the card)
-      <div.card-inner>            — 250×350px, position relative
-        <div.card-front>          — orange face (text), position absolute, inset 0
-        <div.card-back>           — photo face, position absolute, inset 0
+      <div.card-inner>            — 250×350px, border-radius 12px, overflow hidden
+        <Image.card-photo>        — fills card-inner, object-fit cover
 ```
 
-### Card Interaction Behaviour
+### Card Behaviour
 
-Mostly the same as `LeMenu` — see `context/front_page_bocaux.md` for full detail. Notable
-difference: `CatalogueCoffrets` retains the original mouse-out flip-back behavior that was
-removed from `LeMenu`. Specifically:
-
-- On hover: text reappears (same as `LeMenu`)
-- **On mouse out: image returns** — only if the IntersectionObserver trigger has fired for
-  that card. A `WeakMap<Element, boolean>` tracks the trigger state per card.
-
-`LeMenu` no longer has this flip-back. See `context/refactoring.md` §1.5 for the open
-question about whether to align the two components.
+Cards are static — photo displayed directly, no text face, no flip animation, no JavaScript.
+The `card-inner` uses `overflow: hidden` with `border-radius` to clip the image to the card
+shape.
 
 ---
 

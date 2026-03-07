@@ -77,19 +77,6 @@ component template. All text content in both components is injected via `set:htm
 elements never receive the scoping attribute. There are no literal `<strong>` elements in either
 template. Selector has zero matches.
 
-### 1.5 Divergent card behavior between `LeMenu` and `CatalogueCoffrets`
-
-When the `mouseleave` flip-back was removed from `LeMenu.astro`, `CatalogueCoffrets.astro`
-was not updated to match. As a result:
-
-- `LeMenu`: text face persists after mouse-out (current intended behavior)
-- `CatalogueCoffrets`: mouse-out restores the image (old behavior, still in code)
-
-`CatalogueCoffrets` retains the `triggered` WeakMap, the `triggered.set(wrapper, true)` call
-inside the IntersectionObserver, and the `mouseleave` event listener. These are not dead code
-in isolation, but they implement a behavior that was deliberately removed from the equivalent
-component. Unless coffrets intentionally differs, remove the `mouseleave` listener and
-`triggered` WeakMap from `CatalogueCoffrets` to align the two components.
 
 ### 1.4 Dead `withOffset` prop and CSS in `PhotoTextSection.astro`
 
@@ -112,11 +99,12 @@ The two components are structural duplicates. The divergence has grown since ini
 - **CSS**: mostly identical — only the root selector name differs (`.le-menu` vs
   `.catalogue-coffrets`). However `LeMenu` now uses a split `section-header` / `section-footer`
   selector pattern while `CatalogueCoffrets` uses the older `margin: 0 auto 3rem` shorthand.
-- **JavaScript**: logic is now divergent — `LeMenu` removes the `mouseleave` listener and
-  `triggered` WeakMap (text stays after mouse-out); `CatalogueCoffrets` still has the old
-  flip-back behavior. See §1.5 below.
-- **Strapi fields**: `LeMenu` now has `Informations_complementaires` (footer rich text) and
+- **JavaScript**: `LeMenu` has a flip interaction (IntersectionObserver + mouseenter);
+  `CatalogueCoffrets` has no JavaScript — cards are static image-only displays.
+- **Strapi fields**: `LeMenu` has `Informations_complementaires` (footer rich text) and
   `Infos` (per-card label below card); `CatalogueCoffrets` has neither.
+- **Card structure**: `LeMenu` has `card-front` / `card-back` faces; `CatalogueCoffrets`
+  renders the photo directly inside `card-inner` with no flip markup.
 
 The components that started as identical have drifted into a growing maintenance burden.
 
@@ -195,14 +183,13 @@ the deliberate design change, or the component should be corrected. Needs clarif
 
 ## 4. Code Quality
 
-### 4.1 Missing dimension comment in `CatalogueCoffrets.astro`
+### 4.1 Lightbox images in `CatalogueCoffrets` appear pixelated
 
-`LeMenu.astro` has a comment explaining the card dimensions:
-```css
-/* Card dimensions: 58% of ~431px photo width = ~250px; poker ratio 5:7 → 350px tall */
-```
-`CatalogueCoffrets.astro` uses the same values (250px × 350px) without any explanation.
-If `FlipCardSection.astro` is extracted (see 2.1), this comment naturally moves there once.
+The lightbox loads the original Strapi URL directly (`data-full-src`), bypassing Astro's image
+optimisation pipeline. If the source images uploaded to Strapi are low-resolution, they will
+pixelate at 90vw × 90vh. The fix depends on the upload quality: either ensure the shop owner
+uploads high-resolution photos, or generate a larger Astro-optimised variant at build time and
+store its URL in a second `data-` attribute for the lightbox to use.
 
 ### 4.2 `strapi.ts` `blocksToHtml` silently drops unsupported block types
 
