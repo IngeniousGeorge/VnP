@@ -173,14 +173,12 @@ const cartes: Carte[] = data?.Carte ?? [];
   });
 
   const wrappers = Array.from(document.querySelectorAll<HTMLElement>('.le-menu .card-wrapper'));
-  const triggered = new WeakMap<Element, boolean>();
 
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       wrappers.forEach((wrapper, i) => {
         const inner = wrapper.querySelector('.card-inner') as HTMLElement;
         setTimeout(() => {
-          triggered.set(wrapper, true);
           inner.classList.add('show-image');
         }, 1000 + i * 230);
       });
@@ -195,9 +193,6 @@ const cartes: Carte[] = data?.Carte ?? [];
     const inner = wrapper.querySelector('.card-inner') as HTMLElement;
     wrapper.addEventListener('mouseenter', () => {
       inner.classList.remove('show-image');
-    });
-    wrapper.addEventListener('mouseleave', () => {
-      if (triggered.get(wrapper)) inner.classList.add('show-image');
     });
   });
 </script>
