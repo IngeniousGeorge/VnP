@@ -589,12 +589,12 @@ export interface ApiLaBoutiqueLaBoutique extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiLeCrottinLeCrottin extends Struct.SingleTypeSchema {
-  collectionName: 'le_crottin_list';
+export interface ApiLeCrottin1LeCrottin1 extends Struct.SingleTypeSchema {
+  collectionName: 'le_crottin_1_list';
   info: {
-    displayName: 'Le Crottin';
-    pluralName: 'le-crottin-list';
-    singularName: 'le-crottin';
+    displayName: 'Le Crottin 1';
+    pluralName: 'le-crottin-1-list';
+    singularName: 'le-crottin-1';
   };
   options: {
     draftAndPublish: true;
@@ -607,7 +607,39 @@ export interface ApiLeCrottinLeCrottin extends Struct.SingleTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::le-crottin.le-crottin'
+      'api::le-crottin-1.le-crottin-1'
+    > &
+      Schema.Attribute.Private;
+    Mise_en_valeur: Schema.Attribute.String;
+    Photo: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Texte: Schema.Attribute.Blocks;
+    Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLeCrottin2LeCrottin2 extends Struct.SingleTypeSchema {
+  collectionName: 'le_crottin_2_list';
+  info: {
+    displayName: 'Le Crottin 2';
+    pluralName: 'le-crottin-2-list';
+    singularName: 'le-crottin-2';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description_photo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::le-crottin-2.le-crottin-2'
     > &
       Schema.Attribute.Private;
     Mise_en_valeur: Schema.Attribute.String;
@@ -1262,7 +1294,8 @@ declare module '@strapi/strapi' {
       'api::coffrets-gourmands.coffrets-gourmands': ApiCoffretsGourmandsCoffretsGourmands;
       'api::contact-info.contact-info': ApiContactInfoContactInfo;
       'api::la-boutique.la-boutique': ApiLaBoutiqueLaBoutique;
-      'api::le-crottin.le-crottin': ApiLeCrottinLeCrottin;
+      'api::le-crottin-1.le-crottin-1': ApiLeCrottin1LeCrottin1;
+      'api::le-crottin-2.le-crottin-2': ApiLeCrottin2LeCrottin2;
       'api::le-menu.le-menu': ApiLeMenuLeMenu;
       'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
       'api::les-revendeurs.les-revendeurs': ApiLesRevendeursLesRevendeurs;

@@ -125,7 +125,22 @@ Strapi endpoint, field names, and optional `footerHtml`. The `section-footer` re
 card flip JS (using the `LeMenu` behavior as the canonical version), and all shared CSS
 move to the shared component. Both pages use it instead.
 
-### 2.2 `.section-header` + `.accent` pattern repeated across components
+### 2.2 `LaBoutique.astro` could migrate to `PhotoTextSection reversed`
+
+`PhotoTextSection.astro` now accepts a `reversed` prop (added when `LeCrottin1` was built).
+`LaBoutique.astro` implements the same two-column photo-right layout manually. The two differ
+in a few design details:
+
+- `LaBoutique` uses `align-items: start`; `PhotoTextSection` uses `align-items: center`
+- `LaBoutique` h2 is `font-weight: 700`; `PhotoTextSection` h2 is `font-weight: 400`
+- `LaBoutique` h2 `margin-bottom` is `0.5rem`; `PhotoTextSection` is `1.5rem`
+
+**Proposed fix**: align the design choices (confirm whether `start` vs `center` is intentional),
+then replace `LaBoutique.astro` with a thin Strapi-fetching wrapper using
+`<PhotoTextSection reversed />`, same as `LeCrottin1`. This eliminates the last bespoke
+photo+text layout in the codebase.
+
+### 2.3 `.section-header` + `.accent` pattern repeated across components
 
 `LesRevendeurs.astro` and `Contact.astro` both implement an identical centered-heading layout
 (orange horizontal rule + `<h2>`) with near-identical CSS. The two instances differ only in
@@ -134,7 +149,7 @@ move to the shared component. Both pages use it instead.
 **Proposed fix**: extract a `SectionHeader.astro` component accepting `titre`, `introHtml`,
 and a variant prop. This also eliminates the scoped `h2` overrides inside both components.
 
-### 2.3 `navOnly` CSS in `Header.astro` duplicates `.banner.sticky` CSS
+### 2.4 `navOnly` CSS in `Header.astro` duplicates `.banner.sticky` CSS
 
 The `@media (min-width: 769px) .banner--nav-only` block repeats the same font-size overrides
 and spacing rules as `.banner.sticky`. The two states are functionally the same visual

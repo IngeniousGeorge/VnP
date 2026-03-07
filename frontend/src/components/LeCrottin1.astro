@@ -2,7 +2,7 @@
 import { fetchStrapiData, buildPhotoUrl, blocksToHtml } from '../lib/strapi';
 import PhotoTextSection from './PhotoTextSection.astro';
 
-const data = await fetchStrapiData('/api/le-crottin?populate=Photo');
+const data = await fetchStrapiData('/api/le-crottin-1?populate=Photo');
 
 const titre        = data?.Titre            ?? 'Le Crottin Craonnais';
 const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
@@ -11,4 +11,4 @@ const photoUrl     = buildPhotoUrl(data?.Photo);
 const photoAlt     = data?.Description_photo ?? '';
 ---
 
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} />
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} reversed />

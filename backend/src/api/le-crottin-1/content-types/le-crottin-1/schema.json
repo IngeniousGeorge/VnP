@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "le_crottin_1_list",
+  "info": {
+    "singularName": "le-crottin-1",
+    "pluralName": "le-crottin-1-list",
+    "displayName": "Le Crottin 1"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titre": {
+      "type": "string"
+    },
+    "Texte": {
+      "type": "blocks"
+    },
+    "Mise_en_valeur": {
+      "type": "string"
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "Description_photo": {
+      "type": "string"
+    }
+  }
+}

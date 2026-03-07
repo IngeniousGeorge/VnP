@@ -1,10 +1,10 @@
 {
   "kind": "singleType",
-  "collectionName": "le_crottin_list",
+  "collectionName": "le_crottin_2_list",
   "info": {
-    "singularName": "le-crottin",
-    "pluralName": "le-crottin-list",
-    "displayName": "Le Crottin"
+    "singularName": "le-crottin-2",
+    "pluralName": "le-crottin-2-list",
+    "displayName": "Le Crottin 2"
   },
   "options": {
     "draftAndPublish": true

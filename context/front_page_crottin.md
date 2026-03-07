@@ -3,10 +3,12 @@
 ## Overview
 
 A dedicated page at `/crottin` for the shop's signature chocolate specialty. It shares the same
-`Header` component as the home page and contains two sections:
+`Header` component as the home page and contains three sections:
 
-- **Le Crottin Craonnais** — white background, intro text + photo. Uses the shared
-  `PhotoTextSection.astro` component with `withOffset` (same as Les Bocaux).
+- **Le Crottin 1** — white background, intro text + photo on the right. Uses the shared
+  `PhotoTextSection.astro` component with `reversed`. CMS-driven.
+- **Le Crottin 2** — white background, intro text + photo on the left. Uses the shared
+  `PhotoTextSection.astro` component. CMS-driven.
 - **Les Revendeurs** — dark background, section heading + two-column layout: retailer card grid
   on the left, tall portrait photo on the right. CMS-driven.
 
@@ -21,13 +23,10 @@ component is included with `variant="dark"` to match the dark background of `Les
 |---|---|---|
 | Page URL | `/crottin` | |
 | Page file | `crottin.astro` | |
-| Intro section | "Le Crottin Craonnais" | Component: `LeCrottin.astro`, Strapi type: `le-crottin` |
+| First section | "Le Crottin 1" | Component: `LeCrottin1.astro`, Strapi type: `le-crottin-1`; photo right |
+| Second section | "Le Crottin 2" | Component: `LeCrottin2.astro`, Strapi type: `le-crottin-2`; photo left |
 | Retailers section | "Les Revendeurs" | Component: `LesRevendeurs.astro`, CSS class: `.les-revendeurs`, Strapi type: `les-revendeurs` |
 | Strapi component | "Revendeur" | Category: `revendeurs`, file: `revendeurs/revendeur.json`, used as `revendeurs.revendeur` |
-
-Note: the Strapi plural API ID for `le-crottin` is `le-crottin-list` and for `les-revendeurs`
-is `les-revendeurs-list` — these are the values the shop owner entered when creating the types.
-This does not affect the REST API endpoints, which use the singular ID.
 
 ---
 
@@ -57,15 +56,17 @@ See its own section below.
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
-import LeCrottin from '../components/LeCrottin.astro';
+import LeCrottin1 from '../components/LeCrottin1.astro';
+import LeCrottin2 from '../components/LeCrottin2.astro';
 import LesRevendeurs from '../components/LesRevendeurs.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Le Crottin Craonnais — Verre et Papilles">
-  <Header />
+  <Header navOnly />
   <main>
-    <LeCrottin />
+    <LeCrottin1 />
+    <LeCrottin2 />
     <LesRevendeurs />
   </main>
   <Footer variant="dark" />
@@ -78,17 +79,23 @@ import Footer from '../components/Footer.astro';
 
 Both are **Single Types** with `draftAndPublish: true`.
 
-### `le-crottin` (display name: "Le Crottin")
+### `le-crottin-1` (display name: "Le Crottin 1")
 
 | Field | Type | Notes |
 |---|---|---|
 | `Titre` | Short text | Section heading, fallback: "Le Crottin Craonnais" |
 | `Texte` | Rich text (Blocks) | Body paragraphs |
 | `Mise_en_valeur` | Short text | Italic call-to-action line (optional) |
-| `Photo` | Media — single image | Section photo |
+| `Photo` | Media — single image | Section photo (displayed on the right) |
 | `Description_photo` | Short text | Alt text |
 
-API endpoint: `GET /api/le-crottin?populate=Photo`
+API endpoint: `GET /api/le-crottin-1?populate=Photo`
+
+### `le-crottin-2` (display name: "Le Crottin 2")
+
+Same fields as `le-crottin-1`. Photo displayed on the left.
+
+API endpoint: `GET /api/le-crottin-2?populate=Photo`
 
 ### `les-revendeurs` (display name: "Les Revendeurs")
 
@@ -112,43 +119,38 @@ API endpoint: `GET /api/les-revendeurs?populate[Revendeur]=true&populate[Photo]=
 
 ### Strapi permissions
 
-Settings → Users & Permissions → Roles → Public: enable `find` on both `le-crottin` and
-`les-revendeurs`.
+Settings → Users & Permissions → Roles → Public: enable `find` on `le-crottin-1`,
+`le-crottin-2`, and `les-revendeurs`.
 
 ---
 
-## Component: `LeCrottin.astro`
+## Components: `LeCrottin1.astro` and `LeCrottin2.astro`
 
-Thin wrapper around `PhotoTextSection.astro`. Fetches from Strapi, passes props, renders nothing
-if Strapi is unavailable (graceful fallback via `fetchStrapiData`).
+Both are thin wrappers around `PhotoTextSection.astro`. They differ only in endpoint and column
+order. `LeCrottin1` passes `reversed` so the photo appears on the right; `LeCrottin2` uses the
+default left layout.
 
 ```astro
----
-import { fetchStrapiData, buildPhotoUrl, blocksToHtml } from '../lib/strapi';
-import PhotoTextSection from './PhotoTextSection.astro';
+<!-- LeCrottin1.astro -->
+const data = await fetchStrapiData('/api/le-crottin-1?populate=Photo');
+...
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} reversed />
 
-const data = await fetchStrapiData('/api/le-crottin?populate=Photo');
-
-const titre        = data?.Titre            ?? 'Le Crottin Craonnais';
-const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
-const miseEnValeur = data?.Mise_en_valeur   ?? '';
-const photoUrl     = buildPhotoUrl(data?.Photo);
-const photoAlt     = data?.Description_photo ?? '';
----
-
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} withOffset />
+<!-- LeCrottin2.astro -->
+const data = await fetchStrapiData('/api/le-crottin-2?populate=Photo');
+...
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} />
 ```
 
-The `withOffset` prop adds `padding-top: calc(4rem + 24px)` to clear the banner logo overflow
-(logo has `margin-bottom: -80px`; the extra 24px gives comfortable clearance). This is the same
-behaviour as `LesBocaux.astro`.
+Nav clearance on `navOnly` pages is handled by the spacer set in `Header.astro` — no
+`withOffset` needed.
 
 ---
 
 ## Component: `PhotoTextSection.astro` (shared)
 
-Used by `NotreHistoire`, `LesBocaux`, and `LeCrottin`. Implements the white-background two-column
-grid: photo left, text right.
+Used by `NotreHistoire`, `LesBocaux`, `LeCrottin1`, `LeCrottin2`, and `CoffretsGourmands`.
+Implements the white-background two-column grid with configurable photo position.
 
 ### Props
 
@@ -159,7 +161,8 @@ grid: photo left, text right.
 | `photoUrl` | `string \| null` | — | Full URL; photo column renders empty if null |
 | `photoAlt` | `string` | — | Alt text |
 | `miseEnValeur` | `string` | `''` | Optional italic highlight line |
-| `withOffset` | `boolean` | `false` | Adds banner-offset padding-top |
+| `withOffset` | `boolean` | `false` | Adds banner-offset padding-top (currently unused) |
+| `reversed` | `boolean` | `false` | Photo on the right (text left); default is photo left |
 
 ### Styling
 
@@ -263,12 +266,12 @@ Both were previously placeholders (`href="#crottin"` and `href="/"` respectively
 
 ## Key Technical Decisions
 
-- **`LeCrottin` is a 14-line wrapper** — all layout logic lives in `PhotoTextSection.astro`, which
-  is shared with `NotreHistoire` and `LesBocaux`. The only crottin-specific things are the endpoint,
-  the fallback string, and `withOffset`.
-- **`withOffset` prop** — `PhotoTextSection` uses `class:list` to conditionally apply `.with-offset`,
-  which overrides `padding-top` to `calc(4rem + 24px)`. `NotreHistoire` (home page, no sticky header
-  offset issue) uses the component without it.
+- **`LeCrottin1` and `LeCrottin2` are both 14-line wrappers** — all layout logic lives in
+  `PhotoTextSection.astro`. The only section-specific things are the endpoint, the fallback string,
+  and the `reversed` prop.
+- **`reversed` prop** — implemented via `order: 2` on `.image-container` in the CSS grid. The
+  existing mobile `order: -1` on `.content` takes precedence on small screens, so both variants
+  collapse to text-above-image on mobile without extra rules.
 - **`fetchStrapiData` returns null silently** — no try/catch needed in components. If Strapi is
   unavailable at build time, fallback strings are used and the photo column renders empty.
 - **Retailers as a repeatable component** (not a Collection Type) — consistent with `Carte` in
