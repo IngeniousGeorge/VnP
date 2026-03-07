@@ -100,16 +100,20 @@ API endpoint: `GET /api/coffrets-gourmands?populate=Photo`
 
 | Field | Type | Notes |
 |---|---|---|
-| `Titre_section` | Rich text (Blocks) | Section heading; supports `{{date}}` placeholder |
+| `Titre_section` | Rich text (Blocks) | Section heading |
 | `Coffret` | Component — repeatable | List of coffrets (coffrets.type) |
+| `Informations_complementaires` | Rich text (Blocks) | Optional footer text rendered below the cards |
 
 API endpoint: `GET /api/catalogue-coffrets?populate[Coffret][populate]=Photo`
+(Scalar and Blocks fields are returned by default — no extra `populate` needed for
+`Informations_complementaires`.)
 
 ### Component: `coffrets/type` (display name: "Type")
 
 | Field | Type | Notes |
 |---|---|---|
 | `Type` | Short text | Card label displayed above the card |
+| `Infos` | Short text | Optional card label displayed below the card; same style as `Type` |
 | `Photo` | Media — single image | Photo displayed directly on the card |
 | `Description_photo` | Short text | Alt text for the photo |
 
@@ -162,8 +166,8 @@ differences are:
 | Strapi endpoint | `/api/le-menu?populate[Carte][populate]=Photo` | `/api/catalogue-coffrets?populate[Coffret][populate]=Photo` |
 | Repeatable field | `data?.Carte` | `data?.Coffret` |
 | Label above card | `carte.Etape` | `carte.Type` |
-| Label below card | `carte.Infos` (optional) | — (not implemented) |
-| Section footer | `Informations_complementaires` (optional) | — (not implemented) |
+| Label below card | `carte.Infos` (optional) | `carte.Infos` (optional) |
+| Section footer | `Informations_complementaires` (optional) | `Informations_complementaires` (optional) |
 | Card content | Text face + photo face (flip interaction) | Photo only — no text face, no interaction |
 | Root CSS class | `.le-menu` | `.catalogue-coffrets` |
 
@@ -174,11 +178,16 @@ All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 <section.catalogue-coffrets>      — grey background, padding 4rem 2rem
   <div.section-header>            — max-width 900px, centered, text-align center
     <Fragment set:html />          Titre_section blocks
-  <div.cards-container>           — max-width 900px, flex row, gap 4rem, flex-wrap, centered
+  <div.cards-container>           — max-width 62rem, flex row, gap 4rem, flex-wrap, centered
     <div.card-wrapper> × n        — flex column, align-items center, gap 0.6rem
-      <span.card-label>           Type field (label above the card)
-      <div.card-inner>            — 250×350px, border-radius 12px, overflow hidden
+      <span.card-label>           Type field (label above the card, optional)
+      <div.card-inner>            — 275×315px, border-radius 0.75rem, overflow hidden, cursor pointer
         <Image.card-photo>        — fills card-inner, object-fit cover
+      <span.card-label>           Infos field (label below the card, optional)
+  <div.section-footer>            — max-width 900px, centered (optional)
+    <Fragment set:html />          Informations_complementaires blocks
+<dialog#coffret-lightbox>         — fullscreen lightbox, 90vw × 90vh, dismiss on click
+  <img#coffret-lightbox-img>
 ```
 
 ### Card Behaviour

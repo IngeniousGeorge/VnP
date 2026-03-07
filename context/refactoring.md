@@ -101,8 +101,8 @@ The two components are structural duplicates. The divergence has grown since ini
   selector pattern while `CatalogueCoffrets` uses the older `margin: 0 auto 3rem` shorthand.
 - **JavaScript**: `LeMenu` has a flip interaction (IntersectionObserver + mouseenter);
   `CatalogueCoffrets` has no JavaScript — cards are static image-only displays.
-- **Strapi fields**: `LeMenu` has `Informations_complementaires` (footer rich text) and
-  `Infos` (per-card label below card); `CatalogueCoffrets` has neither.
+- **Strapi fields**: both now have `Informations_complementaires` (footer rich text) and
+  `Infos` (per-card label below card).
 - **Card structure**: `LeMenu` has `card-front` / `card-back` faces; `CatalogueCoffrets`
   renders the photo directly inside `card-inner` with no flip markup.
 
