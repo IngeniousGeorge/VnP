@@ -1,58 +1,12 @@
 ---
-import { Image } from 'astro:assets';
-
 const externalLinkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-import actu1 from '../assets/images/actu_1.jpg';
-import actu2 from '../assets/images/actu_2.jpg';
-import actu3 from '../assets/images/actu_3.jpg';
-import actu4 from '../assets/images/actu_4.jpg';
-import actu5 from '../assets/images/actu_5.jpg';
-import actu6 from '../assets/images/actu_6.jpg';
-
-const posts = [
-  {
-    date: "14 février 2026",
-    text: "Il reste encore quelques menus Saint Valentin ! N'hésitez pas à appeler au 02 43 07 89 05.",
-    image: actu1,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-  {
-    date: "12 février 2026",
-    text: "Modification des horaires d'ouverture : Samedi 14 février (Saint Valentin)...",
-    image: actu2,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-  {
-    date: "11 février 2026",
-    text: "Menu Saint Valentin 2026 — 55€ pour 2 personnes. Quantité limitée, pensez à réserver !",
-    image: actu3,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-  {
-    date: "6 février 2026",
-    text: "Pensez à réserver votre menu Saint Valentin !",
-    image: actu4,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-  {
-    date: "30 décembre 2025",
-    text: "Il vous manque du foie gras pour le réveillon ? Il est encore possible de passer chez Verre et Papilles !",
-    image: actu5,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-  {
-    date: "29 décembre 2025",
-    text: "Les horaires d'ouverture de la semaine : retrouvez nos produits du terroir et nos coffrets gourmands.",
-    image: actu6,
-    url: "https://www.facebook.com/verreetpapilles",
-  },
-];
 ---
 
 <section class="nos-actualites">
   <h2 class="actu-title">Nos actualités</h2>
 
   <div class="actu-carousel">
+    <!-- Chevron kept for reintroduction with the post feed — hidden for now -->
     <button class="actu-btn actu-btn--prev" aria-label="Publication précédente" disabled>
       <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 18l-6-6 6-6"/>
@@ -61,32 +15,9 @@ const posts = [
 
     <div class="actu-viewport">
       <div class="actu-track">
-        {posts.map((post) => (
-          <article class="actu-card">
-            <div class="actu-card-header">
-              <svg class="fb-icon" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <div class="actu-card-meta">
-                <span class="actu-card-page">Verre et Papilles</span>
-                <span class="actu-card-date">{post.date}</span>
-              </div>
-            </div>
-            <div class="actu-card-image">
-              <Image src={post.image} alt={post.text} width={450} />
-            </div>
-            <div class="actu-card-body">
-              <p class="actu-card-text">{post.text}</p>
-              <a href={post.url} target="_blank" rel="noopener noreferrer" class="actu-card-link">
-                Voir sur Facebook
-                <Fragment set:html={externalLinkIcon} />
-              </a>
-            </div>
-          </article>
-        ))}
 
-        <!-- CTA card -->
-        <article class="actu-card actu-card--cta">
+        <!-- Facebook CTA card -->
+        <article class="actu-card">
           <div class="actu-cta-fb">
             <svg class="actu-cta-icon" width="36" height="36" viewBox="0 0 24 24" fill="white">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -97,6 +28,10 @@ const posts = [
               <Fragment set:html={externalLinkIcon} />
             </a>
           </div>
+        </article>
+
+        <!-- Instagram CTA card -->
+        <article class="actu-card">
           <div class="actu-cta-ig">
             <svg class="actu-cta-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -110,9 +45,11 @@ const posts = [
             </a>
           </div>
         </article>
+
       </div>
     </div>
 
+    <!-- Chevron kept for reintroduction with the post feed — hidden for now -->
     <button class="actu-btn actu-btn--next" aria-label="Publication suivante">
       <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18l6-6-6-6"/>
@@ -145,7 +82,9 @@ const posts = [
     gap: 1rem;
   }
 
+  /* Temporarily hidden — kept for reintroduction with the post feed */
   .actu-btn {
+    visibility: hidden;
     background: none;
     border: none;
     cursor: pointer;
@@ -174,110 +113,23 @@ const posts = [
     transition: transform 0.4s ease-in-out;
   }
 
-  /* Post card */
   .actu-card {
     flex: 0 0 33.333%;
     padding: 0 0.5rem;
     min-width: 0;
   }
 
-  .actu-card > :first-child {
-    border-radius: 8px 8px 0 0;
-  }
-
-  .actu-card > :last-child {
-    border-radius: 0 0 8px 8px;
-  }
-
-  .actu-card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.75rem 1rem;
-    background-color: var(--color-white);
-    border-bottom: 1px solid var(--color-facebook-light);
-  }
-
-  .fb-icon {
-    flex-shrink: 0;
-  }
-
-  .actu-card-meta {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.3;
-  }
-
-  .actu-card-page {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--color-text);
-  }
-
-  .actu-card-date {
-    font-size: 0.75rem;
-    color: var(--color-facebook-text);
-  }
-
-  .actu-card-image {
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-    background-color: var(--color-facebook-bg);
-  }
-
-  .actu-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .actu-card-body {
-    padding: 1rem;
-    background-color: var(--color-white);
-  }
-
-  .actu-card-text {
-    font-size: 0.9rem;
-    color: var(--color-text);
-    line-height: 1.5;
-    margin-bottom: 0.75rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .actu-card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--color-facebook);
-    transition: color 0.2s;
-  }
-
-  .actu-card-link:hover {
-    color: var(--color-facebook-hover);
-  }
-
-  /* CTA card */
-  .actu-card--cta {
-    display: flex;
-    flex-direction: column;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
+  /* CTA cards */
   .actu-cta-fb,
   .actu-cta-ig {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1.5rem 1rem;
+    padding: 2.5rem 1.5rem;
+    border-radius: 8px;
+    min-height: 280px;
   }
 
   .actu-cta-fb {
@@ -356,26 +208,33 @@ const posts = [
   const mobileQuery = window.matchMedia('(max-width: 768px)');
   let current = 0;
 
+  // Center the track when there are fewer cards than the number of visible slots,
+  // so partial fills don't appear left-aligned. Reverts to default (flex-start)
+  // when enough cards exist to fill or overflow the viewport.
+  const visibleCount = mobileQuery.matches ? 1 : 3;
+  if (totalSlides < visibleCount) {
+    track.style.justifyContent = 'center';
+  }
+
   function getSlidePercent() {
     return mobileQuery.matches ? 100 : 100 / 3;
   }
 
-  // The last valid index ensures the final viewport is always full —
-  // i.e. we stop scrolling when the last slide reaches the right edge.
   function getMaxIndex() {
     const visible = mobileQuery.matches ? 1 : 3;
     return totalSlides - visible;
   }
 
-  // Move the track and sync button disabled states in one place
   function updateCarousel() {
     track.style.transform = `translateX(-${current * getSlidePercent()}%)`;
     prevBtn.disabled = current === 0;
     nextBtn.disabled = current >= getMaxIndex();
   }
 
-  // Event delegation — disabled check guards against clicks on a visually-disabled button
-  // that the browser hasn't yet reflected as `.disabled` (e.g. during rapid clicks)
+  updateCarousel();
+
+  // Event delegation — chevrons are currently hidden but wired up for when
+  // the post feed is reintroduced and the buttons are made visible again.
   section.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.actu-btn') as HTMLButtonElement | null;
     if (!btn || btn.disabled) return;

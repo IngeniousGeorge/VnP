@@ -158,3 +158,65 @@ function updateCarousel() {
 ```
 
 Navigation via event delegation on the section element.
+
+---
+
+## Archived: Combined Facebook + Instagram CTA Card
+
+> This is the original single CTA card that combined both platforms into one stacked element.
+> Archived when the post cards were temporarily removed and the CTA was split into two
+> standalone cards. Restore this structure (in place of the two sibling cards) when the real
+> post feed is wired up and the combined card should sit at the end of the carousel again.
+
+### Markup
+
+```html
+<!-- Combined CTA card — Facebook on top, Instagram below -->
+<article class="actu-card actu-card--cta">
+  <div class="actu-cta-fb">
+    <svg class="actu-cta-icon" width="36" height="36" viewBox="0 0 24 24" fill="white">
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+    </svg>
+    <p class="actu-cta-text">Retrouvez-nous sur Facebook</p>
+    <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="actu-cta-btn">
+      Suivez-nous
+      <Fragment set:html={externalLinkIcon} />
+    </a>
+  </div>
+  <div class="actu-cta-ig">
+    <svg class="actu-cta-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+    <p class="actu-cta-text">Ou sur Instagram</p>
+    <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="actu-cta-btn actu-cta-btn--ig">
+      Suivez-nous
+      <Fragment set:html={externalLinkIcon} />
+    </a>
+  </div>
+</article>
+```
+
+### CSS (add alongside the existing CTA rules)
+
+```css
+.actu-card--cta {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.actu-cta-fb,
+.actu-cta-ig {
+  flex: 1;
+}
+```
+
+### Rationale
+
+The two halves are split vertically (`flex-direction: column`) inside a single carousel slot,
+each taking equal height via `flex: 1`. This makes the card match the height of adjacent post
+cards (header + image + body) without hardcoding a pixel value. The `overflow: hidden` on the
+wrapper clips the colored backgrounds to the card's `border-radius`.
