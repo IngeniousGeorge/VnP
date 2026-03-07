@@ -87,7 +87,8 @@ The card titles use **Dancing Script Bold**. This font must be available before 
 - `line-height: 1.05` — tightens the gap between lines when the title wraps
 - Left card title ("Les bocaux du jour"): `white-space: nowrap` to stay on one line
 - Right card title ("Les coffrets gourmands"): allowed to wrap onto two lines
-- Icon container (`.circle-icon`): 92x92px with `0.5rem` vertical margin
+- Icon container (`.circle-icon`): 92x92px with `0.5rem` vertical margin (`margin: 0.5rem 0`)
+- Left card icon exception: `margin-top: 1.4rem` (overrides the default top margin to push the bocal logo slightly lower within the circle)
 
 ### Center Card (`.circle-image`)
 - Displays the circular Crottin Craonnais logo at 264x264
