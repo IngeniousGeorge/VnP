@@ -2,84 +2,97 @@
 
 ## Overview
 
-When the user scrolls past the full-height banner, the header collapses into a compact sticky navigation bar. The banner's background photo, logo, and original nav links are replaced by a single row of text links (site sections + social icons) on a solid grey background. The transition includes a logo fade-out while scrolling and a slide-down animation when the sticky bar appears.
+The sticky navbar operates in three distinct modes depending on the page and screen size. All
+three modes share the same `<nav class="sticky-navbar">` markup inside `Header.astro`.
 
-This behavior is built **into the existing `Header.astro` component** — it is not a separate component. The banner and the sticky navbar share the same `<header>` element; CSS class toggling switches between the two states.
+| Mode | Pages | Trigger |
+|---|---|---|
+| **Desktop normal** | `/`, `/contact` | Hidden until user scrolls past the banner |
+| **Mobile** | all pages | Always fixed at top, from page load |
+| **navOnly** | `/bocaux`, `/crottin`, `/coffrets` | Always fixed at top, from page load (all screen sizes) |
+
+This behavior is built **into the existing `Header.astro` component** — it is not a separate
+component. The banner and the sticky navbar share the same `<header>` element; CSS class
+toggling (`header.banner--nav-only`, `header.banner.sticky`) switches between states.
+
+---
 
 ## Structure
 
-The sticky navbar is a second `<nav>` inside the banner container, hidden by default and shown only when the `.sticky` class is applied:
-
 ```
-<header.banner>
+<header.banner>  (or .banner.banner--nav-only)
   <div.banner-container>
-    <a.logo>                    — visible in expanded state
-    <nav.banner-nav>            — visible in expanded state
-    <nav.sticky-navbar>         — visible in sticky state
-      <a.navbar-link>           "Accueil"         → /
-      <span.navbar-separator>   "|"
-      <a.navbar-link>           "Les bocaux"      → #bocaux
-      <span.navbar-separator>   "|"
-      <a.navbar-link>           "Le crottin"      → #crottin
-      <span.navbar-separator>   "|"
-      <a.navbar-link>           "Les coffrets"    → #coffrets
-      <span.navbar-separator>   "|"
-      <a.navbar-link>           "Contact"         → /contact
-      <span.navbar-separator>   "|"
+    <a.logo>                      — full banner only (conditionally rendered)
+    <nav.banner-nav>              — full banner only (conditionally rendered)
+    <nav.sticky-navbar>           — always in DOM; shown/hidden via CSS
+      <a.navbar-logo-link href="/">
+        <Image.navbar-logo />     — small logo (96px), overflows -36px below nav
+      <a.navbar-link>             "Les bocaux"  → /bocaux
+      <span.navbar-separator>     "|"
+      <a.navbar-link>             "Le crottin"  → /crottin
+      <span.navbar-separator>     "|"
+      <a.navbar-link>             "Les coffrets" → /coffrets
+      <span.navbar-separator>     "|"
+      <a.navbar-link.navbar-link--phone>  "02 43 07 89 05" → /contact
       <div.navbar-social>
         <a> Instagram SVG (24x24) — stroke="url(#ig-gradient)"
         <a> Facebook SVG (24x24)  — stroke="var(--color-facebook)"
-</header>
-<div.banner-spacer>             — placeholder to prevent content jump
+<div.banner-spacer>               — height 0 by default; set by JS when nav is fixed
 ```
 
-The Instagram gradient (`ig-gradient`) is defined **once** in a hidden `<svg>` placed before the `<header>` element (see `context/front_banner.md`). Both the banner nav icon and the sticky navbar icon reference it by the same ID. No duplicate gradient definitions needed.
+The Instagram gradient (`ig-gradient`) is defined **once** in a hidden `<svg>` placed before
+the `<header>` element (see `context/front_banner.md`).
 
-## Sticky Navbar Styling
+---
 
-### Default (hidden)
+## Sticky Navbar Base Styling (default: hidden)
+
 - `display: none`
-- `align-items: center; justify-content: space-evenly`
+- `align-items: center; justify-content: space-between`
 - `width: 100%; max-width: 1100px; margin: 0 auto`
 
-### Visible (when `.banner.sticky` is active)
-- `display: flex`
-
 ### Navigation Links (`.navbar-link`)
-- Font: `var(--font-heading)` (Crimson), bold italic, `1.05rem`
-- Color: `var(--color-text)`, hover: `var(--color-orange)`
-- Transition: `color 0.2s`
+- Font: `'Bellefair', serif`, `1.05rem` (desktop base), `0.85rem` (mobile)
+- In sticky/navOnly state: `1.575rem`; phone variant (`.navbar-link--phone`): `1.26rem`
+- Color: `var(--color-text)`, hover: `var(--color-orange)`, transition `0.2s`
 
 ### Separators (`.navbar-separator`)
 - Color: `var(--color-separator)` (`#9CA3AF`)
-- Font size: `1.1rem`
+- Font size: `1.1rem` (base), `1.32rem` in sticky/navOnly state
 - `user-select: none`
+
+### Logo (`.navbar-logo`)
+- `width: 96px; height: 96px; object-fit: contain`
+- `margin-bottom: -36px` — overflows below the nav bar, similar to the banner logo
+- On mobile: `28px × 28px`, `margin-bottom: 0`
 
 ### Social Icons (`.navbar-social`)
 - Flex row, `gap: 0.75rem`
-- SVGs at 24x24 (desktop), 20x20 (mobile)
-- Instagram: `stroke="url(#ig-gradient)"` — references shared gradient defined before the header
+- SVGs at 24x24px (desktop), 20x20px (mobile)
+- Instagram: `stroke="url(#ig-gradient)"` — full gradient on the light grey background
 - Facebook: `stroke="var(--color-facebook)"` (`#1877F2`)
 - Hover: `transform: scale(1.1)`, transition `0.2s ease`
 
-## Sticky State CSS (`.banner.sticky`)
+---
 
-When the `.sticky` class is toggled on the `<header>`:
+## Mode 1: Desktop Normal — Scroll-Triggered Sticky State
+
+### CSS (`.banner.sticky`)
+
+When the `.sticky` class is added to the `<header>`:
 
 - `position: fixed; top: 0; left: 0; right: 0`
-- `padding: 0.5rem 2rem`
+- `padding: 0.96rem 2rem`
 - `background-image: none !important` — removes the banner photo
 - `background-color: var(--color-nav-bg)` (`#BDBDC0`) — solid grey
-- `overflow: hidden` — hides any overflow (logo is hidden anyway)
-- `box-shadow: var(--shadow-sm)` — subtle shadow
-- `animation: slideDown 0.3s ease-out` — slides down from top
+- `overflow: visible` — navbar logo overflows below the bar
+- `box-shadow: var(--shadow-sm)`
+- `animation: slideDown 0.3s ease-out`
 
-### Elements hidden in sticky state
+Elements hidden in sticky state:
 - `.banner.sticky .logo { display: none }`
 - `.banner.sticky .banner-nav { display: none }`
-- `.banner.sticky::before { display: none }` — removes the dark overlay
 
-### Slide-down animation
 ```css
 @keyframes slideDown {
   from { transform: translateY(-100%); }
@@ -87,19 +100,10 @@ When the `.sticky` class is toggled on the `<header>`:
 }
 ```
 
-## Spacer Element
-
-A `<div class="banner-spacer">` sits immediately after the `<header>`. When the header becomes `position: fixed`, this spacer is set to the banner's original height to prevent a layout jump:
-
-- Default: `height: 0`
-- When sticky: `height: {bannerHeight}px` (set via JS)
-
-## JavaScript Behavior
-
-### Scroll Handler
+### JavaScript (desktop normal branch)
 
 ```js
-const FADE_THRESHOLD = 0.7; // fraction of banner height at which logo starts fading
+const FADE_THRESHOLD = 0.7; // logo starts fading at 70% of banner height scrolled
 const bannerHeight = banner.offsetHeight;
 const fadeStart = bannerHeight * FADE_THRESHOLD;
 let isSticky = false;
@@ -107,61 +111,122 @@ let isSticky = false;
 
 On each scroll event (`passive: true` listener):
 
-1. **Logo fade-out**: While not yet sticky, the logo fades from full opacity to 0 as the user scrolls through the last 30% of the banner height:
-   - `scrollY <= fadeStart` → opacity 1
-   - `scrollY > fadeStart` → opacity decreases linearly to 0 at `scrollY = bannerHeight`
-   - Formula: `Math.max(0, 1 - (scrollY - fadeStart) / (bannerHeight - fadeStart))`
+1. **Logo fade-out**: while not yet sticky, the logo fades from opacity 1 to 0 linearly
+   between `fadeStart` and `bannerHeight`:
+   `Math.max(0, 1 - (scrollY - fadeStart) / (bannerHeight - fadeStart))`
 
-2. **Sticky toggle**: When `scrollY > bannerHeight`, toggle the `.sticky` class on the header:
-   - **Entering sticky**: add `.sticky`, set spacer height to `bannerHeight`
-   - **Leaving sticky**: remove `.sticky`, reset spacer height to 0, restore logo opacity to 1
+2. **Sticky toggle**: when `scrollY > bannerHeight`, toggle `.sticky` on the header.
+   - Entering sticky: add `.sticky`, set `spacer.style.height = bannerHeight + 'px'`
+   - Leaving sticky: remove `.sticky`, reset spacer to `0`, restore logo opacity to `1`
 
-3. The `isSticky` flag prevents redundant DOM updates on every scroll tick — the class toggle and spacer update only happen on state change.
+3. The `isSticky` flag prevents redundant DOM writes on every scroll tick.
 
-## Mobile Behavior (max-width: 768px)
+---
 
-On mobile, the sticky navbar is **always visible from page load** — there is no scroll-triggered transition. The desktop scroll handler (logo fade-out, class toggle, spacer) is completely bypassed.
+## Mode 2: Mobile — Always Visible
 
-### How it works
+### CSS (`@media (max-width: 768px)`)
 
-The navbar is `position: fixed; top: 0` from the start, with its own opaque background. It acts as the primary (and only) navigation on mobile, since the banner nav and hero navigation cards are both hidden.
+The sticky navbar is always visible and fixed at the top, regardless of scroll position:
 
-### Styling
-- `position: fixed; top: 0; left: 0; right: 0; z-index: 200`
-- `background-color: var(--color-nav-bg)` — same grey as the desktop sticky state
+- `display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 200`
+- `background-color: var(--color-nav-bg)`
 - `padding: 0.5rem 1rem`
-- `box-shadow: var(--shadow-sm)`
-- `display: flex; flex-wrap: wrap; justify-content: center; align-items: center`
-- `gap: 0.5rem 0.8rem` (row and column gap for wrapped lines)
-- Link font size: `0.85rem`
-- Social SVGs: 20x20
+- `box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08)`
+- `flex-wrap: wrap; justify-content: center; align-items: center`
+- `gap: 0.5rem 0.8rem`
 
 ### JavaScript (mobile branch)
 
-The script detects mobile via `window.matchMedia('(max-width: 768px)')` at page load. On mobile:
+On mobile, the script measures the navbar's rendered height and exposes it as a CSS custom
+property so the banner can add matching top padding:
 
-1. Measures the navbar's rendered height (`nav.offsetHeight`)
-2. Sets a CSS custom property on `<html>`: `--mobile-nav-height: {height}px`
-3. Does **not** attach a scroll listener — no fade-out, no class toggle, no spacer logic
+```js
+const navHeight = nav.offsetHeight;
+document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
+spacer.style.height = navHeight + 'px';
+```
 
-The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3rem) + 0.5rem)`. The `3rem` fallback prevents layout flash before JS runs. The `0.5rem` adds breathing room between the nav and the logo below.
+The banner's mobile `padding-top: calc(var(--mobile-nav-height, 3rem) + 0.5rem)` uses this
+variable. The `3rem` fallback prevents layout flash before JS runs. `0.5rem` adds breathing
+room between the fixed nav and the logo below.
 
-### Interaction with other components
+No scroll listener is attached on mobile.
 
-- **Banner** (`Header.astro`): The banner nav (social icons, CTA) is hidden on mobile. The logo is centered. The banner becomes a purely visual element (photo + logo) below the fixed nav.
-- **Hero cards** (`HeroCircles.astro`): Hidden on mobile (`display: none` at 768px breakpoint). Their navigation links (bocaux, crottin, coffrets) are redundant with the sticky navbar.
-- **Page flow**: As the user scrolls, the banner and subsequent content scroll naturally under the fixed navbar. No spacer or class toggling is needed.
+---
 
-### Key difference from desktop
+## Mode 3: navOnly — Always Visible, All Screen Sizes
 
-| | Desktop | Mobile |
-|---|---|---|
-| Initial state | Hidden (`display: none`) | Visible, `position: fixed` at top |
-| Trigger | Scroll past banner height | Always visible from page load |
-| Background | Inherits from `.banner.sticky` | Own `background-color: var(--color-nav-bg)` |
-| JS behavior | Scroll handler, class toggle, spacer | Measures nav height, sets CSS variable |
-| Banner nav | Visible until sticky | Hidden (`display: none`) |
-| Hero cards | Visible | Hidden (`display: none`) |
+Used on inner pages (`/bocaux`, `/crottin`, `/coffrets`) where no banner photo or logo should
+appear. The `navOnly` prop is passed to `<Header />` in those page files.
+
+### How it works
+
+The `banner--nav-only` class is set at **build time** directly in the HTML — no JS is needed
+to show the correct initial state, so there is no flash of banner content on page load.
+
+### CSS (`@media (min-width: 769px)`)
+
+On desktop, the header element itself becomes the full-width fixed bar:
+
+```css
+.banner--nav-only {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 0.96rem 2rem;
+  background-image: none !important;
+  background-color: var(--color-nav-bg);
+  box-shadow: var(--shadow-sm);
+  z-index: 200;
+}
+.banner--nav-only .sticky-navbar    { display: flex; }
+.banner--nav-only .navbar-link      { font-size: 1.575rem; }
+.banner--nav-only .navbar-link--phone { font-size: 1.26rem; }
+.banner--nav-only .navbar-logo-link { margin-left: -0.75rem; }
+.banner--nav-only .navbar-separator { font-size: 1.32rem; }
+```
+
+On mobile, the existing `@media (max-width: 768px)` `.sticky-navbar` rules already handle
+the always-visible fixed nav — no additional overrides needed.
+
+### JavaScript (navOnly branch)
+
+`isNavOnly` is detected via `banner.classList.contains('banner--nav-only')`. When true, the
+same branch as mobile runs:
+
+```js
+if (isMobile || isNavOnly) {
+  const navHeight = nav.offsetHeight;
+  document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
+  spacer.style.height = navHeight + 'px';
+}
+```
+
+The spacer height ensures page content starts below the fixed nav bar. No scroll listener
+is attached.
+
+### Inner page first sections
+
+Pages using `navOnly` do **not** pass `withOffset` to their first `<PhotoTextSection>`. The
+spacer handles the fixed nav clearance; the section's base `padding: 4rem 2rem` provides
+adequate breathing room beneath it.
+
+---
+
+## Comparison Table
+
+| | Desktop normal | Mobile | navOnly (desktop) |
+|---|---|---|---|
+| Initial nav state | Hidden | Fixed at top | Fixed at top |
+| Trigger | Scroll past banner | Always from page load | Always from page load |
+| Set by | JS class toggle (`.sticky`) | CSS `@media` | CSS class `.banner--nav-only` (build time) |
+| Background | `.banner.sticky` (the header) | `.sticky-navbar` (the nav) | `.banner--nav-only` (the header) |
+| Slide-down animation | Yes | No | No |
+| Spacer height set by JS | Yes (on scroll entry) | Yes (on load) | Yes (on load) |
+| Banner photo/logo | Visible until sticky | Visible (scrolls away) | Not rendered |
+| Scroll listener | Yes | No | No |
+
+---
 
 ## CSS Variables Referenced
 
@@ -171,18 +236,30 @@ The banner's `padding-top` uses this variable: `calc(var(--mobile-nav-height, 3r
 - `--color-separator` — separator color (`#9CA3AF`)
 - `--color-facebook` — Facebook icon stroke (`#1877F2`)
 - `--shadow-sm` — `0 2px 4px rgba(0, 0, 0, 0.1)`
-- `--font-heading` — navbar link font (Crimson)
+
+---
 
 ## Key Technical Decisions
 
-- **Single `<header>` element** for both states (not two separate elements) — simpler DOM, single sticky container
-- **CSS class toggle** (`.sticky`) rather than JS style manipulation — all visual changes defined in CSS, JS only handles the toggle logic
-- **`position: fixed`** (not `position: sticky`) because the header needs to completely change its appearance (different content, background, size) rather than just pin in place
-- **Spacer div** prevents the content jump that would occur when the header leaves normal flow to become fixed
-- **Logo fade-out** provides a smooth visual transition before the sticky bar appears, rather than an abrupt switch
-- **`passive: true`** on the scroll listener for better scroll performance
-- **Shared Instagram gradient** (`#ig-gradient`) defined once before the `<header>` in a hidden `<svg>` — referenced by both the banner nav icon and the sticky navbar icon via `url(#ig-gradient)`. No duplicate gradient IDs needed.
-- **Mobile uses `position: fixed`** (not `position: sticky`) because the navbar is nested inside the `<header>` — `position: sticky` would only keep it pinned while the banner is in view, then it would scroll away with its parent. `position: fixed` keeps it pinned for the entire page.
-- **CSS custom property for nav height** (`--mobile-nav-height`) — JS measures the dynamic height (which varies with text wrapping) and exposes it as a variable. CSS uses it for the banner's `padding-top`. This keeps layout logic in CSS and avoids a magic pixel value in JS.
-- **`matchMedia` gate at page load** — the mobile/desktop branch is chosen once. Device rotation during a session is an accepted edge case (page refresh resolves it).
-- **`FADE_THRESHOLD = 0.7`** extracted as a named constant so the scroll fade behaviour is self-documenting and easy to adjust.
+- **Single `<header>` element** for all three states — simpler DOM, CSS class toggling handles
+  the visual differences.
+- **`navOnly` class set at build time** — because it's a static Astro prop, it's present in the
+  HTML before the browser paints. There is no JS involved in showing the correct initial state,
+  so inner pages never flash the banner.
+- **Background on the `<header>` element, not on `.sticky-navbar`** — `.sticky-navbar` has
+  `max-width: 1100px` which would clip the background to that width. Applying the background
+  to the full-width `<header>` (`.banner.sticky` and `.banner--nav-only`) gives the correct
+  edge-to-edge grey bar.
+- **`position: fixed`** (not `position: sticky`) — the navbar is nested inside the `<header>`.
+  `position: sticky` would only pin it while the parent is in view. `position: fixed` pins it
+  to the viewport for the entire page.
+- **Spacer div** prevents the layout jump that occurs when the header leaves normal flow to
+  become fixed. Set to `bannerHeight` on desktop sticky entry; set to `navHeight` on load for
+  mobile and navOnly.
+- **`passive: true`** on the scroll listener for better scroll performance.
+- **`FADE_THRESHOLD = 0.7`** extracted as a named constant for self-documentation.
+- **`matchMedia` gate at page load** — the mode branch is chosen once. Device rotation is an
+  accepted edge case (page refresh resolves it).
+- **Logo fade-out** on desktop provides a smooth visual transition rather than an abrupt switch.
+  The `logoEl` reference is typed as nullable (`HTMLElement | null`) since the element is not
+  rendered in `navOnly` mode.

@@ -1,28 +1,192 @@
 # Refactoring Notes
 
-## Dead code identified — pending removal
+A living document. Sections are grouped by type. Items are removed once resolved.
 
-### 1. Three orphaned CSS variables in `Layout.astro`
+---
+
+## 0. Discrepancies Found During Context Doc Audit
+
+While updating `front_banner.md` and `front_sticky_nav.md` to reflect the `navOnly` changes,
+several gaps were found between the context docs and the actual code. Most were silent design
+decisions that were never written down. They are listed here not as refactoring tasks, but as
+things worth knowing about — some may point to unresolved questions about intent.
+
+**0.1 Navbar font is Bellefair, not Crimson**
+The context docs specified `var(--font-heading)` (Crimson) for navbar links. The code uses
+`'Bellefair', serif` directly. This was a deliberate design choice at some point but was never
+documented. Worth confirming this is intentional and updating the font comment in
+`Layout.astro` if Bellefair is now a permanent UI font alongside Glacial Indifference and Crimson.
+
+**0.2 The dark overlay on the banner (`::before`) was never implemented**
+The original spec described a `::before` pseudo-element with `background-color: rgba(0,0,0,0.33)`
+over the banner photo, plus `isolation: isolate` on the header. Neither exists in the current
+code. The banner photo provides enough contrast on its own. Confirmed intentional omission — the
+spec simply wasn't cleaned up.
+
+**0.3 Sticky state padding differs from spec**
+The context doc said `padding: 0.5rem 2rem` for the sticky navbar. The code uses
+`padding: 0.96rem 2rem`. The taller padding accommodates the overflowing navbar logo. The spec
+predated the logo being added to the sticky nav.
+
+**0.4 Sticky state `overflow` differs from spec**
+The context doc said `overflow: hidden`. The code uses `overflow: visible` to allow the navbar
+logo to overflow below the bar. Same root cause as 0.3 above.
+
+**0.5 Navbar links are page routes, not anchor links**
+The original spec listed in-page anchor targets (`#bocaux`, `#crottin`, `#coffrets`). The
+implementation uses full page routes (`/bocaux`, `/crottin`, `/coffrets`). This reflects the
+decision to give each product category its own page rather than section on the home page.
+
+**0.6 "Accueil" text link replaced by logo image**
+The spec listed a plain `"Accueil"` text link as the first item in the sticky navbar. The code
+renders a small logo image (`navbar-logo`, 96px, overflowing) instead.
+
+**0.7 Banner nav shows phone number, not "Nous contacter"**
+The spec described a "Nous contacter" text CTA. The code shows the actual phone number
+`02 43 07 89 05`. A commit message confirms this was a deliberate late-stage change.
+
+**0.8 Instagram icon in banner nav uses plain white, not the gradient**
+The spec said the banner nav Instagram icon uses `stroke="url(#ig-gradient)"`. The code uses
+plain `stroke="white"`. The gradient is reserved for the sticky navbar, where it displays
+against a light grey background. Against the dark banner photo, white is simpler and equally
+legible.
+
+---
+
+## 1. Dead Code
+
+### 1.1 Orphaned CSS variables in `Layout.astro`
 
 `--color-facebook-hover`, `--color-facebook-text`, `--color-facebook-bg` — defined in `:root`
 but consumed exclusively by the post card styles (`actu-card-link:hover`, `actu-card-date`,
-`actu-card-image`) which were removed when the hardcoded Facebook post cards were stripped from
+`actu-card-image`) which were removed when the hardcoded post cards were stripped from
 `NosActualites`. Confirmed unused by codebase-wide grep.
 
-### 2. Dead mobile breakpoint rules in `HeroCircles.astro`
+### 1.2 Dead mobile breakpoint rules in `HeroCircles.astro`
 
-The entire `<section class="hero-circles">` is `display: none` on mobile. Yet the
-`@media (max-width: 768px)` block contains 5 size-adjustment rules for `.circles-container`,
-`.circle`, `.circle-image`, `.circle-title`, and `.circle-icon` — none of which can ever render.
-Likely carried over from before the mobile-hide decision was made.
+The entire `<section class="hero-circles">` is `display: none` at the 768px breakpoint. Yet
+the same `@media (max-width: 768px)` block contains 5 size-adjustment rules for
+`.circles-container`, `.circle`, `.circle-image`, `.circle-title`, and `.circle-icon` — none
+of which can ever render. Likely carried over from before the mobile-hide decision was made.
 
-### 3. Dead `strong` rule in `LaBoutique.astro`
+### 1.3 Dead `strong` rule in `LaBoutique.astro` and `PhotoTextSection.astro`
 
-A scoped `strong { font-weight: 700; }` rule that can never match anything. All text content
-is injected via `set:html`, which bypasses Astro's scoping (injected elements do not receive the
-`data-astro-cid-*` attribute), and there are no literal `<strong>` elements in the template.
-Astro compiles this to `strong[data-astro-cid-xxx]` — a selector with zero matches.
+Both have a scoped `strong { font-weight: 700; }` rule. Astro compiles scoped styles to
+`strong[data-astro-cid-xxx]`, which only matches `<strong>` elements rendered directly by the
+component template. All text content in both components is injected via `set:html`, so injected
+elements never receive the scoping attribute. There are no literal `<strong>` elements in either
+template. Selector has zero matches.
 
-### 4. Same dead `strong` rule in `PhotoTextSection.astro`
+### 1.4 Dead `withOffset` prop and CSS in `PhotoTextSection.astro`
 
-Identical situation to `LaBoutique.astro` — same cause, same effect.
+The `withOffset` boolean prop (and its CSS rule `.photo-text-section.with-offset { padding-top:
+calc(4rem + 24px); }`) is no longer passed by any component in the codebase. It was removed
+from `LesBocaux`, `LeCrottin`, and `CoffretsGourmands` when those pages switched to `navOnly`
+header mode. The prop, its CSS, and the `class:list` binding that references `with-offset` can
+all be deleted.
+
+---
+
+## 2. Duplication / Modularisation
+
+### 2.1 `LeMenu.astro` and `CatalogueCoffrets.astro` are near-identical components
+
+The two components are structural duplicates:
+
+- **HTML**: identical structure (`section-header`, `cards-container`, `card-wrapper`,
+  `card-inner`, `card-front`, `card-back`, `card-label`, `card-photo`)
+- **CSS**: identical rules — only the root selector name differs (`.le-menu` vs
+  `.catalogue-coffrets`), and both use `var(--color-gray-bg)` as background
+- **JavaScript**: identical logic — only the CSS query selectors differ (`.le-menu` vs
+  `.catalogue-coffrets`)
+- **Differences**: Strapi endpoint, field names (`Etape` vs `Type`, `Carte` vs `Coffret`),
+  and the local `Carte` type definition
+
+**Proposed fix**: extract a single `FlipCardSection.astro` component accepting props for the
+section class name, Strapi endpoint, label field name, and card array field name. Both pages
+use this component instead. The `Carte` type and card flip JS move to the shared component.
+
+### 2.2 `.section-header` + `.accent` pattern repeated across components
+
+`LesRevendeurs.astro` and `Contact.astro` both implement an identical centered-heading layout
+(orange horizontal rule + `<h2>`) with near-identical CSS. The two instances differ only in
+`max-width` (1100px vs 900px) and text colour (white vs `--color-text`).
+
+**Proposed fix**: extract a `SectionHeader.astro` component accepting `titre`, `introHtml`,
+and a variant prop. This also eliminates the scoped `h2` overrides inside both components.
+
+### 2.3 `navOnly` CSS in `Header.astro` duplicates `.banner.sticky` CSS
+
+The `@media (min-width: 769px) .banner--nav-only` block repeats the same font-size overrides
+and spacing rules as `.banner.sticky`. The two states are functionally the same visual
+appearance, just triggered differently (build-time class vs scroll-driven JS class).
+
+**Proposed fix**: create a shared CSS selector grouping:
+```css
+.banner.sticky,
+.banner--nav-only { ... }
+```
+for all rules that apply identically to both states. State-specific rules (animation, the
+`!important` background override) remain separate.
+
+---
+
+## 3. Naming Conventions
+
+### 3.1 `--mobile-nav-height` is a misleading CSS custom property name
+
+The variable is set and consumed in two unrelated code paths:
+- **Mobile**: always-visible sticky nav (original intent, hence the name)
+- **navOnly (desktop)**: inner pages with no banner
+
+The name implies mobile-only, which is no longer accurate. The banner's mobile padding-top
+(`calc(var(--mobile-nav-height, 3rem) + 0.5rem)`) is the sole consumer of this variable.
+Renaming to `--nav-height` (or `--sticky-nav-height`) and updating the one CSS reference that
+uses it would make the purpose clearer.
+
+### 3.2 Context file name doesn't match component name
+
+`context/front_hero_navigation_cards.md` documents the `HeroCircles.astro` component. The
+names are inconsistent — the context doc describes them as "navigation cards" while the
+component treats them as circles. Low priority, but worth aligning (either rename the file to
+`front_hero_circles.md` or the component to `HeroNavigationCards.astro`).
+
+### 3.3 `LaBoutique.astro` background diverges from context spec
+
+The component uses `background-color: var(--color-white)` but `context/front_main_content.md`
+specifies `var(--color-gray-bg)` for La Boutique. Either the spec should be updated to reflect
+the deliberate design change, or the component should be corrected. Needs clarification.
+
+---
+
+## 4. Code Quality
+
+### 4.1 Missing dimension comment in `CatalogueCoffrets.astro`
+
+`LeMenu.astro` has a comment explaining the card dimensions:
+```css
+/* Card dimensions: 58% of ~431px photo width = ~250px; poker ratio 5:7 → 350px tall */
+```
+`CatalogueCoffrets.astro` uses the same values (250px × 350px) without any explanation.
+If `FlipCardSection.astro` is extracted (see 2.1), this comment naturally moves there once.
+
+### 4.2 `strapi.ts` `blocksToHtml` silently drops unsupported block types
+
+The function handles `paragraph` and `heading` but returns `''` for `list`, `quote`,
+`code`, and any other Strapi block types. This is currently acceptable since only those two
+types are used in the CMS, but it should be documented with a comment so future editors know
+why content disappears if they use other block types.
+
+### 4.3 `updateCarousel()` in `NosActualites.astro` sets a no-op initial transform
+
+`updateCarousel()` is called on init when `current = 0`, which sets
+`track.style.transform = 'translateX(-0%)'`. This is functionally identical to no transform
+and adds a redundant inline style to the DOM. A simple guard (`if (current !== 0)`) or
+initialising only the button disabled states on load would be cleaner.
+
+### 4.4 `index.astro` section order may be unintentional
+
+The home page renders `LaBoutique` before `NotreHistoire`. The more natural narrative order
+for a shop is: introduce the owners/story first (Notre Histoire), then present the shop
+(La Boutique). This may be a deliberate design decision or a leftover from early iteration.
+Worth confirming.

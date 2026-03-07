@@ -1,14 +1,20 @@
 ---
+interface Props {
+  navOnly?: boolean;
+}
+
+const { navOnly = false } = Astro.props;
+
 import { Image, getImage } from 'astro:assets';
 import { fetchStrapiData, blocksToHtml } from '../lib/strapi';
 import logo from '../assets/images/logo_vp.png';
 import bannerSrc from '../assets/images/banner.jpg';
 
-const banner = await getImage({ src: bannerSrc, width: 1920 });
-const annonce = await fetchStrapiData('/api/annonce');
-const texteHtml     = annonce?.Texte            ? blocksToHtml(annonce.Texte) : '';
-const lienLibelle   = annonce?.Texte_du_lien    ?? '';
-const lienUrl       = annonce?.Adresse_du_lien  ?? '';
+const bannerBg = navOnly ? null : await getImage({ src: bannerSrc, width: 1920 });
+const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce');
+const texteHtml   = annonce?.Texte           ? blocksToHtml(annonce.Texte) : '';
+const lienLibelle = annonce?.Texte_du_lien   ?? '';
+const lienUrl     = annonce?.Adresse_du_lien ?? '';
 ---
 
 <!-- Shared SVG defs: Instagram gradient referenced by both icons below -->
@@ -22,27 +28,31 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
   </defs>
 </svg>
 
-<header class="banner" style={`background-image: url(${banner.src});`}>
+<header class:list={['banner', { 'banner--nav-only': navOnly }]} style={bannerBg ? `background-image: url(${bannerBg.src});` : ''}>
   <div class="banner-container">
-    <a href="/" class="logo">
-      <Image src={logo} alt="Verre et Papilles" width={200} height={200} />
-    </a>
+    {!navOnly && (
+      <Fragment>
+        <a href="/" class="logo">
+          <Image src={logo} alt="Verre et Papilles" width={200} height={200} />
+        </a>
 
-    <nav class="banner-nav">
-      <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Instagram">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-        </svg>
-      </a>
-      <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Facebook">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-        </svg>
-      </a>
-      <a href="/contact" class="banner-nav-link banner-cta">02 43 07 89 05</a>
-    </nav>
+        <nav class="banner-nav">
+          <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Instagram">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" class="banner-nav-link banner-social" aria-label="Facebook">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+          </a>
+          <a href="/contact" class="banner-nav-link banner-cta">02 43 07 89 05</a>
+        </nav>
+      </Fragment>
+    )}
 
     <nav class="sticky-navbar">
       <a href="/" class="navbar-logo-link">
@@ -73,7 +83,7 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
   </div>
 </header>
 <div class="banner-spacer"></div>
-{texteHtml ? (
+{!navOnly && (texteHtml ? (
   <div class="announcement-bar">
     <div class="announcement-content">
       <div class="announcement-text" set:html={texteHtml} />
@@ -84,20 +94,24 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
   </div>
 ) : (
   <div class="announcement-spacer"></div>
-)}
+))}
 
 <script>
   const banner = document.querySelector('.banner') as HTMLElement;
   const spacer = document.querySelector('.banner-spacer') as HTMLElement;
-  const logoEl = banner.querySelector('.logo') as HTMLElement;
+  const logoEl = banner.querySelector('.logo') as HTMLElement | null;
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const isNavOnly = banner.classList.contains('banner--nav-only');
 
-  if (isMobile) {
-    // Mobile: the sticky navbar is always visible at the top of the screen.
-    // We measure its rendered height and expose it as a CSS variable so the
-    // banner can add matching top padding to avoid being hidden beneath it.
+  if (isMobile || isNavOnly) {
+    // Mobile and navOnly mode: the sticky navbar is always visible at the top.
+    // Measure its height and expose it as a CSS variable so the banner (mobile)
+    // can add matching top padding. Also set the spacer so page content clears
+    // the fixed bar from the start.
     const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
-    document.documentElement.style.setProperty('--mobile-nav-height', nav.offsetHeight + 'px');
+    const navHeight = nav.offsetHeight;
+    document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
+    spacer.style.height = navHeight + 'px';
   } else {
     // Desktop: the navbar is hidden inside the banner and becomes sticky only
     // after the user has scrolled past the full banner height.
@@ -114,7 +128,7 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
       // Once sticky, the logo is hidden via CSS so we skip the calculation.
       if (!isSticky) {
         const opacity = y <= fadeStart ? 1 : Math.max(0, 1 - (y - fadeStart) / (bannerHeight - fadeStart));
-        logoEl.style.opacity = String(opacity);
+        if (logoEl) logoEl.style.opacity = String(opacity);
       }
 
       // Toggle sticky state only on transition to avoid redundant DOM writes on every scroll event.
@@ -123,7 +137,7 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
         banner.classList.toggle('sticky', isSticky);
         // Hold the layout space the banner occupied so page content doesn't jump.
         spacer.style.height = isSticky ? `${bannerHeight}px` : '0';
-        if (!isSticky) logoEl.style.opacity = '1';
+        if (!isSticky && logoEl) logoEl.style.opacity = '1';
       }
     }
 
@@ -265,7 +279,7 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
     to { transform: translateY(0); }
   }
 
-  /* Sticky state */
+  /* Sticky state (scroll-triggered on desktop) */
   .banner.sticky {
     position: fixed;
     top: 0;
@@ -305,6 +319,42 @@ const lienUrl       = annonce?.Adresse_du_lien  ?? '';
 
   .banner.sticky .sticky-navbar {
     display: flex;
+  }
+
+  /* navOnly mode: inner pages without banner (bocaux, crottin, coffrets).
+     The header itself becomes the full-width fixed bar — same pattern as .banner.sticky. */
+  @media (min-width: 769px) {
+    .banner--nav-only {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0.96rem 2rem;
+      background-image: none !important;
+      background-color: var(--color-nav-bg);
+      box-shadow: var(--shadow-sm);
+      z-index: 200;
+    }
+
+    .banner--nav-only .sticky-navbar {
+      display: flex;
+    }
+
+    .banner--nav-only .navbar-link {
+      font-size: 1.575rem;
+    }
+
+    .banner--nav-only .navbar-link--phone {
+      font-size: 1.26rem;
+    }
+
+    .banner--nav-only .navbar-logo-link {
+      margin-left: -0.75rem;
+    }
+
+    .banner--nav-only .navbar-separator {
+      font-size: 1.32rem;
+    }
   }
 
   /* Mobile */
