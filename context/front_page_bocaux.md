@@ -73,14 +73,18 @@ API endpoint: `GET /api/les-bocaux?populate=Photo`
 |---|---|---|
 | `Titre_section` | Rich text (Blocks) | Section heading; supports `{{date}}` placeholder |
 | `Carte` | Component — repeatable | 3 cards (bocaux.carte component) |
+| `Informations_complementaires` | Rich text (Blocks) | Optional footer text rendered below the cards; same style as the section heading |
 
 API endpoint: `GET /api/le-menu?populate[Carte][populate]=Photo`
+(Scalar and Blocks fields are returned by default — no extra `populate` needed for
+`Informations_complementaires`.)
 
 ### Component: `bocaux/carte` (display name: "Carte")
 
 | Field | Type | Notes |
 |---|---|---|
 | `Etape` | Short text | Card label displayed above the card |
+| `Infos` | Short text | Optional card label displayed below the card; same style as `Etape` |
 | `Texte` | Rich text (Blocks) | Text shown on the card front (orange face) |
 | `Photo` | Media — single, images | Photo shown on the card back |
 | `Description_photo` | Short text | Alt text for the photo |
@@ -144,10 +148,13 @@ Grey background section with a CMS-driven heading and 3 interactive cards.
     <Fragment set:html />          Titre_section blocks (may contain {{date}} placeholder)
   <div.cards-container>           — max-width 900px, flex row, gap 4rem, flex-wrap, centered
     <div.card-wrapper> × 3        — flex column, align-items center, gap 0.6rem
-      <span.card-label>           Etape field (label above the card)
+      <span.card-label>           Etape field (label above the card, optional)
       <div.card-inner>            — 250×350px, position relative
         <div.card-front>          — orange face (text), position absolute, inset 0
         <div.card-back>           — photo face, position absolute, inset 0
+      <span.card-label>           Infos field (label below the card, optional)
+  <div.section-footer>            — max-width 900px, centered (optional; only rendered if Informations_complementaires is set)
+    <Fragment set:html />          Informations_complementaires blocks
 ```
 
 ### Card Dimensions
@@ -157,11 +164,13 @@ Poker card ratio 5:7 → **350px tall**.
 
 ### Styling
 
-**Section and header:**
+**Section, header, and footer:**
 - `.le-menu`: `background-color: var(--color-gray-bg)`, `padding: 4rem 2rem`
-- `.section-header`: `max-width: 900px`, `margin: 0 auto 3rem`, `text-align: center`
-- `.section-header :global(h2, h3)`: `font-size: 2rem`, `color: var(--color-white)`, `font-weight: 400`, `margin-bottom: 1rem`
-- `.section-header :global(p)`: `color: var(--color-white)`, `line-height: 1.8`
+- `.section-header, .section-footer` (shared): `max-width: 900px`, `margin: 0 auto`, `text-align: center`
+- `.section-header`: `margin-bottom: 3rem`
+- `.section-footer`: `margin-top: 3rem`
+- `.section-header :global(h2, h3), .section-footer :global(h2, h3)`: `font-size: 2rem`, `color: var(--color-white)`, `font-weight: 400`, `margin-bottom: 1rem`
+- `.section-header :global(p), .section-footer :global(p)`: `color: var(--color-white)`, `line-height: 1.8`
 
 **Cards container:**
 - `.cards-container`: `max-width: 900px`, `margin: 0 auto`, `display: flex`, `justify-content: center`, `align-items: center`, `gap: 4rem`, `flex-wrap: wrap`
@@ -210,10 +219,10 @@ Uses Astro's `<Image>` with `inferSize` and `width={500}` (2× retina for the 25
 - After 1460ms, add `.show-image` to card 2 (right)
 - The observer disconnects after firing once
 
-**On hover:** remove `.show-image` from the hovered card (text reappears)
+**On hover:** remove `.show-image` from the hovered card (text reappears).
 
-**On mouse out:** add `.show-image` back — but only if the visibility trigger has already
-fired for that card (tracked via a `WeakMap<Element, boolean>`)
+**On mouse out:** nothing — text face remains visible. Cards do not automatically revert to
+the image on mouse-out. The visitor must move their mouse away and let the initial flip stand.
 
 ### Date Placeholder
 
@@ -263,8 +272,10 @@ navigation component needed.
   description. The image reveal is a deliberate "discovery" interaction, not the initial state.
 - **Staggered image reveal** — images appear left to right with 230ms between each, giving a
   satisfying sequential reveal rather than a simultaneous pop.
-- **`WeakMap` for trigger tracking** — avoids mouse-out prematurely flipping cards to image before
-  the visibility timer has fired for that card.
+- **No WeakMap or mouseleave listener** — the original implementation used a `WeakMap` to track
+  per-card trigger state, so mouse-out would re-show the image only after the visibility timer
+  had fired. This was removed: text now persists after mouse-out entirely. The interaction is
+  simpler — hover to read the text, move away and the text stays.
 - **`StrapiBlock` type exported from `strapi.ts`** — used in `LeMenu.astro` for the `Texte` field
   type annotation instead of `any[]`.
 - **No 3D flip animation** — cross-fade with scale (350ms ease) was chosen over a CSS 3D flip

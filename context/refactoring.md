@@ -77,6 +77,20 @@ component template. All text content in both components is injected via `set:htm
 elements never receive the scoping attribute. There are no literal `<strong>` elements in either
 template. Selector has zero matches.
 
+### 1.5 Divergent card behavior between `LeMenu` and `CatalogueCoffrets`
+
+When the `mouseleave` flip-back was removed from `LeMenu.astro`, `CatalogueCoffrets.astro`
+was not updated to match. As a result:
+
+- `LeMenu`: text face persists after mouse-out (current intended behavior)
+- `CatalogueCoffrets`: mouse-out restores the image (old behavior, still in code)
+
+`CatalogueCoffrets` retains the `triggered` WeakMap, the `triggered.set(wrapper, true)` call
+inside the IntersectionObserver, and the `mouseleave` event listener. These are not dead code
+in isolation, but they implement a behavior that was deliberately removed from the equivalent
+component. Unless coffrets intentionally differs, remove the `mouseleave` listener and
+`triggered` WeakMap from `CatalogueCoffrets` to align the two components.
+
 ### 1.4 Dead `withOffset` prop and CSS in `PhotoTextSection.astro`
 
 The `withOffset` boolean prop (and its CSS rule `.photo-text-section.with-offset { padding-top:
@@ -91,20 +105,25 @@ all be deleted.
 
 ### 2.1 `LeMenu.astro` and `CatalogueCoffrets.astro` are near-identical components
 
-The two components are structural duplicates:
+The two components are structural duplicates. The divergence has grown since initial discovery:
 
 - **HTML**: identical structure (`section-header`, `cards-container`, `card-wrapper`,
   `card-inner`, `card-front`, `card-back`, `card-label`, `card-photo`)
-- **CSS**: identical rules — only the root selector name differs (`.le-menu` vs
-  `.catalogue-coffrets`), and both use `var(--color-gray-bg)` as background
-- **JavaScript**: identical logic — only the CSS query selectors differ (`.le-menu` vs
-  `.catalogue-coffrets`)
-- **Differences**: Strapi endpoint, field names (`Etape` vs `Type`, `Carte` vs `Coffret`),
-  and the local `Carte` type definition
+- **CSS**: mostly identical — only the root selector name differs (`.le-menu` vs
+  `.catalogue-coffrets`). However `LeMenu` now uses a split `section-header` / `section-footer`
+  selector pattern while `CatalogueCoffrets` uses the older `margin: 0 auto 3rem` shorthand.
+- **JavaScript**: logic is now divergent — `LeMenu` removes the `mouseleave` listener and
+  `triggered` WeakMap (text stays after mouse-out); `CatalogueCoffrets` still has the old
+  flip-back behavior. See §1.5 below.
+- **Strapi fields**: `LeMenu` now has `Informations_complementaires` (footer rich text) and
+  `Infos` (per-card label below card); `CatalogueCoffrets` has neither.
 
-**Proposed fix**: extract a single `FlipCardSection.astro` component accepting props for the
-section class name, Strapi endpoint, label field name, and card array field name. Both pages
-use this component instead. The `Carte` type and card flip JS move to the shared component.
+The components that started as identical have drifted into a growing maintenance burden.
+
+**Proposed fix**: extract a single `FlipCardSection.astro` component with props for the
+Strapi endpoint, field names, and optional `footerHtml`. The `section-footer` rendering,
+card flip JS (using the `LeMenu` behavior as the canonical version), and all shared CSS
+move to the shared component. Both pages use it instead.
 
 ### 2.2 `.section-header` + `.accent` pattern repeated across components
 

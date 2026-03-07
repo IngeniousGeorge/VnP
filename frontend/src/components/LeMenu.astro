@@ -6,9 +6,11 @@ import type { StrapiBlock } from '../lib/strapi';
 const data = await fetchStrapiData('/api/le-menu?populate[Carte][populate]=Photo');
 
 const titreHtml = data?.Titre_section ? blocksToHtml(data.Titre_section) : '';
+const infosComplementairesHtml = data?.Informations_complementaires ? blocksToHtml(data.Informations_complementaires) : '';
 
 type Carte = {
   Etape?: string;
+  Infos?: string;
   Texte?: StrapiBlock[];
   Photo?: { url: string };
   Description_photo?: string;
@@ -43,9 +45,15 @@ const cartes: Carte[] = data?.Carte ?? [];
             )}
           </div>
         </div>
+        {carte.Infos && <span class="card-label">{carte.Infos}</span>}
       </div>
     ))}
   </div>
+  {infosComplementairesHtml && (
+    <div class="section-footer">
+      <Fragment set:html={infosComplementairesHtml} />
+    </div>
+  )}
 </section>
 
 <style>
@@ -54,21 +62,33 @@ const cartes: Carte[] = data?.Carte ?? [];
     padding: 4rem 2rem;
   }
 
-  .section-header {
+  .section-header,
+  .section-footer {
     max-width: 900px;
-    margin: 0 auto 3rem;
+    margin: 0 auto;
     text-align: center;
   }
 
+  .section-header {
+    margin-bottom: 3rem;
+  }
+
+  .section-footer {
+    margin-top: 3rem;
+  }
+
   .section-header :global(h2),
-  .section-header :global(h3) {
+  .section-header :global(h3),
+  .section-footer :global(h2),
+  .section-footer :global(h3) {
     font-size: 2rem;
     color: var(--color-white);
     font-weight: 400;
     margin-bottom: 1rem;
   }
 
-  .section-header :global(p) {
+  .section-header :global(p),
+  .section-footer :global(p) {
     color: var(--color-white);
     line-height: 1.8;
   }

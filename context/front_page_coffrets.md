@@ -159,9 +159,12 @@ differences are:
 |---|---|---|
 | Strapi endpoint | `/api/le-menu?populate[Carte][populate]=Photo` | `/api/catalogue-coffrets?populate[Coffret][populate]=Photo` |
 | Repeatable field | `data?.Carte` | `data?.Coffret` |
-| Label field | `carte.Etape` | `carte.Type` |
+| Label above card | `carte.Etape` | `carte.Type` |
+| Label below card | `carte.Infos` (optional) | — (not implemented) |
+| Section footer | `Informations_complementaires` (optional) | — (not implemented) |
 | Text field | `carte.Texte` | `carte.Texte` |
 | Root CSS class | `.le-menu` | `.catalogue-coffrets` |
+| Mouse-out behavior | Text persists (no flip-back) | Image returns (flip-back via `mouseleave`) |
 
 All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 
@@ -180,13 +183,16 @@ All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 
 ### Card Interaction Behaviour
 
-Same as `LeMenu` — see `context/front_page_bocaux.md`:
-- Default state: text (orange face) visible, photo hidden below
-- On first visibility (IntersectionObserver, threshold 0.3): staggered reveal left to right
-  (1000ms, 1230ms, 1460ms)
-- On hover: text reappears; on mouse out: image returns (only if visibility trigger has fired)
-- `WeakMap<Element, boolean>` tracks per-card trigger state
-- `{{date}}` in `Titre_section` replaced client-side with French-formatted current date
+Mostly the same as `LeMenu` — see `context/front_page_bocaux.md` for full detail. Notable
+difference: `CatalogueCoffrets` retains the original mouse-out flip-back behavior that was
+removed from `LeMenu`. Specifically:
+
+- On hover: text reappears (same as `LeMenu`)
+- **On mouse out: image returns** — only if the IntersectionObserver trigger has fired for
+  that card. A `WeakMap<Element, boolean>` tracks the trigger state per card.
+
+`LeMenu` no longer has this flip-back. See `context/refactoring.md` §1.5 for the open
+question about whether to align the two components.
 
 ---
 
