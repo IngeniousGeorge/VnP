@@ -22,6 +22,9 @@
     },
     "Description_photo": {
       "type": "string"
+    },
+    "Infos": {
+      "type": "string"
     }
   },
   "config": {}

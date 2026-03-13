@@ -18,6 +18,9 @@
       "type": "component",
       "component": "coffrets.type",
       "repeatable": true
+    },
+    "Informations_complementaires": {
+      "type": "blocks"
     }
   }
 }

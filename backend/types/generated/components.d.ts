@@ -21,6 +21,7 @@ export interface CoffretsType extends Struct.ComponentSchema {
   };
   attributes: {
     Description_photo: Schema.Attribute.String;
+    Infos: Schema.Attribute.String;
     Photo: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     Texte: Schema.Attribute.Blocks;
     Type: Schema.Attribute.String;
