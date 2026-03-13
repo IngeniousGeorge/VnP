@@ -419,23 +419,28 @@ const lienUrl     = annonce?.Adresse_du_lien ?? '';
   }
 
   .announcement-bar {
-    background-color: var(--color-white);
-    border-top: 8px solid var(--color-orange);
-    border-bottom: 8px solid var(--color-orange);
+    background-color: var(--color-dark-bg);
+    border-top: 8px solid var(--color-white);
+    color: var(--color-white);
   }
 
   .announcement-content {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0.4rem 2rem;
-    color: var(--color-dark-bg);
+    color: var(--color-white);
+    font-family: var(--font-body);
     text-align: center;
+  }
+
+  .announcement-content :global(*) {
+    font-family: var(--font-body);
+    font-style: normal;
   }
 
   .announcement-content :global(p) {
     margin: 0;
     line-height: 1.6;
-    font-family: var(--font-heading);
     font-size: 1.2rem;
   }
 
