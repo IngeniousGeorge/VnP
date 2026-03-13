@@ -55,3 +55,58 @@ JWT_SECRET=<base64>
 After the first successful deployment, attach a volume to the Strapi service via the Railway assistant chatbot or UI. Mount path: `/app/public/uploads`. This is Strapi's default uploads directory — media files will survive redeploys.
 
 The trial plan caps volumes at 500MB, which is sufficient for a small shop.
+
+### Build and start commands
+
+Set these explicitly in Railway → service → Settings to ensure `strapi build` runs before `strapi start`:
+
+- **Build Command**: `npm run build`
+- **Start Command**: `npm run start`
+
+---
+
+## Content migration (local SQLite → production PostgreSQL)
+
+Run from `backend/` with the local Strapi dev server running (`npm run develop` in a separate terminal).
+
+### Step 1 — generate a transfer token
+
+In the Railway Strapi admin: Settings → Transfer Tokens → Create new token (full access).
+
+### Step 2 — transfer content
+
+```bash
+npx strapi transfer --to https://vnp-production.up.railway.app/admin --only content --force
+```
+
+### Step 3 — transfer config
+
+Without this step the admin content manager will not display entries (the API works, but the UI does not).
+
+```bash
+npx strapi transfer --to https://vnp-production.up.railway.app/admin --only config --force
+```
+
+### Step 4 — upload media manually
+
+File transfer to Railway is blocked because the filesystem outside the volume mount is read-only (Strapi cannot create its backup folder at `/app/public/`). Upload images directly through the Railway Strapi admin → Media Library, then re-link them to the relevant content entries.
+
+Any Netlify build referencing a missing image will fail with `FailedToFetchRemoteImageDimensions` — this is the signal that an image needs to be re-uploaded.
+
+---
+
+## Netlify (Astro frontend)
+
+### Setup
+
+1. New site → "Import an existing project" → GitHub → select repo
+2. Set **Base directory** to `frontend/`, **Build command** to `npm run build`, **Publish directory** to `frontend/dist`
+3. Add environment variable: `STRAPI_URL=https://vnp-production.up.railway.app`
+4. Deploy
+
+### Strapi → Netlify build hook
+
+Ensures the site rebuilds automatically when content is published in Strapi.
+
+1. Netlify → Site settings → "Build & deploy" → "Build hooks" → add a hook named `strapi-publish` → copy the URL
+2. Railway Strapi admin → Settings → Webhooks → add the Netlify URL, trigger on **Entry: Publish** and **Entry: Unpublish**
