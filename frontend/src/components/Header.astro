@@ -6,15 +6,17 @@ interface Props {
 const { navOnly = false } = Astro.props;
 
 import { Image, getImage } from 'astro:assets';
-import { fetchStrapiData, blocksToHtml } from '../lib/strapi';
+import { fetchStrapiData, blocksToHtml, buildPhotoUrl } from '../lib/strapi';
 import logo from '../assets/images/logo_vp.png';
 import bannerSrc from '../assets/images/banner.jpg';
 
 const bannerBg = navOnly ? null : await getImage({ src: bannerSrc, width: 1920 });
-const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce');
-const texteHtml   = annonce?.Texte           ? blocksToHtml(annonce.Texte) : '';
-const lienLibelle = annonce?.Texte_du_lien   ?? '';
-const lienUrl     = annonce?.Adresse_du_lien ?? '';
+const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce?populate=Image');
+const texteHtml      = annonce?.Texte           ? blocksToHtml(annonce.Texte) : '';
+const lienLibelle    = annonce?.Texte_du_lien   ?? '';
+const lienUrl        = annonce?.Adresse_du_lien ?? '';
+const texteImage     = annonce?.Texte_lien_image ?? '';
+const imageUrl       = buildPhotoUrl(annonce?.Image);
 ---
 
 <!-- Shared SVG defs: Instagram gradient referenced by both icons below -->
@@ -90,11 +92,18 @@ const lienUrl     = annonce?.Adresse_du_lien ?? '';
       {lienLibelle && lienUrl && (
         <a href={lienUrl} class="announcement-link">{lienLibelle}</a>
       )}
+      {texteImage && imageUrl && (
+        <button class="announcement-lightbox-btn" data-src={imageUrl}>{texteImage}</button>
+      )}
     </div>
   </div>
 ) : (
   <div class="announcement-spacer"></div>
 ))}
+
+<dialog id="annonce-lightbox">
+  <img id="annonce-lightbox-img" src="" alt="" />
+</dialog>
 
 <script>
   const banner = document.querySelector('.banner') as HTMLElement;
@@ -142,6 +151,17 @@ const lienUrl     = annonce?.Adresse_du_lien ?? '';
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  const lightbox = document.getElementById('annonce-lightbox') as HTMLDialogElement | null;
+  const lightboxImg = document.getElementById('annonce-lightbox-img') as HTMLImageElement | null;
+  const lightboxBtn = document.querySelector('.announcement-lightbox-btn') as HTMLElement | null;
+  if (lightbox && lightboxImg && lightboxBtn) {
+    lightboxBtn.addEventListener('click', () => {
+      lightboxImg.src = lightboxBtn.dataset.src ?? '';
+      lightbox.showModal();
+    });
+    lightbox.addEventListener('click', () => lightbox.close());
   }
 </script>
 
@@ -455,5 +475,46 @@ const lienUrl     = annonce?.Adresse_du_lien ?? '';
     text-decoration: underline;
     font-style: italic;
     font-size: 1.2rem;
+  }
+
+  .announcement-lightbox-btn {
+    display: block;
+    margin-top: 0.3rem;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--color-orange);
+    text-decoration: underline;
+    font-size: 1.2rem;
+    font-family: var(--font-body);
+    text-align: center;
+    width: 100%;
+  }
+
+  #annonce-lightbox {
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 90vw;
+    height: 90vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #annonce-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+  }
+
+  #annonce-lightbox img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
   }
 </style>
