@@ -4,7 +4,7 @@ import PhotoTextSection from './PhotoTextSection.astro';
 
 const data = await fetchStrapiData('/api/le-crottin-2?populate=Photo');
 
-const titre        = data?.Titre            ?? 'Le Crottin Craonnais';
+const titre        = data?.Titre            ?? '';
 const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
 const miseEnValeur = data?.Mise_en_valeur   ?? '';
 const photoUrl     = buildPhotoUrl(data?.Photo);

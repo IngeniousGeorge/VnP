@@ -21,7 +21,7 @@ const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false, 
       {photoUrl && <Image src={photoUrl} width={800} inferSize alt={photoAlt} class="section-photo" />}
     </div>
     <div class="content">
-      <h2>{titre}</h2>
+      {titre && <h2>{titre}</h2>}
       <Fragment set:html={texteHtml} />
       {miseEnValeur && <p class="highlight">{miseEnValeur}</p>}
     </div>
