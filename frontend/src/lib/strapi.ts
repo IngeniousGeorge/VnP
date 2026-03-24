@@ -29,7 +29,7 @@ export function buildPhotoUrl(photoObj?: { url: string } | null): string | null 
 function renderChildren(children: StrapiChild[]): string {
   return children.map(child => {
     if (child.type === 'hardBreak') return '<br>';
-    if (child.type === 'link') return `<a href="${child.url}">${renderChildren(child.children)}</a>`;
+    if (child.type === 'link') return `<a href="${child.url}" target="_blank" rel="noopener noreferrer">${renderChildren(child.children)}</a>`;
     let text = child.text.replace(/\n/g, '<br>');
     if (child.code)          text = `<code>${text}</code>`;
     if (child.bold)          text = `<strong>${text}</strong>`;

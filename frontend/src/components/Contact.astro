@@ -7,8 +7,10 @@ const titre        = data?.Titre     ?? 'Nous contacter';
 const introHtml    = data?.Intro     ? blocksToHtml(data.Intro) : '';
 const adresseHtml  = data?.Adresse   ? blocksToHtml(data.Adresse) : '';
 const telephone    = data?.Telephone ?? '';
+const telHref      = telephone ? '+33' + telephone.replace(/\s/g, '').replace(/^0/, '') : '';
 const email        = data?.Email     ?? '';
 const horairesHtml = data?.Horaires  ? blocksToHtml(data.Horaires) : '';
+const vacancesHtml = data?.Vacances  ? blocksToHtml(data.Vacances) : '';
 const urlCarte     = data?.Lien_carte ?? '';
 ---
 
@@ -27,6 +29,12 @@ const urlCarte     = data?.Lien_carte ?? '';
           <div class="info-value" set:html={horairesHtml} />
         </div>
       )}
+      {vacancesHtml && (
+        <div class="info-group">
+          <p class="info-label">Vacances</p>
+          <div class="info-value" set:html={vacancesHtml} />
+        </div>
+      )}
       {adresseHtml && (
         <div class="info-group">
           <p class="info-label">Adresse</p>
@@ -36,7 +44,7 @@ const urlCarte     = data?.Lien_carte ?? '';
       {telephone && (
         <div class="info-group">
           <p class="info-label">Téléphone</p>
-          <a class="info-value info-link" href={`tel:${telephone}`}>{telephone}</a>
+          <a class="info-value info-link" href={`tel:${telHref}`}>{telephone}</a>
         </div>
       )}
       {email && (
@@ -142,11 +150,21 @@ const urlCarte     = data?.Lien_carte ?? '';
 
   .info-link {
     display: block;
-    text-decoration: none;
+    text-decoration: underline;
     transition: color 0.2s;
   }
 
   .info-link:hover {
+    color: var(--color-orange);
+  }
+
+  .info-value :global(a) {
+    color: inherit;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+
+  .info-value :global(a:hover) {
     color: var(--color-orange);
   }
 

@@ -34,7 +34,7 @@ All CMS fetching goes through `frontend/src/lib/strapi.ts`:
 // Fetches any Strapi endpoint; returns json.data or null on error
 export async function fetchStrapiData(endpoint: string)
 
-// Converts Strapi Blocks rich text to HTML string
+// Converts Strapi Blocks rich text to HTML string; links rendered with target="_blank"
 export function blocksToHtml(blocks: StrapiBlock[]): string
 ```
 
@@ -76,8 +76,9 @@ import Footer from '../components/Footer.astro';
 | `Titre` | Short text | Section heading, fallback: "Nous contacter" |
 | `Intro` | Rich text (Blocks) | Optional intro paragraph displayed below the heading |
 | `Horaires` | Rich text (Blocks) | Opening hours — displayed first in the info block |
-| `Adresse` | Rich text (Blocks) | Shop address — allows multiline formatting |
-| `Telephone` | Short text | Phone number (e.g. `+33 2 43 06 XX XX`) |
+| `Vacances` | Rich text (Blocks) | Holiday closures — displayed after Horaires |
+| `Adresse` | Rich text (Blocks) | Shop address — supports clickable links via Strapi rich text editor |
+| `Telephone` | Short text | Phone number in French format (e.g. `02 43 06 XX XX`) |
 | `Email` | Short text | Email address |
 | `Lien_carte` | Short text | Google Maps embed URL (the `src` value from "Share → Embed a map") |
 
@@ -113,27 +114,37 @@ fallback via `fetchStrapiData`). No JavaScript — purely static.
   <div.content>                 — max-width 1100px, grid 1fr 1fr, gap 3rem
     <div.info-block>
       <div.info-group>          Horaires (rich text)
-      <div.info-group>          Adresse (rich text)
+      <div.info-group>          Vacances (rich text, optional)
+      <div.info-group>          Adresse (rich text — may contain links)
       <div.info-group>          Téléphone (tel: link)
       <div.info-group>          Email (mailto: link)
     <div.map-container>         Google Maps iframe (only if Lien_carte is set)
 ```
 
-Info groups are ordered: hours → address → phone → email. Each group not rendered if its field
-is empty. The last visible group has no bottom border (`:last-child` selector).
+Info groups are ordered: hours → vacances → address → phone → email. Each group not rendered
+if its field is empty. The last visible group has no bottom border (`:last-child` selector).
 
-### Phone and email links
+### Phone link
 
-`Telephone` and `Email` are plain Short text fields in Strapi. The component wraps them in
-clickable links on the frontend:
+`Telephone` is stored in French format in Strapi (e.g. `02 43 07 89 05`). The display value
+is shown as-is; the `href` is converted to international format at build time:
 
 ```astro
-<a class="info-value info-link" href={`tel:${telephone}`}>{telephone}</a>
+const telHref = telephone ? '+33' + telephone.replace(/\s/g, '').replace(/^0/, '') : '';
+// e.g. "02 43 07 89 05" → "+33243078905"
+<a class="info-value info-link" href={`tel:${telHref}`}>{telephone}</a>
+```
+
+### Email link
+
+```astro
 <a class="info-value info-link" href={`mailto:${email}`}>{email}</a>
 ```
 
-Strapi stores the raw values; the frontend decides how to render them. Same pattern as `Lien`
-in `LesRevendeurs`.
+### Address link
+
+The shop owner adds a link directly in Strapi's rich text editor. `blocksToHtml` renders it
+as `<a href="..." target="_blank" rel="noopener noreferrer">`. No Astro-side wrapping needed.
 
 ### Styling
 
@@ -161,9 +172,10 @@ in `LesRevendeurs`.
 - `.info-label`: `font-family: var(--font-heading)`, `font-style: italic`, `font-size: 0.95rem`,
   `color: var(--color-orange-dark)`, `margin-bottom: 0.4rem`
 - `.info-value`: `color: var(--color-text)`, `line-height: 1.7`
-- `.info-value :global(p)`: `margin-bottom: 0.4rem`, `line-height: 1.7` — targets `<p>` tags
-  injected by `blocksToHtml` inside rich text fields (`Horaires`, `Adresse`)
-- `.info-link`: `display: block`, `text-decoration: none`, `transition: color 0.2s`
+- `.info-value :global(p)`: `margin-bottom: 0.4rem`, `line-height: 1.7`
+- `.info-value :global(a)`: `color: inherit`, `text-decoration: underline`, `transition: color 0.2s`
+- `.info-value :global(a:hover)`: `color: var(--color-orange)`
+- `.info-link`: `display: block`, `text-decoration: underline`, `transition: color 0.2s`
 - `.info-link:hover`: `color: var(--color-orange)`
 
 **Map:**
@@ -183,11 +195,8 @@ in `LesRevendeurs`.
 
 The contact page is linked from two places in the existing `Header` component (shared with all pages):
 
-- **Banner nav** (`Header.astro`): `<a href="/contact" class="banner-nav-link banner-cta">Nous contacter</a>`
-  — styled as the primary orange CTA button in the top-right of the banner
-- **Sticky nav** (`Header.astro`): `<a href="/contact" class="navbar-link">Contact</a>`
-
-Both links were already in place before this page was built.
+- **Banner nav** (`Header.astro`): `<a href="/contact" class="banner-nav-link banner-cta">Contact & infos</a>`
+- **Sticky nav** (`Header.astro`): `<a href="/contact" class="navbar-link navbar-link--contact">Contact & infos</a>`
 
 ---
 
@@ -195,7 +204,7 @@ Both links were already in place before this page was built.
 
 - `--color-white` — section background
 - `--color-text` — `h2`, `.info-value`, `.intro`
-- `--color-orange` — `.accent` rule, `.info-link:hover`
+- `--color-orange` — `.accent` rule, link and `.info-link` hover colour
 - `--color-orange-dark` — `.info-label`
 - `--font-heading` — `h2` (Crimson, bold italic), `.info-label` (Crimson, italic)
 - `--font-body` — body text (Glacial Indifference, via global rule)
@@ -207,18 +216,21 @@ Both links were already in place before this page was built.
 - **Single section, no `PhotoTextSection`** — the contact page has no photo column. The layout
   (heading + two-column info/map grid) is specific enough that reusing `PhotoTextSection` would
   require fighting its assumptions. `Contact.astro` is self-contained.
-- **`withOffset` hardcoded** — `PhotoTextSection` implements the offset via a `withOffset` prop.
-  `Contact.astro` doesn't use `PhotoTextSection`, so `padding-top: calc(4rem + 24px)` is applied
-  directly on `.contact`. Same effective result.
+- **`withOffset` hardcoded** — `padding-top: calc(4rem + 24px)` is applied directly on `.contact`
+  since this component doesn't use `PhotoTextSection`. Same effective result.
 - **All fields optional** — every field renders conditionally. If Strapi is unreachable at build
   time, the page shows only the fallback heading "Nous contacter".
 - **`no-map` modifier class** — when `Lien_carte` is not set, `class:list` adds `.no-map` to
-  `.content`, collapsing the grid to a single centered column so the info block doesn't sit in a
-  half-width void.
-- **Rich text for `Adresse`** — allows the shop owner to format the address across multiple lines
-  in the Strapi editor. Rendered via `blocksToHtml` + `set:html`, same as `Horaires`.
-- **`Lien_carte` named for the shop owner** — the field name avoids technical jargon ("URL").
-  The frontend variable is `urlCarte` for code clarity.
+  `.content`, collapsing the grid to a single centered column.
+- **Phone stored in French format** — the shop owner enters `02 43 07 89 05`; the frontend
+  derives the `tel:` href via `'+33' + telephone.replace(/\s/g, '').replace(/^0/, '')`.
+- **Address link authored in Strapi** — the shop owner adds the Google Maps link directly in
+  the rich text editor. `blocksToHtml` in `strapi.ts` renders all rich text links with
+  `target="_blank" rel="noopener noreferrer"`, so no frontend wrapping is needed.
+- **Rich text for `Adresse` and `Vacances`** — allows multiline formatting and clickable links
+  in the Strapi editor.
+- **`Lien_carte` named for the shop owner** — avoids technical jargon ("URL"). The frontend
+  variable is `urlCarte` for code clarity.
 - **Footer on this page** — the contact page is the only inner page with `Footer`. It is the
   natural end of the site's navigation flow.
 - **No JavaScript** — purely static.
