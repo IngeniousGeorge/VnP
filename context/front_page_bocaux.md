@@ -5,11 +5,11 @@
 A dedicated page at `/bocaux` for the shop's prepared dishes sold in jars ("bocaux"). It shares
 the same `Header` component as the home page and contains two sections:
 
-- **Les Bocaux** — white background, intro text + photo (mirrors `NotreHistoire` layout). CMS-driven.
-- **Le Menu** — grey background, section heading + 3 interactive flip cards showing the day's dishes. CMS-driven.
+- **Le Menu** — white background, section heading + 3 interactive flip cards showing the day's dishes. CMS-driven. Rendered first.
+- **Les Bocaux** — dark background (`--color-dark-bg`), intro text + photo. CMS-driven. Rendered second.
 
 No hero cards, no partners carousel, no social posts section on this page. The shared `Footer`
-component is included with `variant="gray"` to match the grey background of `LeMenu` above it.
+component is included with `variant="dark"` to match the dark background of `LesBocaux` above it.
 
 ---
 
@@ -40,12 +40,12 @@ import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Les Bocaux — Verre et Papilles">
-  <Header />
+  <Header navOnly />
   <main>
-    <LesBocaux />
     <LeMenu />
+    <LesBocaux />
   </main>
-  <Footer variant="gray" />
+  <Footer variant="dark" />
 </Layout>
 ```
 
@@ -97,32 +97,21 @@ In Settings → Users & Permissions → Public role, enable `find` on both `les-
 
 ## Component: `LesBocaux.astro`
 
-Mirrors `NotreHistoire.astro` exactly in layout: white background, photo left, text right.
-The only structural difference is `padding-top: calc(4rem + 24px)` to clear the banner logo
-overflow (the logo has `margin-bottom: -80px`; `24px` extra provides comfortable clearance
-without excessive whitespace).
+A thin wrapper around `PhotoTextSection`. Fetches from Strapi and passes `darkerBg` to apply
+the dark background (`--color-dark-bg`, same as `LesRevendeurs`). Photo left, text right (default layout).
 
-### Structure
-```
-<section.les-bocaux>              — white background, padding calc(4rem + 24px) 2rem 4rem
-  <div.container>                 — max-width 1100px, 2-column grid, 3rem gap, align-items center
-    <div.image-container>
-      <Image les-bocaux-photo />  — width 800, inferSize, 82% width, centered, border-radius 8px
-    <div.content>
-      <h2>                        Titre from Strapi (fallback: "Les Bocaux")
-      <Fragment set:html />       Texte blocks rendered as HTML
-      <p.highlight>               Mise_en_valeur (optional, italic, orange-dark)
+```astro
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} darkerBg />
 ```
 
 ### Styling
 
-- **Section**: `background-color: var(--color-white)`, `padding: calc(4rem + 24px) 2rem 4rem`
-- **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
-- **Photo** (`.les-bocaux-photo`): `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `display: block`, `margin: 0 auto`
-- **Content**: `padding: 1rem`
-- **h2**: `font-size: 2rem`, `margin-bottom: 1.5rem`, `font-weight: 400`
-- **p** (via `:global(p)`): `margin-bottom: 1.4rem`, `line-height: 1.8`, `text-align: justify`
+All layout and styling are handled by `PhotoTextSection` with `darkerBg`:
+
+- **Background**: `var(--color-dark-bg)` (`#374151`)
+- **Text color**: `var(--color-white)` (h2 and body)
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
+- **Padding**: `4rem 2rem` (nav clearance handled by the `navOnly` spacer in `Header.astro`)
 
 ### Mobile (max-width: 768px)
 - Grid collapses to single column, gap: `2rem`
@@ -139,11 +128,12 @@ optimized at build time. See `context/tech_stack.md`.
 
 ## Component: `LeMenu.astro`
 
-Grey background section with a CMS-driven heading and 3 interactive cards.
+White background section with a CMS-driven heading and 3 interactive cards. Rendered first on
+the page.
 
 ### Structure
 ```
-<section.le-menu>                 — grey background, padding 4rem 2rem
+<section.le-menu>                 — white background, padding 4rem 2rem
   <div.section-header>            — max-width 900px, centered, text-align center
     <Fragment set:html />          Titre_section blocks (may contain {{date}} placeholder)
   <div.cards-container>           — max-width 900px, flex row, gap 4rem, flex-wrap, centered
@@ -165,12 +155,12 @@ Poker card ratio 5:7 → **350px tall**.
 ### Styling
 
 **Section, header, and footer:**
-- `.le-menu`: `background-color: var(--color-gray-bg)`, `padding: 4rem 2rem`
+- `.le-menu`: `background-color: var(--color-white)`, `padding: 4rem 2rem`
 - `.section-header, .section-footer` (shared): `max-width: 900px`, `margin: 0 auto`, `text-align: center`
 - `.section-header`: `margin-bottom: 3rem`
 - `.section-footer`: `margin-top: 3rem`
-- `.section-header :global(h2, h3), .section-footer :global(h2, h3)`: `font-size: 2rem`, `color: var(--color-white)`, `font-weight: 400`, `margin-bottom: 1rem`
-- `.section-header :global(p), .section-footer :global(p)`: `color: var(--color-white)`, `line-height: 1.8`
+- `.section-header :global(h2, h3), .section-footer :global(h2, h3)`: `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1rem`
+- `.section-header :global(p), .section-footer :global(p)`: `color: var(--color-text)`, `line-height: 1.8`
 
 **Cards container:**
 - `.cards-container`: `max-width: 900px`, `margin: 0 auto`, `display: flex`, `justify-content: center`, `align-items: center`, `gap: 4rem`, `flex-wrap: wrap`
@@ -199,7 +189,7 @@ Poker card ratio 5:7 → **350px tall**.
 - `.card-inner.show-image .card-front`: `opacity: 0`, `transform: scale(0.97)`, `z-index: 1`
 
 **Card label:**
-- `.card-label`: `color: var(--color-white)`, `font-size: 1.6rem`, `white-space: nowrap`
+- `.card-label`: `color: var(--color-text)`, `font-size: 1.6rem`, `white-space: nowrap`
 - `font-family: var(--font-heading)`, `font-weight: 700`, `font-style: italic`
 
 **Card photo:**
@@ -254,8 +244,9 @@ navigation component needed.
 
 ## CSS Variables Referenced
 
-- `--color-white` — Les Bocaux background, card text, section-header text
-- `--color-gray-bg` — Le Menu background
+- `--color-white` — Le Menu background, card text
+- `--color-text` — Le Menu section header/footer text, card labels
+- `--color-dark-bg` — Les Bocaux background (same as `LesRevendeurs`)
 - `--color-orange` — card front background
 - `--color-orange-dark` — `.highlight` text in Les Bocaux
 - `--font-heading` — card label font (Crimson, bold italic)
@@ -265,17 +256,18 @@ navigation component needed.
 
 ## Key Technical Decisions
 
-- **`padding-top: calc(4rem + 24px)`** on `LesBocaux` — the banner logo overflows 80px below
-  the header via `margin-bottom: -80px`. `24px` extra (30% of 80px) gives comfortable clearance
-  without excessive whitespace. The `calc()` makes the intent explicit.
+- **Le Menu rendered first, Les Bocaux second** — the daily menu is the primary reason visitors
+  come to this page, so it appears immediately on load. The introductory text follows below.
+- **`darkerBg` prop on `PhotoTextSection`** — Les Bocaux uses `--color-dark-bg` (the darkest
+  brand background, shared with `LesRevendeurs`), not `--color-gray-bg` (used by `NotreHistoire`
+  via `darkBg`). A separate prop avoids coupling the two background tones.
+- **`variant="dark"` on Footer** — matches the dark background of the last section (Les Bocaux).
 - **Text face on top by default** — cards start showing text so visitors immediately see the dish
   description. The image reveal is a deliberate "discovery" interaction, not the initial state.
 - **Staggered image reveal** — images appear left to right with 230ms between each, giving a
   satisfying sequential reveal rather than a simultaneous pop.
-- **No WeakMap or mouseleave listener** — the original implementation used a `WeakMap` to track
-  per-card trigger state, so mouse-out would re-show the image only after the visibility timer
-  had fired. This was removed: text now persists after mouse-out entirely. The interaction is
-  simpler — hover to read the text, move away and the text stays.
+- **No WeakMap or mouseleave listener** — text persists after mouse-out entirely. The interaction
+  is intentionally simple: hover to read the text, move away and it stays visible.
 - **`StrapiBlock` type exported from `strapi.ts`** — used in `LeMenu.astro` for the `Texte` field
   type annotation instead of `any[]`.
 - **No 3D flip animation** — cross-fade with scale (350ms ease) was chosen over a CSS 3D flip

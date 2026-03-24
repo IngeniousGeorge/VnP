@@ -9,13 +9,14 @@ interface Props {
   miseEnValeur?: string;
   withOffset?: boolean;
   darkBg?: boolean;
+  darkerBg?: boolean;
   reversed?: boolean;
 }
 
-const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false, darkBg = false, reversed = false } = Astro.props;
+const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false, darkBg = false, darkerBg = false, reversed = false } = Astro.props;
 ---
 
-<section class:list={['photo-text-section', { 'with-offset': withOffset, 'dark-bg': darkBg, 'reversed': reversed }]}>
+<section class:list={['photo-text-section', { 'with-offset': withOffset, 'dark-bg': darkBg, 'darker-bg': darkerBg, 'reversed': reversed }]}>
   <div class="container">
     <div class="image-container">
       {photoUrl && <Image src={photoUrl} width={800} inferSize alt={photoAlt} class="section-photo" />}
@@ -44,6 +45,15 @@ const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false, 
   }
 
   .photo-text-section.dark-bg h2 {
+    color: var(--color-white);
+  }
+
+  .photo-text-section.darker-bg {
+    background-color: var(--color-dark-bg);
+    color: var(--color-white);
+  }
+
+  .photo-text-section.darker-bg h2 {
     color: var(--color-white);
   }
 
