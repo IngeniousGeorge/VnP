@@ -23,7 +23,7 @@ Both modes use the same single component, controlled by the `navOnly` prop.
 
 ## Source Files
 
-- **Logo**: `misc/elements/logo_vp.png` (2000x2000 PNG, circular logo on white background)
+- **Logo source**: `misc/elements/Logo_rond.pdf` — circular logo with white corners
 - **Banner photo**: `misc/elements/banner1.jpeg` — resize to max 1920px wide, 80% JPEG quality:
   ```
   convert <input> -resize '1920x>' -quality 80 <output>
@@ -35,18 +35,24 @@ Both modes use the same single component, controlled by the `navOnly` prop.
 ## Image Processing
 
 ### Logo (`logo_vp.png`)
-1. Remove the white background outside the circular logo using ImageMagick flood-fill from all
-   four corners with ~10% fuzz tolerance:
+1. Convert the PDF to PNG at 300 DPI using ImageMagick with a white background flatten:
    ```
-   convert <input> -fuzz 10% -fill none \
-     -draw "color 0,0 floodfill" \
-     -draw "color 0,<height-1> floodfill" \
-     -draw "color <width-1>,0 floodfill" \
-     -draw "color <width-1>,<height-1> floodfill" \
-     <output>
+   convert -density 300 Logo_rond.pdf -background white -flatten /tmp/logo_raw.png
    ```
-2. Save as PNG (transparency required) to `frontend/src/assets/images/logo_vp.png`
-3. Astro's `<Image />` handles resizing and WebP conversion at build time
+2. Apply a circular alpha mask using Python/Pillow — detect the bounding box of non-white
+   pixels, use that as the circle boundary (with a small safety buffer), set corners transparent:
+   ```python
+   from PIL import Image, ImageDraw
+   import numpy as np
+   img = Image.open('/tmp/logo_raw.png').convert('RGBA')
+   # detect bounding box, derive center + radius, add ~5px buffer
+   mask = Image.new('L', img.size, 0)
+   ImageDraw.Draw(mask).ellipse([cx-r, cy-r, cx+r, cy+r], fill=255)
+   img.putalpha(mask)
+   img.save('logo_vp.png', optimize=True)
+   ```
+3. Save to `frontend/src/assets/images/logo_vp.png`
+4. Astro's `<Image />` handles resizing and WebP conversion at build time
 
 ---
 
@@ -59,7 +65,7 @@ const { navOnly = false } = Astro.props;
 
 // Only fetched when the full banner is rendered
 const bannerBg = navOnly ? null : await getImage({ src: bannerSrc, width: 1920 });
-const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce');
+const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce?populate=Image');
 ```
 
 The Strapi announcement bar fetch is skipped entirely in `navOnly` mode — there is no point
@@ -91,9 +97,9 @@ icon instances in the component (banner nav and sticky navbar) reference it by I
     <a.logo href="/">                 — links to home (conditionally rendered)
       <Image />                       — logo, 200x200, overflows below header
     <nav.banner-nav>                  — align-self: flex-start, padding-top: 0.4rem (conditionally rendered)
-      <a> Instagram SVG icon          — plain white stroke, links to Instagram (new tab)
-      <a> Facebook SVG icon           — plain white stroke, links to Facebook (new tab)
-      <a.banner-cta> "02 43 07 89 05" — phone number, links to /contact
+      <a> Instagram SVG icon              — plain white stroke, links to Instagram (new tab)
+      <a> Facebook SVG icon               — plain white stroke, links to Facebook (new tab)
+      <a.banner-cta> "Contact & infos"    — links to /contact
     <nav.sticky-navbar>               — hidden by default, shown in sticky state / navOnly
 <div.banner-spacer>                   — height 0 by default, set by JS when nav is fixed
 <div.announcement-bar>                — conditionally rendered if Strapi has content
@@ -106,6 +112,7 @@ The `.logo` and `.banner-nav` are conditionally omitted via Astro's `{!navOnly &
 - Displayed at 200x200px on desktop, 160x160px on mobile (breakpoint: 768px)
 - Bottom overflows below the header: `margin-bottom: -80px` (desktop) / `-64px` (mobile)
 - Hover effect: `opacity: 0.8`
+- Generated at `width={400} height={400}` (2× CSS size) for retina sharpness
 
 ### Banner Background (full banner only)
 - Applied as inline `background-image` style using `bannerBg.src` from `getImage()`
@@ -128,11 +135,36 @@ The `.logo` and `.banner-nav` are conditionally omitted via Astro's `{!navOnly &
 - Both open in new tab: `target="_blank" rel="noopener noreferrer"`
 - Hover: `transform: scale(1.1)` via `.banner-nav-link:hover`
 
-#### Phone / Contact Link
-- Displays the phone number: `02 43 07 89 05`
+#### Contact Link
+- Displays: `Contact & infos`
 - Links to `/contact`
 - Font size `1.5rem`, colour `var(--color-white)`, `text-shadow: 0 1px 4px rgba(0,0,0,0.6)`
 - Hover: orange background, white text
+
+### Announcement Bar — Lightbox
+
+The `annonce` content type has two optional fields for a clickable image lightbox, independent
+of the existing `Texte_du_lien` / `Adresse_du_lien` link fields:
+
+| Strapi field | Type | Notes |
+|---|---|---|
+| `Texte_lien_image` | Short text | The clickable label rendered below the announcement text |
+| `Image` | Media — single (unique) | The image shown full-screen in the lightbox |
+
+Both are optional. The lightbox trigger only renders when **both** are present.
+
+**Fetch**: `GET /api/annonce?populate=Image`
+
+**Frontend behavior**:
+- If both `Texte_lien_image` and `Image` are present, a `<button>` is rendered below the
+  announcement text. Clicking it calls `dialog.showModal()` on a `<dialog id="annonce-lightbox">`.
+- The dialog renders the image at `90vw × 90vh` with `object-fit: contain` and a dark backdrop.
+- Clicking anywhere (image or backdrop) closes the dialog via `dialog.close()`.
+- Uses the native HTML `<dialog>` element — same pattern as `CatalogueCoffrets`.
+
+**Button styling**: orange, underlined, centered, non-italic, `var(--font-body)`
+
+---
 
 ### CSS Variables Referenced
 - `--color-white`

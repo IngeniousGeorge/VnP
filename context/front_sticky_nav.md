@@ -33,7 +33,7 @@ toggling (`header.banner--nav-only`, `header.banner.sticky`) switches between st
       <span.navbar-separator>     "|"
       <a.navbar-link>             "Les coffrets" → /coffrets
       <span.navbar-separator>     "|"
-      <a.navbar-link.navbar-link--phone>  "02 43 07 89 05" → /contact
+      <a.navbar-link.navbar-link--contact>  "Contact & infos" → /contact
       <div.navbar-social>
         <a> Instagram SVG (24x24) — stroke="url(#ig-gradient)"
         <a> Facebook SVG (24x24)  — stroke="var(--color-facebook)"
@@ -53,7 +53,7 @@ the `<header>` element (see `context/front_banner.md`).
 
 ### Navigation Links (`.navbar-link`)
 - Font: `'Bellefair', serif`, `1.05rem` (desktop base), `0.85rem` (mobile)
-- In sticky/navOnly state: `1.575rem`; phone variant (`.navbar-link--phone`): `1.26rem`
+- In sticky/navOnly state: `1.575rem`
 - Color: `var(--color-text)`, hover: `var(--color-orange)`, transition `0.2s`
 
 ### Separators (`.navbar-separator`)
@@ -64,6 +64,7 @@ the `<header>` element (see `context/front_banner.md`).
 ### Logo (`.navbar-logo`)
 - `width: 96px; height: 96px; object-fit: contain`
 - `margin-bottom: -36px` — overflows below the nav bar, similar to the banner logo
+- Generated at `width={192} height={192}` (2× CSS size) for retina sharpness
 - On mobile: `28px × 28px`, `margin-bottom: 0`
 
 ### Social Icons (`.navbar-social`)
@@ -181,7 +182,6 @@ On desktop, the header element itself becomes the full-width fixed bar:
 }
 .banner--nav-only .sticky-navbar    { display: flex; }
 .banner--nav-only .navbar-link      { font-size: 1.575rem; }
-.banner--nav-only .navbar-link--phone { font-size: 1.26rem; }
 .banner--nav-only .navbar-logo-link { margin-left: -0.75rem; }
 .banner--nav-only .navbar-separator { font-size: 1.32rem; }
 ```

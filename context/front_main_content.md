@@ -2,10 +2,14 @@
 
 ## Overview
 
-Two content sections that sit between the hero navigation cards and the partners carousel. Both follow the same two-column grid layout pattern (text + photo), mirrored left-to-right. On mobile, they stack vertically with the image on top.
+Two CMS-driven content sections between the hero navigation cards and the partners carousel.
+Both are thin wrappers around the shared `PhotoTextSection.astro` component. On mobile, both
+stack vertically with text above image.
 
-- **Notre Histoire** — white background, photo on the left, text on the right. Introduces the shop owners.
-- **La Boutique** — grey background, text on the left, photo on the right. Describes the product range.
+- **Notre Histoire** — white background, text on the left, photo on the right (`reversed`).
+  Introduces the shop owners.
+- **La Boutique** — white background, photo on the left, text on the right (default layout).
+  Describes the product range.
 
 ## Source Files
 
@@ -30,144 +34,63 @@ Astro's `<Image />` handles further optimization (WebP, resizing) at build time.
 
 ## Component: `NotreHistoire.astro`
 
-### Structure
-```
-<section.notre-histoire>              — white background, padding 4rem 2rem
-  <div.container>                     — max-width 1100px, 2-column grid, 3rem gap
-    <div.image-container>
-      <Image owners.jpg />            — width 800, 82% width, centered, border-radius 8px
-    <div.content>
-      <h2>                            "Notre histoire"
-      <p>                             Intro paragraph
-      <p>                             Commerce de proximité, épicerie fine
-      <p>                             Plats cuisinés à emporter en bocaux
-      <p.highlight>                   Italic call-to-action line (orange-dark)
+A thin wrapper around `PhotoTextSection`. Fetches from `GET /api/notre-histoire?populate=Photo`.
+
+```astro
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} darkBg={true} reversed />
 ```
 
-### Text Content
-```
-Bienvenue au magasin « Verre et Papilles » situé à Craon en Mayenne.
-
-Anne-Marie et Fabrice Sorin, anciens restaurateurs, amoureux des vins et de la
-gastronomie ont créé un commerce de proximité ou vous pourrez découvrir des
-produits d'épicerie fine, vins et spiritueux.
-
-Le chef Fabrice vous propose également des plats cuisinés à emporter,
-conditionnés en bocaux.
-
-Depuis 2023, le couple a repris la fabrication de la spécialité Mayennaise le
-« Crottin Craonnais ». Ce chocolat emblématique des années 80 fait son retour
-gourmand.
-```
-(The last paragraph uses class `.highlight`.)
-
-### Styling
-
-- **Section**: `background-color: var(--color-white)`, `padding: 4rem 2rem`
-- **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
-- **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `display: block`, `margin: 0 auto`
-- **Content**: `padding: 1rem`
-- **h2**: `font-size: 2rem`, `color: var(--color-text)`, `margin-bottom: 1.5rem`, `font-weight: 400`
-- **p**: `margin-bottom: 1rem`, `line-height: 1.8`, `text-align: justify`
-- **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
-
-### Mobile (max-width: 768px)
-- Grid collapses to single column
-- Text moves above image via `order: -1` on `.content`
-- h2 font size: `1.75rem`
-- Gap: `2rem`
+- `reversed` — photo on the right, text on the left
+- `darkBg={true}` — applies the dark background variant of `PhotoTextSection`
+- Fallback title: `'Notre histoire'`
 
 ---
 
 ## Component: `LaBoutique.astro`
 
-### Structure
-```
-<section.la-boutique>                 — grey background, white text, padding 4rem 2rem
-  <div.container>                     — max-width 1100px, 2-column grid, 3rem gap
-    <div.content>
-      <h2>                            "La boutique"
-      <p.subtitle>                    "Produits du terroir, de France et d'ailleurs"
-      <p>                             Product range intro
-      <p>                             Product list
-      <p>                             Quality promise
-    <div.image-container>
-      <Image boutique.jpg />          — width 800, 82% width, centered, border-radius 8px
+A thin wrapper around `PhotoTextSection`. Fetches from `GET /api/la-boutique?populate=Photo`.
+
+```astro
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} />
 ```
 
-### Text Content
-```
-La boutique
-Produits du terroir, de France et d'ailleurs
-
-Nous vous proposons un large choix de spécialités régionales
-et de nombreuses idées cadeaux ou compositions à votre convenance pour
-tous les budgets.
-
-Terrines terre et mer, tartinades, épices, condiments, huiles, vinaigres,
-produits Italiens et Espagnols, confitures, bonbons, chocolats, guimauves,
-nougats, pâtes de fruits, biscuits, caramels, thés ...
-
-Les maisons les plus réputées côtoient les petits producteurs afin de vous
-garantir le plaisir des papilles.
-```
-
-### Styling
-
-- **Section**: `background-color: var(--color-gray-bg)`, `color: var(--color-white)`, `padding: 4rem 2rem`
-- **Container**: `max-width: 1100px`, `display: grid`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: start`
-- **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `display: block`, `margin: 0 auto`
-- **Content**: `padding: 1rem 0`
-- **h2**: `font-size: 2rem`, `margin-bottom: 0.5rem`, `font-weight: 700`
-- **`.subtitle`**: `font-style: italic`, `margin-bottom: 1.5rem`, `opacity: 0.9`
-- **p**: `margin-bottom: 1rem`, `line-height: 1.8`, `text-align: justify`
-
-### Mobile (max-width: 768px)
-- Grid collapses to single column
-- h2 font size: `1.75rem`
-- Gap: `2rem`
+- Default layout — photo on the left, text on the right
+- Fallback title: `'La boutique'`
 
 ---
 
 ## Shared Layout Pattern
 
-Both sections use the same grid pattern but mirrored:
+Both sections delegate all layout and styling to `PhotoTextSection.astro`
+(see `context/front_page_crottin.md` for the full `PhotoTextSection` spec).
 
-| | Left column | Right column | Background |
+| | Photo position | Text position | `reversed` prop |
 |---|---|---|---|
-| Notre Histoire | Photo | Text | `var(--color-white)` |
-| La Boutique | Text | Photo | `var(--color-gray-bg)` |
+| Notre Histoire | Right | Left | `true` |
+| La Boutique | Left | Right | `false` (default) |
 
-This alternating layout creates visual rhythm on the page. The grid column order handles the mirroring — no CSS `order` property needed on desktop.
+This alternating layout creates visual rhythm on the page.
 
-## Differences Between the Two Sections
-
-| Property | Notre Histoire | La Boutique |
-|---|---|---|
-| Background | `--color-white` (#FFFFFF) | `--color-gray-bg` (#6B7280) |
-| Text color | default (`--color-text`) | `var(--color-white)` |
-| h2 font-weight | 400 | 700 |
-| h2 margin-bottom | 1.5rem | 0.5rem |
-| Subtitle | none | italic, 0.9 opacity |
-| Content padding | 1rem | 1rem 0 |
-| Grid align-items | center | start |
-| Closing element | `.highlight` (italic, orange-dark) | none |
+---
 
 ## CSS Variables Referenced
 
-- `--color-white` — Notre Histoire background; La Boutique text
-- `--color-text` — Notre Histoire text, h2 color
-- `--color-gray-bg` — La Boutique background
-- `--color-orange-dark` — highlight text in Notre Histoire
-- `--font-heading` — h2 font (Crimson, via global rule)
-- `--font-body` — body text (Glacial Indifference, via global rule)
+All styling is handled by `PhotoTextSection`. See its spec for details.
+
+- `--color-white` — section background
+- `--color-text` — h2 and body text
+- `--color-orange-dark` — `.highlight` text
+- `--font-heading` — h2 font (Crimson)
+- `--font-body` — body text (Glacial Indifference)
+
+---
 
 ## Key Technical Decisions
 
-- **Two separate components** rather than a parameterized generic section — the content and styling differences are significant enough that a shared abstraction would add complexity without meaningful DRY benefit
-- **CSS Grid** (not flexbox) for the two-column layout — grid handles equal-height columns and alignment more cleanly
-- **`align-items: center`** for Notre Histoire (vertically centers shorter text next to taller photo), **`align-items: start`** for La Boutique (text is longer, top-alignment reads more naturally)
-- **`text-align: justify`** on paragraphs for a polished, editorial feel consistent with the boutique brand
-- **Photos at 82% width**, centered with `margin: 0 auto` — slightly smaller than the full column to give visual breathing room and better proportion against the text
-- **Image on top in mobile** for both sections — photo provides visual context before the text
-- **No JavaScript** — these are pure static content sections
+- **Both components are thin wrappers around `PhotoTextSection`** — all layout logic is
+  centralised. The only section-specific things are the API endpoint, the fallback string,
+  and the `reversed` prop.
+- **`reversed` prop** on `PhotoTextSection` is implemented via `order: 2` on `.image-container`
+  in CSS grid. The mobile `order: -1` on `.content` takes precedence on small screens, so
+  both variants collapse to text-above-image on mobile without extra rules.
+- **No JavaScript** — both sections are purely static.

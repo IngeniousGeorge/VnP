@@ -51,7 +51,7 @@ a new colour break.
 | Les bocaux | `/bocaux` |
 | Le crottin | `/crottin` |
 | Les coffrets | `/coffrets` |
-| Contact | `/contact` |
+| Contact & infos | `/contact` |
 
 The link corresponding to the current page is filtered out at build time — see *Current-page
 filtering* below.
@@ -173,7 +173,7 @@ const allLinks = [
   { label: 'Les bocaux',       href: '/bocaux' },
   { label: 'Le crottin',       href: '/crottin' },
   { label: 'Les coffrets',     href: '/coffrets' },
-  { label: 'Contact',          href: '/contact' },
+  { label: 'Contact & infos',  href: '/contact' },
 ];
 
 const links = allLinks.filter(l => l.href !== pathname);

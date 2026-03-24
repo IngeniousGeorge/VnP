@@ -133,11 +133,13 @@ default left layout.
 ```astro
 <!-- LeCrottin1.astro -->
 const data = await fetchStrapiData('/api/le-crottin-1?populate=Photo');
+const titre = data?.Titre ?? 'Le Crottin Craonnais';
 ...
 <PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} reversed />
 
 <!-- LeCrottin2.astro -->
 const data = await fetchStrapiData('/api/le-crottin-2?populate=Photo');
+const titre = data?.Titre ?? '';  // title is intentionally optional — no fallback
 ...
 <PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} />
 ```
@@ -170,7 +172,7 @@ Implements the white-background two-column grid with configurable photo position
 - **with-offset modifier**: `padding-top: calc(4rem + 24px)`
 - **Container**: `max-width: 1100px`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
 - **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `margin: 0 auto`
-- **h2**: `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
+- **h2**: conditionally rendered (`{titre && <h2>{titre}</h2>}`) — omitted entirely when `titre` is empty, avoiding stray margin; `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
 - **p** (`:global`): `margin-bottom: 1.4rem`, `line-height: 1.8`, `text-align: justify`
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
 
