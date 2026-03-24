@@ -1,5 +1,25 @@
 # Partners Carousel — Implementation Prompt
 
+## Planned: Strapi Migration (pending shop owner confirmation)
+
+Partners are currently hardcoded in the component with locally-processed logos. The plan is to migrate to a Strapi **Collection Type** so the shop owner can manage partners independently.
+
+**New Strapi Collection Type: `partenaire`**
+- `Nom` — Short text — internal label only, not used by the frontend (helps the shop owner identify entries)
+- `Slogan` — Short text — used as tooltip text and image alt text
+- `Logo` — Media (single image, unique) — uploaded via Strapi media library
+- `Lien` — Short text — external URL
+
+**Frontend changes:**
+- Remove the 12 local image imports and hardcoded partner array
+- Fetch `/api/partenaires?populate=Logo` at build time
+- Use `<Image src={STRAPI_URL + logo.url} height={100} inferSize>` for remote images
+- Astro optimizes remote images to WebP at build time — the shop owner can upload any format/size
+- Client-side Fisher-Yates shuffle is unchanged (ordering in Strapi is irrelevant)
+- A new deploy is required for changes to take effect (shop owner uses the existing deploy button)
+
+---
+
 ## Overview
 
 Create an infinite-loop carousel showcasing partner brand logos. The carousel displays 3 logos at a time on desktop (1 on mobile), auto-advances every 2 seconds, and loops seamlessly in both directions. Each logo links to the partner's website (new tab). A tooltip shows the partner name after a 500ms hover delay. Slide order is randomized client-side on each page visit.
