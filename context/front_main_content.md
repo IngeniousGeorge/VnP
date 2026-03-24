@@ -37,11 +37,12 @@ Astro's `<Image />` handles further optimization (WebP, resizing) at build time.
 A thin wrapper around `PhotoTextSection`. Fetches from `GET /api/notre-histoire?populate=Photo`.
 
 ```astro
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} darkBg={true} reversed />
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} {photoWidth} {photoHeight} darkBg={true} reversed />
 ```
 
 - `reversed` — photo on the right, text on the left
-- `darkBg={true}` — applies the dark background variant of `PhotoTextSection`
+- `darkBg={true}` — grey background (`--color-gray-bg`) with white text
+- `photoWidth` / `photoHeight` — passed from `data?.Photo?.width` / `data?.Photo?.height` for landscape detection
 - Fallback title: `'Notre histoire'`
 
 ---
@@ -51,10 +52,11 @@ A thin wrapper around `PhotoTextSection`. Fetches from `GET /api/notre-histoire?
 A thin wrapper around `PhotoTextSection`. Fetches from `GET /api/la-boutique?populate=Photo`.
 
 ```astro
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} />
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} {photoWidth} {photoHeight} />
 ```
 
 - Default layout — photo on the left, text on the right
+- `photoWidth` / `photoHeight` — passed from `data?.Photo?.width` / `data?.Photo?.height` for landscape detection
 - Fallback title: `'La boutique'`
 
 ---

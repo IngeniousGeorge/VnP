@@ -144,9 +144,11 @@ const texteHtml    = data?.Texte            ? blocksToHtml(data.Texte) : '';
 const miseEnValeur = data?.Mise_en_valeur   ?? '';
 const photoUrl     = buildPhotoUrl(data?.Photo);
 const photoAlt     = data?.Description_photo ?? '';
+const photoWidth   = data?.Photo?.width;
+const photoHeight  = data?.Photo?.height;
 ---
 
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} withOffset />
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} {photoWidth} {photoHeight} withOffset />
 ```
 
 The `withOffset` prop adds `padding-top: calc(4rem + 24px)` to clear the banner logo overflow

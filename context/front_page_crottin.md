@@ -151,8 +151,8 @@ Nav clearance on `navOnly` pages is handled by the spacer set in `Header.astro` 
 
 ## Component: `PhotoTextSection.astro` (shared)
 
-Used by `NotreHistoire`, `LesBocaux`, `LeCrottin1`, `LeCrottin2`, and `CoffretsGourmands`.
-Implements the white-background two-column grid with configurable photo position.
+Used by `NotreHistoire`, `LaBoutique`, `LesBocaux`, `LeCrottin1`, `LeCrottin2`, and `CoffretsGourmands`.
+Implements a two-column grid with configurable photo position, background, and landscape-aware column sizing.
 
 ### Props
 
@@ -164,15 +164,24 @@ Implements the white-background two-column grid with configurable photo position
 | `photoAlt` | `string` | — | Alt text |
 | `miseEnValeur` | `string` | `''` | Optional italic highlight line |
 | `withOffset` | `boolean` | `false` | Adds banner-offset padding-top (currently unused) |
+| `darkBg` | `boolean` | `false` | Grey background (`--color-gray-bg`) with white text |
+| `darkerBg` | `boolean` | `false` | Dark background (`--color-dark-bg`) with white text |
 | `reversed` | `boolean` | `false` | Photo on the right (text left); default is photo left |
+| `photoWidth` | `number` | — | Source image width in px — used for landscape detection |
+| `photoHeight` | `number` | — | Source image height in px — used for landscape detection |
+
+Landscape detection: `photoWidth > photoHeight` adds the `landscape` CSS class, widening the image column.
 
 ### Styling
 
 - **Section**: `background-color: var(--color-white)`, `padding: 4rem 2rem`
-- **with-offset modifier**: `padding-top: calc(4rem + 24px)`
-- **Container**: `max-width: 1100px`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
+- **`dark-bg` modifier**: `background-color: var(--color-gray-bg)`, `color: var(--color-white)`
+- **`darker-bg` modifier**: `background-color: var(--color-dark-bg)`, `color: var(--color-white)`
+- **`with-offset` modifier**: `padding-top: calc(4rem + 24px)`
+- **Container (portrait)**: `max-width: 1100px`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
+- **Container (landscape)**: `grid-template-columns: 58fr 42fr`; reversed landscape: `42fr 58fr`
 - **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `margin: 0 auto`
-- **h2**: conditionally rendered (`{titre && <h2>{titre}</h2>}`) — omitted entirely when `titre` is empty, avoiding stray margin; `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
+- **h2**: conditionally rendered — omitted when `titre` is empty; `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
 - **p** (`:global`): `margin-bottom: 1.4rem`, `line-height: 1.8`, `text-align: justify`
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
 

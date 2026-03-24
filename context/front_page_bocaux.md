@@ -101,7 +101,7 @@ A thin wrapper around `PhotoTextSection`. Fetches from Strapi and passes `darker
 the dark background (`--color-dark-bg`, same as `LesRevendeurs`). Photo left, text right (default layout).
 
 ```astro
-<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} darkerBg />
+<PhotoTextSection {titre} {texteHtml} {miseEnValeur} {photoUrl} {photoAlt} {photoWidth} {photoHeight} darkerBg />
 ```
 
 ### Styling
