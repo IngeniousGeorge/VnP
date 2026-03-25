@@ -55,36 +55,13 @@ legible.
 
 ## 1. Dead Code
 
-### 1.1 Orphaned CSS variables in `Layout.astro`
+~~### 1.1 Orphaned CSS variables in `Layout.astro`~~ ✓ Done
 
-`--color-facebook-hover`, `--color-facebook-text`, `--color-facebook-bg` — defined in `:root`
-but consumed exclusively by the post card styles (`actu-card-link:hover`, `actu-card-date`,
-`actu-card-image`) which were removed when the hardcoded post cards were stripped from
-`NosActualites`. Confirmed unused by codebase-wide grep.
+~~### 1.2 Dead mobile breakpoint rules in `HeroCircles.astro`~~ ✓ Done
 
-### 1.2 Dead mobile breakpoint rules in `HeroCircles.astro`
+~~### 1.3 Dead `strong` rule in `LaBoutique.astro` and `PhotoTextSection.astro`~~ ✓ Done
 
-The entire `<section class="hero-circles">` is `display: none` at the 768px breakpoint. Yet
-the same `@media (max-width: 768px)` block contains 5 size-adjustment rules for
-`.circles-container`, `.circle`, `.circle-image`, `.circle-title`, and `.circle-icon` — none
-of which can ever render. Likely carried over from before the mobile-hide decision was made.
-
-### 1.3 Dead `strong` rule in `LaBoutique.astro` and `PhotoTextSection.astro`
-
-Both have a scoped `strong { font-weight: 700; }` rule. Astro compiles scoped styles to
-`strong[data-astro-cid-xxx]`, which only matches `<strong>` elements rendered directly by the
-component template. All text content in both components is injected via `set:html`, so injected
-elements never receive the scoping attribute. There are no literal `<strong>` elements in either
-template. Selector has zero matches.
-
-
-### 1.4 Dead `withOffset` prop and CSS in `PhotoTextSection.astro`
-
-The `withOffset` boolean prop (and its CSS rule `.photo-text-section.with-offset { padding-top:
-calc(4rem + 24px); }`) is no longer passed by any component in the codebase. It was removed
-from `LesBocaux`, `LeCrottin`, and `CoffretsGourmands` when those pages switched to `navOnly`
-header mode. The prop, its CSS, and the `class:list` binding that references `with-offset` can
-all be deleted.
+~~### 1.4 Dead `withOffset` prop and CSS in `PhotoTextSection.astro`~~ ✓ Done
 
 ---
 

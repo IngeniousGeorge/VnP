@@ -7,7 +7,6 @@ interface Props {
   photoUrl: string | null;
   photoAlt: string;
   miseEnValeur?: string;
-  withOffset?: boolean;
   darkBg?: boolean;
   darkerBg?: boolean;
   reversed?: boolean;
@@ -15,12 +14,12 @@ interface Props {
   photoHeight?: number;
 }
 
-const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, withOffset = false, darkBg = false, darkerBg = false, reversed = false, photoWidth, photoHeight } = Astro.props;
+const { titre, texteHtml, photoUrl, photoAlt, miseEnValeur, darkBg = false, darkerBg = false, reversed = false, photoWidth, photoHeight } = Astro.props;
 
 const isLandscape = photoWidth && photoHeight ? photoWidth > photoHeight : false;
 ---
 
-<section class:list={['photo-text-section', { 'with-offset': withOffset, 'dark-bg': darkBg, 'darker-bg': darkerBg, 'reversed': reversed, 'landscape': isLandscape }]}>
+<section class:list={['photo-text-section', { 'dark-bg': darkBg, 'darker-bg': darkerBg, 'reversed': reversed, 'landscape': isLandscape }]}>
   <div class="container">
     <div class="image-container">
       {photoUrl && <Image src={photoUrl} width={800} inferSize alt={photoAlt} class="section-photo" />}
@@ -37,10 +36,6 @@ const isLandscape = photoWidth && photoHeight ? photoWidth > photoHeight : false
   .photo-text-section {
     background-color: var(--color-white);
     padding: 4rem 2rem;
-  }
-
-  .photo-text-section.with-offset {
-    padding-top: calc(4rem + 24px);
   }
 
   .photo-text-section.dark-bg {
@@ -103,10 +98,6 @@ const isLandscape = photoWidth && photoHeight ? photoWidth > photoHeight : false
     color: var(--color-text);
     margin-bottom: 1.5rem;
     font-weight: 400;
-  }
-
-  strong {
-    font-weight: 700;
   }
 
   /* set:html bypasses Astro scoping — :global() required */
