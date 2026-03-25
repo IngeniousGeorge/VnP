@@ -67,6 +67,9 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
       <a href="/coffrets" class="navbar-link">Les coffrets</a>
       <span class="navbar-separator">|</span>
       <a href="/contact" class="navbar-link navbar-link--contact">Contact & infos</a>
+      <span class="navbar-separator navbar-sep--phone">|</span>
+      <a href="tel:+33243078905" class="navbar-link navbar-link--phone">02 43 07 89 05</a>
+      <span class="navbar-separator navbar-sep--social">|</span>
       <div class="navbar-social">
         <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -115,12 +118,56 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
   if (isMobile || isNavOnly) {
     // Mobile and navOnly mode: the sticky navbar is always visible at the top.
     // Measure its height and expose it as a CSS variable so the banner (mobile)
-    // can add matching top padding. Also set the spacer so page content clears
-    // the fixed bar from the start.
+    // can add matching top padding.
     const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
-    const navHeight = nav.offsetHeight;
-    document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
-    spacer.style.height = navHeight + 'px';
+
+    function applyNavHeight() {
+      const navHeight = nav.offsetHeight;
+      document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
+      // On navOnly pages the banner has no height of its own (padding: 0), so the
+      // spacer must provide the full clearance. On mobile full-banner pages (home,
+      // contact) the banner is in normal flow but the logo overflows 64px below it
+      // (margin-bottom: -64px) — the spacer must clear exactly that overflow so the
+      // announcement bar isn't covered.
+      if (isNavOnly) {
+        spacer.style.height = navHeight + 'px';
+      } else {
+        spacer.style.height = '64px';
+      }
+    }
+
+    if (isMobile) {
+      // Hide separators that fall at the end of a wrapped flex line so a dangling
+      // "|" never appears as the last item before a line break. Re-measure the nav
+      // height afterwards since hiding separators may collapse a line.
+      function updateSeparators() {
+        const seps = nav.querySelectorAll('.navbar-separator');
+        seps.forEach(sep => { (sep as HTMLElement).style.display = ''; });
+        seps.forEach(sep => {
+          const next = sep.nextElementSibling as HTMLElement | null;
+          if (!next) return;
+          const sepRect = sep.getBoundingClientRect();
+          const nextRect = next.getBoundingClientRect();
+          const sepMid = sepRect.top + sepRect.height / 2;
+          const nextMid = nextRect.top + nextRect.height / 2;
+          if (Math.abs(sepMid - nextMid) > 10) {
+            (sep as HTMLElement).style.display = 'none';
+          }
+        });
+        applyNavHeight();
+      }
+
+      let resizeTimer: ReturnType<typeof setTimeout>;
+      function onResize() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateSeparators, 100);
+      }
+
+      updateSeparators();
+      window.addEventListener('resize', onResize);
+    } else {
+      applyNavHeight();
+    }
   } else {
     // Desktop: the navbar is hidden inside the banner and becomes sticky only
     // after the user has scrolled past the full banner height.
@@ -347,7 +394,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     font-size: 1.575rem;
   }
 
-
   .banner.sticky .navbar-logo-link {
     margin-left: -0.75rem;
   }
@@ -366,6 +412,12 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
 
   .banner.sticky .sticky-navbar {
     display: flex;
+  }
+
+  .navbar-sep--phone,
+  .navbar-sep--social,
+  .navbar-link--phone {
+    display: none;
   }
 
   /* navOnly mode: inner pages without banner (bocaux, crottin, coffrets).
@@ -390,7 +442,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     .banner--nav-only .navbar-link {
       font-size: 1.575rem;
     }
-
 
     .banner--nav-only .navbar-logo-link {
       margin-left: -0.75rem;
@@ -417,7 +468,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
 
     /* Hide desktop banner nav */
@@ -444,13 +494,28 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     }
 
     .navbar-logo {
-      width: 28px;
-      height: 28px;
+      width: 56px;
+      height: 56px;
       margin-bottom: 0;
     }
 
+    .banner--nav-only {
+      padding: 0;
+      box-shadow: none;
+    }
+
     .navbar-link {
-      font-size: 0.85rem;
+      font-size: 1.36rem;
+    }
+
+    .navbar-separator {
+      font-size: 1.36rem;
+    }
+
+    .navbar-sep--phone,
+    .navbar-sep--social,
+    .navbar-link--phone {
+      display: inline;
     }
 
     .navbar-social svg {

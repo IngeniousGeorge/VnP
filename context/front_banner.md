@@ -196,6 +196,9 @@ navbar (see `context/front_sticky_nav.md`).
   breathing room between the fixed nav and the logo below.
 - **Bottom gap removed**: `padding-bottom: 0` + `margin-bottom: -0.3125rem` so the
   announcement bar sits almost flush with the logo bottom.
+- **Spacer set to 64px** by JS (the logo's overflow amount) — just enough to clear the
+  overflowing logo so the announcement bar is not covered. On navOnly pages the spacer is
+  set to `navHeight` instead (banner has no visible content).
 
 ### Logo (mobile)
 - Sized at 160x160px
