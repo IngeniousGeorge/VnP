@@ -119,7 +119,7 @@ The `.logo` and `.banner-nav` are conditionally omitted via Astro's `{!navOnly &
 - CSS: `background-size: cover; background-position: center; background-repeat: no-repeat`
 
 ### Header Sizing (full banner)
-- Padding: `1.1rem 2rem 0.55rem` (desktop), `1rem` (mobile)
+- Padding: `1.1rem 2rem 0.55rem` (desktop), `1rem` sides/top (mobile), `padding-bottom: 0` + `margin-bottom: -0.3125rem` on mobile to pull the announcement bar close to the logo
 - Height is determined by padding + visible logo portion (logo overflows 80px, so visible
   portion is 120px). The negative margin on the logo prevents it from stretching the header.
 
@@ -194,6 +194,8 @@ navbar (see `context/front_sticky_nav.md`).
 - **Padding clears the fixed nav**: `padding-top: calc(var(--mobile-nav-height, 3rem) + 0.5rem)`.
   The `3rem` fallback prevents layout flash before JS sets the variable. `0.5rem` adds
   breathing room between the fixed nav and the logo below.
+- **Bottom gap removed**: `padding-bottom: 0` + `margin-bottom: -0.3125rem` so the
+  announcement bar sits almost flush with the logo bottom.
 
 ### Logo (mobile)
 - Sized at 160x160px
