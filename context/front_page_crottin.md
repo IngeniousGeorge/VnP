@@ -179,15 +179,20 @@ Landscape detection: `photoWidth > photoHeight` adds the `landscape` CSS class, 
 - **`darker-bg` modifier**: `background-color: var(--color-dark-bg)`, `color: var(--color-white)`
 - **`with-offset` modifier**: `padding-top: calc(4rem + 24px)`
 - **Container (portrait)**: `max-width: 1100px`, `grid-template-columns: 1fr 1fr`, `gap: 3rem`, `align-items: center`
-- **Container (landscape)**: `grid-template-columns: 58fr 42fr`; reversed landscape: `42fr 58fr`
+- **Container (landscape, desktop only `min-width: 769px`)**: `grid-template-columns: 58fr 42fr`; reversed landscape: `42fr 58fr`
 - **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `margin: 0 auto`
 - **h2**: conditionally rendered — omitted when `titre` is empty; `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
 - **h1, h2, h3** (`:global`): `margin-top: 0`, `margin-bottom: 1.4rem`, `line-height: 1.8` — matches paragraph spacing for consistent rhythm in rich text
 - **p** (`:global`): `margin-bottom: 1.4rem`, `line-height: 1.8`, `text-align: justify`
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
 
+### Desktop only (min-width: 769px)
+- `reversed`: `order: 2` on `.image-container`
+- Landscape: `grid-template-columns: 58fr 42fr`; reversed landscape: `42fr 58fr`
+
 ### Mobile (max-width: 768px)
 - Single column, gap `2rem`, text moves above image (`order: -1` on `.content`), h2 `1.75rem`
+- Landscape and `reversed` column overrides do not apply — mobile layout is always single column
 
 ---
 

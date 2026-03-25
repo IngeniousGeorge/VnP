@@ -70,17 +70,19 @@ const isLandscape = photoWidth && photoHeight ? photoWidth > photoHeight : false
     align-items: center;
   }
 
-  .photo-text-section.landscape .container {
-    grid-template-columns: 58fr 42fr;
-  }
+  @media (min-width: 769px) {
+    /* Photo on the right: push image-container after content */
+    .photo-text-section.reversed .image-container {
+      order: 2;
+    }
 
-  .photo-text-section.landscape.reversed .container {
-    grid-template-columns: 42fr 58fr;
-  }
+    .photo-text-section.landscape .container {
+      grid-template-columns: 58fr 42fr;
+    }
 
-  /* Photo on the right: push image-container after content */
-  .photo-text-section.reversed .image-container {
-    order: 2;
+    .photo-text-section.landscape.reversed .container {
+      grid-template-columns: 42fr 58fr;
+    }
   }
 
   .section-photo {
