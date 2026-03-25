@@ -163,16 +163,49 @@ const cartes: Carte[] = data?.Coffret ?? [];
 <script>
   const dialog = document.getElementById('coffret-lightbox') as HTMLDialogElement;
   const lightboxImg = document.getElementById('coffret-lightbox-img') as HTMLImageElement;
+  let pendingLoad: HTMLImageElement | null = null;
+
+  function cancelPendingLoad() {
+    if (pendingLoad) {
+      pendingLoad.onload = null;
+      pendingLoad = null;
+      lightboxImg.style.cursor = '';
+    }
+  }
 
   document.querySelectorAll('.catalogue-coffrets .card-inner').forEach(card => {
     card.addEventListener('click', () => {
       const fullSrc = (card as HTMLElement).dataset.fullSrc;
       if (!fullSrc) return;
-      lightboxImg.src = fullSrc;
-      lightboxImg.alt = (card as HTMLElement).dataset.alt ?? '';
+      const alt = (card as HTMLElement).dataset.alt ?? '';
+
+      cancelPendingLoad();
+
+      // Show the already-loaded thumbnail immediately — no blank dialog, no flicker
+      const thumbSrc = (card as HTMLElement).querySelector('img')?.src ?? '';
+      lightboxImg.src = thumbSrc;
+      lightboxImg.alt = alt;
       dialog.showModal();
+
+      // Signal that full-res is loading
+      lightboxImg.style.cursor = 'wait';
+
+      // Swap to full-res once loaded; cancel if dialog was closed or another card clicked first
+      const full = new Image();
+      pendingLoad = full;
+      full.onload = () => {
+        if (pendingLoad === full) {
+          lightboxImg.src = fullSrc;
+          lightboxImg.style.cursor = '';
+          pendingLoad = null;
+        }
+      };
+      full.src = fullSrc;
     });
   });
 
-  dialog.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', () => {
+    cancelPendingLoad();
+    dialog.close();
+  });
 </script>

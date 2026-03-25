@@ -157,11 +157,41 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
   const lightboxImg = document.getElementById('annonce-lightbox-img') as HTMLImageElement | null;
   const lightboxBtn = document.querySelector('.announcement-lightbox-btn') as HTMLElement | null;
   if (lightbox && lightboxImg && lightboxBtn) {
+    const src = lightboxBtn.dataset.src ?? '';
+    let pendingLoad: HTMLImageElement | null = null;
+
+    // Preload as soon as the page is ready so the click is instant in most cases
+    const preload = new Image();
+    preload.src = src;
+
     lightboxBtn.addEventListener('click', () => {
-      lightboxImg.src = lightboxBtn.dataset.src ?? '';
-      lightbox.showModal();
+      if (preload.complete) {
+        lightboxImg.src = src;
+        lightbox.showModal();
+      } else {
+        // Still downloading — open dialog and show wait cursor until ready
+        lightboxImg.src = '';
+        lightboxImg.style.cursor = 'wait';
+        lightbox.showModal();
+        pendingLoad = preload;
+        preload.onload = () => {
+          if (pendingLoad === preload) {
+            lightboxImg.src = src;
+            lightboxImg.style.cursor = '';
+            pendingLoad = null;
+          }
+        };
+      }
     });
-    lightbox.addEventListener('click', () => lightbox.close());
+
+    lightbox.addEventListener('click', () => {
+      if (pendingLoad) {
+        pendingLoad.onload = null;
+        pendingLoad = null;
+        lightboxImg.style.cursor = '';
+      }
+      lightbox.close();
+    });
   }
 </script>
 
