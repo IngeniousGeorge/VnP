@@ -114,7 +114,7 @@ fallback via `fetchStrapiData`). No JavaScript — purely static.
   <div.content>                 — max-width 1100px, grid 1fr 1fr, gap 3rem
     <div.info-block>
       <div.info-group>          Horaires (rich text)
-      <div.info-group>          Vacances (rich text, optional)
+      <div.info-group>          Congés annuels / Vacances (rich text, optional; label displayed as "Congés annuels", Strapi field is `Vacances`)
       <div.info-group>          Adresse (rich text — may contain links)
       <div.info-group>          Téléphone (tel: link)
       <div.info-group>          Email (mailto: link)
@@ -179,14 +179,14 @@ as `<a href="..." target="_blank" rel="noopener noreferrer">`. No Astro-side wra
 - `.info-link:hover`: `color: var(--color-orange)`
 
 **Map:**
-- `.map-container iframe`: `width: 100%`, `height: 459px`, `border-radius: 8px`, `display: block`
+- `.map-container iframe`: `width: 100%`, `height: 542px`, `border-radius: 8px`, `display: block`
 - Inline `style="border:0;"` on the `<iframe>` element — Google's standard recommendation
 - `loading="lazy"`, `referrerpolicy="no-referrer-when-downgrade"` — standard iframe attributes
 
 ### Mobile (max-width: 768px)
 
 - `.content` collapses to `grid-template-columns: 1fr`, `gap: 2rem`
-- `.map-container iframe`: `height: 328px`
+- `.map-container iframe`: `height: 387px`
 - `h2`: `font-size: 1.75rem`
 
 ---

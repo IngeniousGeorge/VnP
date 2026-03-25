@@ -194,9 +194,16 @@ All JS querySelector selectors use `.catalogue-coffrets` as scope prefix.
 
 ### Card Behaviour
 
-Cards are static — photo displayed directly, no text face, no flip animation, no JavaScript.
-The `card-inner` uses `overflow: hidden` with `border-radius` to clip the image to the card
-shape.
+Cards are clickable — clicking a `card-inner` opens a full-screen lightbox (`<dialog>`).
+
+**Lightbox UX:**
+- The thumbnail already on the page is shown instantly as a placeholder (no blank dialog).
+- `cursor: wait` is applied to the lightbox `<img>` while the full-res image loads in the background.
+- When the full-res finishes loading, it replaces the thumbnail silently.
+- If the user closes the dialog or clicks another card before the full-res loads, the pending load is cancelled (its `onload` is nulled) to avoid a stale swap.
+- Clicking anywhere on the open dialog closes it.
+
+`pendingLoad` tracks the in-flight `Image()` object; `cancelPendingLoad()` clears it on close and on each new card click.
 
 ---
 
@@ -235,5 +242,5 @@ Both were previously placeholders (`href="#coffrets"` and `href="/"` respectivel
   `catalogue-coffrets` is `Coffret`. This naming keeps the Strapi UI unambiguous for the shop
   owner: each entry in the list is "a coffret", and the card label field is "the type" of coffret.
 - **No JavaScript** in `CoffretsGourmands` — purely static.
-- **Client-side date injection** in `CatalogueCoffrets` — same pattern as `LeMenu`, handles
-  `{{date}}` in `Titre_section` without a daily rebuild.
+- **`CatalogueCoffrets` has a lightbox script** — thumbnail-first loading, cursor:wait feedback,
+  and stale-load cancellation. See Card Behaviour above.

@@ -161,6 +161,12 @@ Both are optional. The lightbox trigger only renders when **both** are present.
 - The dialog renders the image at `90vw × 90vh` with `object-fit: contain` and a dark backdrop.
 - Clicking anywhere (image or backdrop) closes the dialog via `dialog.close()`.
 - Uses the native HTML `<dialog>` element — same pattern as `CatalogueCoffrets`.
+- **Preloading**: the image URL is fetched via a hidden `new Image()` as soon as the page script
+  runs, so the lightbox opens instantly in most cases.
+- **Loading feedback**: if the user clicks before the preload finishes, the dialog opens with
+  `cursor: wait` on the `<img>`, cleared once the image is ready.
+- **Cancel on close**: if the dialog is closed before the preload finishes, `pendingLoad.onload`
+  is nulled to prevent a stale `src` swap after close.
 
 **Button styling**: orange, underlined, centered, non-italic, `var(--font-body)`
 

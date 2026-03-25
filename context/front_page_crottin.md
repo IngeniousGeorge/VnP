@@ -182,6 +182,7 @@ Landscape detection: `photoWidth > photoHeight` adds the `landscape` CSS class, 
 - **Container (landscape)**: `grid-template-columns: 58fr 42fr`; reversed landscape: `42fr 58fr`
 - **Photo**: `width: 82%`, `height: auto`, `border-radius: 8px`, `object-fit: cover`, `margin: 0 auto`
 - **h2**: conditionally rendered — omitted when `titre` is empty; `font-size: 2rem`, `color: var(--color-text)`, `font-weight: 400`, `margin-bottom: 1.5rem`
+- **h1, h2, h3** (`:global`): `margin-top: 0`, `margin-bottom: 1.4rem`, `line-height: 1.8` — matches paragraph spacing for consistent rhythm in rich text
 - **p** (`:global`): `margin-bottom: 1.4rem`, `line-height: 1.8`, `text-align: justify`
 - **`.highlight`**: `font-style: italic`, `color: var(--color-orange-dark)`, `margin-top: 1.5rem`
 

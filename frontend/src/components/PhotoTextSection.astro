@@ -108,6 +108,14 @@ const isLandscape = photoWidth && photoHeight ? photoWidth > photoHeight : false
   }
 
   /* set:html bypasses Astro scoping — :global() required */
+  .content :global(h1),
+  .content :global(h2),
+  .content :global(h3) {
+    margin-top: 0;
+    margin-bottom: 1.4rem;
+    line-height: 1.8;
+  }
+
   .content :global(p) {
     margin-bottom: 1.4rem;
     line-height: 1.8;
