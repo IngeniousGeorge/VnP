@@ -1,22 +1,31 @@
 # Partners Carousel — Implementation Prompt
 
-## Planned: Strapi Migration (pending shop owner confirmation)
+## Strapi Content Type
 
-Partners are currently hardcoded in the component with locally-processed logos. The plan is to migrate to a Strapi **Collection Type** so the shop owner can manage partners independently.
+Partner data is managed via a Strapi **Collection Type** so the shop owner can add, remove, and update partners independently. A new deploy is required for changes to take effect (shop owner uses the existing deploy button).
 
-**New Strapi Collection Type: `partenaire`**
-- `Nom` — Short text — internal label only, not used by the frontend (helps the shop owner identify entries)
-- `Slogan` — Short text — used as tooltip text and image alt text
-- `Logo` — Media (single image, unique) — uploaded via Strapi media library
+**Collection Type: `Partenaires`**
+- `singularName`: `partenaires`, `pluralName`: `partenaires-list` (Strapi auto-suffixed to avoid a naming conflict — API endpoint is `/api/partenaires-list`)
+- `Nom` — Short text, required, unique — internal label for the shop owner; used as alt text fallback when `Slogan` is absent
+- `Slogan` — Short text — used as tooltip text and image alt text (falls back to `Nom` if empty)
+- `Logo` — Media (single image) — uploaded via Strapi media library; entries without a logo are silently skipped at build time
 - `Lien` — Short text — external URL
 
-**Frontend changes:**
-- Remove the 12 local image imports and hardcoded partner array
-- Fetch `/api/partenaires?populate=Logo` at build time
-- Use `<Image src={STRAPI_URL + logo.url} height={100} inferSize>` for remote images
-- Astro optimizes remote images to WebP at build time — the shop owner can upload any format/size
-- Client-side Fisher-Yates shuffle is unchanged (ordering in Strapi is irrelevant)
-- A new deploy is required for changes to take effect (shop owner uses the existing deploy button)
+Public API read permission must be enabled: Strapi admin → Settings → Roles → Public → `partenaires-list` → enable `find`.
+
+**Frontend fetch (build time):**
+```js
+const raw = await fetchStrapiData('/api/partenaires-list?populate=Logo') ?? [];
+const partners = raw
+  .filter((p: any) => p.Logo)
+  .map((p: any) => ({
+    name: (p.Slogan || p.Nom) as string,
+    logo: buildPhotoUrl(p.Logo)!,
+    url: p.Lien as string,
+  }));
+```
+
+Astro optimizes remote images to WebP at build time — the shop owner can upload any format or size. Ordering in Strapi is irrelevant; slides are shuffled client-side.
 
 ---
 
@@ -26,15 +35,7 @@ Create an infinite-loop carousel showcasing partner brand logos. The carousel di
 
 ## Source Files
 
-- **Partner logos**: `misc/partenaires/p_1_hangar.png` through `p_12_comptoir.png` (PNG, ~300–400px wide, `#FAF0EE` background)
-
-## Image Processing
-
-All 12 logos: strip metadata and compress using ImageMagick, then save to `frontend/src/assets/images/`:
-```
-convert <input> -strip -define png:compression-level=9 <output>
-```
-Astro's `<Image />` handles further optimization (WebP, resizing) at build time.
+- **Partner logos**: `misc/partenaires/p_1_hangar.png` through `p_12_comptoir.png` (PNG, ~300–400px wide, `#FAF0EE` background) — uploaded directly to Strapi via the Media Library
 
 ## Partner Data
 
@@ -67,7 +68,7 @@ Each partner has a name (used as alt text and tooltip), a logo image, and a URL:
       <div.carousel-track>           — flex row, slides moved via JS
         <div.carousel-slide> × 12    — each 33.333% width (100% on mobile)
           <a.carousel-link>          — target="_blank", data-tooltip={name}
-            <Image />                — height 100px, object-fit: contain
+            <Image />                — 200×100px bounding box, object-fit: contain
     <button.carousel-btn--next>      — orange chevron SVG (56x56)
   <div.carousel-tooltip>             — fixed-position tooltip element
 ```
@@ -87,7 +88,7 @@ Each partner has a name (used as alt text and tooltip), a logo image, and a URL:
 ### Slides
 - Each slide: `flex: 0 0 33.333%` (desktop), `flex: 0 0 100%` (mobile, breakpoint 768px)
 - Padding: `1rem 2rem` (desktop), `1rem` (mobile)
-- Logo images: `height: 100px` (desktop), `70px` (mobile), `width: auto`, `object-fit: contain`
+- Logo images: Astro `<Image width={200} height={100}>` — bounding box, `object-fit: contain`; CSS `width: 200px; height: 100px` (desktop), `width: 140px; height: 70px` (mobile)
 - Each logo wrapped in `<a>` with `target="_blank" rel="noopener noreferrer"`
 - The `data-tooltip` attribute on each link stores the partner name for the tooltip
 
@@ -159,6 +160,8 @@ The carousel loops by physically moving DOM nodes after each transition:
 These should be defined in the global layout/stylesheet.
 
 ## Key Technical Decisions
+- Partner data fetched from Strapi at build time (`/api/partenaires-list?populate=Logo`); entries without a logo are filtered out to prevent build-time errors
+- Logo images use a fixed 200×100px bounding box with `object-fit: contain` so logos of varying aspect ratios occupy visually consistent space — wide logos fill horizontally, square logos vertically
 - Infinite loop via DOM node rotation (appendChild/insertBefore) rather than cloning slides — simpler, no duplicate event listeners
 - Autoplay pause scoped to the **viewport** (not the full section) so hovering the title or buttons doesn't stop the carousel
 - Hover state tracked with a boolean flag (`isHovered`) rather than relying on event ordering — prevents edge cases with DOM manipulation triggering spurious mouse events

@@ -445,6 +445,7 @@ export interface ApiAnnonceAnnonce extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -454,6 +455,7 @@ export interface ApiAnnonceAnnonce extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     Texte: Schema.Attribute.Blocks;
     Texte_du_lien: Schema.Attribute.String;
+    Texte_lien_image: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -542,7 +544,7 @@ export interface ApiContactInfoContactInfo extends Struct.SingleTypeSchema {
     Email: Schema.Attribute.String;
     Horaires: Schema.Attribute.Blocks;
     Intro: Schema.Attribute.Blocks;
-    Lien_carte: Schema.Attribute.String;
+    Lien_carte: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -555,6 +557,7 @@ export interface ApiContactInfoContactInfo extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Vacances: Schema.Attribute.Blocks;
   };
 }
 
@@ -676,6 +679,7 @@ export interface ApiLeMenuLeMenu extends Struct.SingleTypeSchema {
       'api::le-menu.le-menu'
     > &
       Schema.Attribute.Private;
+    Notice: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
     Titre_section: Schema.Attribute.Blocks;
     updatedAt: Schema.Attribute.DateTime;
@@ -773,6 +777,39 @@ export interface ApiNotreHistoireNotreHistoire extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     Texte: Schema.Attribute.Blocks;
     Titre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPartenairesPartenaires extends Struct.CollectionTypeSchema {
+  collectionName: 'partenaires_list';
+  info: {
+    displayName: 'Partenaires';
+    pluralName: 'partenaires-list';
+    singularName: 'partenaires';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Lien: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partenaires.partenaires'
+    > &
+      Schema.Attribute.Private;
+    Logo: Schema.Attribute.Media<'images' | 'files'>;
+    Nom: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    Slogan: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1301,6 +1338,7 @@ declare module '@strapi/strapi' {
       'api::les-bocaux.les-bocaux': ApiLesBocauxLesBocaux;
       'api::les-revendeurs.les-revendeurs': ApiLesRevendeursLesRevendeurs;
       'api::notre-histoire.notre-histoire': ApiNotreHistoireNotreHistoire;
+      'api::partenaires.partenaires': ApiPartenairesPartenaires;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
