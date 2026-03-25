@@ -19,6 +19,19 @@
     },
     "Adresse_du_lien": {
       "type": "string"
+    },
+    "Texte_lien_image": {
+      "type": "string"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

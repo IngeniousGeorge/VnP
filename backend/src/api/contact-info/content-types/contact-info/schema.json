@@ -17,6 +17,12 @@
     "Intro": {
       "type": "blocks"
     },
+    "Horaires": {
+      "type": "blocks"
+    },
+    "Vacances": {
+      "type": "blocks"
+    },
     "Adresse": {
       "type": "blocks"
     },
@@ -26,11 +32,8 @@
     "Email": {
       "type": "string"
     },
-    "Horaires": {
-      "type": "blocks"
-    },
     "Lien_carte": {
-      "type": "string"
+      "type": "text"
     }
   }
 }
