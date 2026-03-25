@@ -36,7 +36,7 @@ toggling (`header.banner--nav-only`, `header.banner.sticky`) switches between st
       <a.navbar-link.navbar-link--contact>  "Contact & infos" → /contact
       <span.navbar-separator.navbar-sep--phone>  "|"  (mobile only)
       <a.navbar-link.navbar-link--phone>  "02 43 07 89 05" → tel:+33243078905 (mobile only)
-      <span.navbar-separator.navbar-sep--social>  "|"  (mobile only)
+      <span.navbar-separator.navbar-sep--social>  "|"
       <div.navbar-social>
         <a> Instagram SVG (24x24) — stroke="url(#ig-gradient)"
         <a> Facebook SVG (24x24)  — stroke="var(--color-facebook)"
@@ -58,7 +58,8 @@ the `<header>` element (see `context/front_banner.md`).
 - Font: `'Bellefair', serif`, `1.05rem` (desktop base), `1.36rem` (mobile)
 - In sticky/navOnly state: `1.575rem`
 - Color: `var(--color-text)`, hover: `var(--color-orange)`, transition `0.2s`
-- `.navbar-link--phone` and `.navbar-sep--phone`, `.navbar-sep--social`: `display: none` by default (hidden on desktop); `display: inline` on mobile
+- `.navbar-link--phone` and `.navbar-sep--phone`: `display: none` by default (hidden on desktop); `display: inline` on mobile
+- `.navbar-sep--social`: visible on all breakpoints (sits between "Contact & infos" and the social icons on desktop too)
 
 ### Separators (`.navbar-separator`)
 - Color: `var(--color-separator)` (`#9CA3AF`)
