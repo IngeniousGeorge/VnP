@@ -43,6 +43,7 @@ ADMIN_JWT_SECRET=<base64>
 TRANSFER_TOKEN_SALT=<base64>
 ENCRYPTION_KEY=<base64>
 JWT_SECRET=<base64>
+NETLIFY_BUILD_HOOK_URL=<netlify-build-hook-url>
 ```
 
 `APP_KEYS` requires 4 comma-separated values. `DATABASE_URL` references the PostgreSQL service directly — Railway resolves it at runtime.
@@ -104,9 +105,18 @@ Any Netlify build referencing a missing image will fail with `FailedToFetchRemot
 3. Add environment variable: `STRAPI_URL=https://vnp-production.up.railway.app`
 4. Deploy
 
-### Strapi → Netlify build hook
+### Manual deploy button
 
-Ensures the site rebuilds automatically when content is published in Strapi.
+Automatic Strapi webhooks are disabled — they triggered too many builds. Instead, a "Déployer le site" button is exposed in the Strapi admin sidebar. The shop owner publishes content in Strapi, then clicks the button once to trigger a single Netlify build.
 
-1. Netlify → Site settings → "Build & deploy" → "Build hooks" → add a hook named `strapi-publish` → copy the URL
-2. Railway Strapi admin → Settings → Webhooks → add the Netlify URL, trigger on **Entry: Publish** and **Entry: Unpublish**
+**Implementation:**
+
+- `backend/src/api/deploy/routes/deploy.ts` — registers `POST /api/deploy` (auth disabled so the admin frontend can call it without a token)
+- `backend/src/api/deploy/controllers/deploy.ts` — POSTs to `NETLIFY_BUILD_HOOK_URL` and returns `{ ok: true }` or an error status
+- `backend/src/admin/app.ts` — registers the sidebar link ("Déployer le site") pointing to `/deploy`, with an upload cloud icon
+- `backend/src/admin/DeployPage.tsx` — React page with a single button; shows in-progress, success, and error states
+
+**Setup:**
+
+1. Netlify → Site settings → "Build & deploy" → "Build hooks" → add a hook → copy the URL
+2. Set `NETLIFY_BUILD_HOOK_URL` to that URL in the Railway environment variables
