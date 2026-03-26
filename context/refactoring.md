@@ -67,124 +67,32 @@ legible.
 
 ## 2. Duplication / Modularisation
 
-### 2.1 `LeMenu.astro` and `CatalogueCoffrets.astro` are near-identical components
+### 2.1 `LeMenu.astro` and `CatalogueCoffrets.astro` are near-identical components — Deferred (site complete)
 
-The two components are structural duplicates. The divergence has grown since initial discovery:
+~~### 2.2 `LaBoutique.astro` could migrate to `PhotoTextSection reversed`~~ ✓ Done
 
-- **HTML**: identical structure (`section-header`, `cards-container`, `card-wrapper`,
-  `card-inner`, `card-front`, `card-back`, `card-label`, `card-photo`)
-- **CSS**: mostly identical — only the root selector name differs (`.le-menu` vs
-  `.catalogue-coffrets`). However `LeMenu` now uses a split `section-header` / `section-footer`
-  selector pattern while `CatalogueCoffrets` uses the older `margin: 0 auto 3rem` shorthand.
-- **JavaScript**: `LeMenu` has a flip interaction (IntersectionObserver + mouseenter);
-  `CatalogueCoffrets` has no JavaScript — cards are static image-only displays.
-- **Strapi fields**: both now have `Informations_complementaires` (footer rich text) and
-  `Infos` (per-card label below card).
-- **Card structure**: `LeMenu` has `card-front` / `card-back` faces; `CatalogueCoffrets`
-  renders the photo directly inside `card-inner` with no flip markup.
+### 2.3 `.section-header` + `.accent` pattern repeated across components — Deferred (site complete)
 
-The components that started as identical have drifted into a growing maintenance burden.
-
-**Proposed fix**: extract a single `FlipCardSection.astro` component with props for the
-Strapi endpoint, field names, and optional `footerHtml`. The `section-footer` rendering,
-card flip JS (using the `LeMenu` behavior as the canonical version), and all shared CSS
-move to the shared component. Both pages use it instead.
-
-### 2.2 `LaBoutique.astro` could migrate to `PhotoTextSection reversed`
-
-`PhotoTextSection.astro` now accepts a `reversed` prop (added when `LeCrottin1` was built).
-`LaBoutique.astro` implements the same two-column photo-right layout manually. The two differ
-in a few design details:
-
-- `LaBoutique` uses `align-items: start`; `PhotoTextSection` uses `align-items: center`
-- `LaBoutique` h2 is `font-weight: 700`; `PhotoTextSection` h2 is `font-weight: 400`
-- `LaBoutique` h2 `margin-bottom` is `0.5rem`; `PhotoTextSection` is `1.5rem`
-
-**Proposed fix**: align the design choices (confirm whether `start` vs `center` is intentional),
-then replace `LaBoutique.astro` with a thin Strapi-fetching wrapper using
-`<PhotoTextSection reversed />`, same as `LeCrottin1`. This eliminates the last bespoke
-photo+text layout in the codebase.
-
-### 2.3 `.section-header` + `.accent` pattern repeated across components
-
-`LesRevendeurs.astro` and `Contact.astro` both implement an identical centered-heading layout
-(orange horizontal rule + `<h2>`) with near-identical CSS. The two instances differ only in
-`max-width` (1100px vs 900px) and text colour (white vs `--color-text`).
-
-**Proposed fix**: extract a `SectionHeader.astro` component accepting `titre`, `introHtml`,
-and a variant prop. This also eliminates the scoped `h2` overrides inside both components.
-
-### 2.4 `navOnly` CSS in `Header.astro` duplicates `.banner.sticky` CSS
-
-The `@media (min-width: 769px) .banner--nav-only` block repeats the same font-size overrides
-and spacing rules as `.banner.sticky`. The two states are functionally the same visual
-appearance, just triggered differently (build-time class vs scroll-driven JS class).
-
-**Proposed fix**: create a shared CSS selector grouping:
-```css
-.banner.sticky,
-.banner--nav-only { ... }
-```
-for all rules that apply identically to both states. State-specific rules (animation, the
-`!important` background override) remain separate.
+~~### 2.4 `navOnly` CSS in `Header.astro` duplicates `.banner.sticky` CSS~~ — Skipped (risk/reward not justified)
 
 ---
 
 ## 3. Naming Conventions
 
-### 3.1 `--mobile-nav-height` is a misleading CSS custom property name
+### 3.1 `--mobile-nav-height` is a misleading CSS custom property name — Deferred (site complete)
 
-The variable is set and consumed in two unrelated code paths:
-- **Mobile**: always-visible sticky nav (original intent, hence the name)
-- **navOnly (desktop)**: inner pages with no banner
+### 3.2 Context file name doesn't match component name — Deferred (site complete)
 
-The name implies mobile-only, which is no longer accurate. The banner's mobile padding-top
-(`calc(var(--mobile-nav-height, 3rem) + 0.5rem)`) is the sole consumer of this variable.
-Renaming to `--nav-height` (or `--sticky-nav-height`) and updating the one CSS reference that
-uses it would make the purpose clearer.
-
-### 3.2 Context file name doesn't match component name
-
-`context/front_hero_navigation_cards.md` documents the `HeroCircles.astro` component. The
-names are inconsistent — the context doc describes them as "navigation cards" while the
-component treats them as circles. Low priority, but worth aligning (either rename the file to
-`front_hero_circles.md` or the component to `HeroNavigationCards.astro`).
-
-### 3.3 `LaBoutique.astro` background diverges from context spec
-
-The component uses `background-color: var(--color-white)` but `context/front_main_content.md`
-specifies `var(--color-gray-bg)` for La Boutique. Either the spec should be updated to reflect
-the deliberate design change, or the component should be corrected. Needs clarification.
+### 3.3 `LaBoutique.astro` background diverges from context spec — Deferred (site complete)
 
 ---
 
 ## 4. Code Quality
 
-### 4.1 Lightbox images in `CatalogueCoffrets` appear pixelated
+### 4.1 Lightbox images in `CatalogueCoffrets` appear pixelated — Operational (depends on upload quality)
 
-The lightbox loads the original Strapi URL directly (`data-full-src`), bypassing Astro's image
-optimisation pipeline. If the source images uploaded to Strapi are low-resolution, they will
-pixelate at 90vw × 90vh. The fix depends on the upload quality: either ensure the shop owner
-uploads high-resolution photos, or generate a larger Astro-optimised variant at build time and
-store its URL in a second `data-` attribute for the lightbox to use.
+### 4.2 `strapi.ts` `blocksToHtml` silently drops unsupported block types — Deferred (site complete)
 
-### 4.2 `strapi.ts` `blocksToHtml` silently drops unsupported block types
+### 4.3 `updateCarousel()` in `NosActualites.astro` sets a no-op initial transform — Deferred (site complete)
 
-The function handles `paragraph` and `heading` but returns `''` for `list`, `quote`,
-`code`, and any other Strapi block types. This is currently acceptable since only those two
-types are used in the CMS, but it should be documented with a comment so future editors know
-why content disappears if they use other block types.
-
-### 4.3 `updateCarousel()` in `NosActualites.astro` sets a no-op initial transform
-
-`updateCarousel()` is called on init when `current = 0`, which sets
-`track.style.transform = 'translateX(-0%)'`. This is functionally identical to no transform
-and adds a redundant inline style to the DOM. A simple guard (`if (current !== 0)`) or
-initialising only the button disabled states on load would be cleaner.
-
-### 4.4 `index.astro` section order may be unintentional
-
-The home page renders `LaBoutique` before `NotreHistoire`. The more natural narrative order
-for a shop is: introduce the owners/story first (Notre Histoire), then present the shop
-(La Boutique). This may be a deliberate design decision or a leftover from early iteration.
-Worth confirming.
+### 4.4 `index.astro` section order may be unintentional — Deferred (site complete)
