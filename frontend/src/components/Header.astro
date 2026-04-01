@@ -10,7 +10,7 @@ import { fetchStrapiData, blocksToHtml, buildPhotoUrl } from '../lib/strapi';
 import logo from '../assets/images/logo_vp.png';
 import bannerSrc from '../assets/images/banner.jpg';
 
-const bannerBg = navOnly ? null : await getImage({ src: bannerSrc, width: 1920 });
+const bannerBg = await getImage({ src: bannerSrc, width: 1920 });
 const annonce  = navOnly ? null : await fetchStrapiData('/api/annonce?populate=Image');
 const texteHtml      = annonce?.Texte           ? blocksToHtml(annonce.Texte) : '';
 const lienLibelle    = annonce?.Texte_du_lien   ?? '';
@@ -85,6 +85,79 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
         </a>
       </div>
     </nav>
+
+    <!-- Mobile navigation bar (≤768px only) -->
+    <nav class="mobile-nav-bar" style={`background-image: url(${bannerBg.src});`}>
+      <a href="/bocaux" class="mobile-nav-link">Bocaux</a>
+      <a href="/" class="mobile-nav-logo">
+        <Image src={logo} alt="Verre et Papilles" width={282} height={282} />
+      </a>
+      <div class="mobile-nav-actions">
+        <a href="tel:+33243078905" class="mobile-action-icon" aria-label="Téléphone">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </a>
+        <button class="mobile-action-icon mobile-menu-toggle" aria-label="Menu">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="banner-spacer"></div>
+
+<!-- Mobile drawer navigation -->
+<nav class="mobile-drawer">
+  <button class="drawer-close" aria-label="Fermer">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  <ul class="drawer-menu">
+    <li><a href="/">Verre et Papilles</a></li>
+    <li><a href="/bocaux">Les bocaux</a></li>
+    <li><a href="/crottin">Le crottin</a></li>
+    <li><a href="/coffrets">Les coffrets</a></li>
+    <li><a href="/contact">Contact & infos</a></li>
+    <li><a href="tel:+33243078905">02 43 07 89 05</a></li>
+    <li class="drawer-social">
+      <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig-gradient)"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="url(#ig-gradient)"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="url(#ig-gradient)"/>
+        </svg>
+      </a>
+      <a href="https://www.facebook.com/verreetpapilles" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-facebook)" stroke-width="2">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+{!navOnly && (texteHtml ? (
+  <div class="announcement-bar">
+    <div class="announcement-content">
+      <div class="announcement-text" set:html={texteHtml} />
+      {lienLibelle && lienUrl && (
+        <a href={lienUrl} class="announcement-link">{lienLibelle}</a>
+      )}
+      {texteImage && imageUrl && (
+        <button class="announcement-lightbox-btn" data-src={imageUrl}>{texteImage}</button>
+      )}
+    </div>
+  </div>
+) : (
+  <div class="announcement-spacer"></div>
+))}
   </div>
 </header>
 <div class="banner-spacer"></div>
@@ -115,58 +188,34 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const isNavOnly = banner.classList.contains('banner--nav-only');
 
-  if (isMobile || isNavOnly) {
-    // Mobile and navOnly mode: the sticky navbar is always visible at the top.
-    // Measure its height and expose it as a CSS variable so the banner (mobile)
-    // can add matching top padding.
-    const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
+  // Mobile drawer toggle
+  if (isMobile) {
+    const drawer = document.querySelector('.mobile-drawer') as HTMLElement;
+    const menuToggle = document.querySelector('.mobile-menu-toggle') as HTMLElement;
+    const drawerClose = document.querySelector('.drawer-close') as HTMLElement;
 
-    function applyNavHeight() {
-      const navHeight = nav.offsetHeight;
-      document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
-      // On navOnly pages the banner has no height of its own (padding: 0), so the
-      // spacer must provide the full clearance. On mobile full-banner pages (home,
-      // contact) the banner is in normal flow but the logo overflows 64px below it
-      // (margin-bottom: -64px) — the spacer must clear exactly that overflow so the
-      // announcement bar isn't covered.
-      if (isNavOnly) {
-        spacer.style.height = navHeight + 'px';
-      } else {
-        spacer.style.height = '64px';
-      }
+    if (drawer && menuToggle && drawerClose) {
+      menuToggle.addEventListener('click', () => {
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+
+      drawerClose.addEventListener('click', () => {
+        drawer.classList.remove('open');
+        document.body.style.overflow = '';
+      });
     }
+  }
 
-    if (isMobile) {
-      // Hide separators that fall at the end of a wrapped flex line so a dangling
-      // "|" never appears as the last item before a line break. Re-measure the nav
-      // height afterwards since hiding separators may collapse a line.
-      function updateSeparators() {
-        const seps = nav.querySelectorAll('.navbar-separator');
-        seps.forEach(sep => { (sep as HTMLElement).style.display = ''; });
-        seps.forEach(sep => {
-          const next = sep.nextElementSibling as HTMLElement | null;
-          if (!next) return;
-          const sepRect = sep.getBoundingClientRect();
-          const nextRect = next.getBoundingClientRect();
-          const sepMid = sepRect.top + sepRect.height / 2;
-          const nextMid = nextRect.top + nextRect.height / 2;
-          if (Math.abs(sepMid - nextMid) > 10) {
-            (sep as HTMLElement).style.display = 'none';
-          }
-        });
-        applyNavHeight();
-      }
-
-      let resizeTimer: ReturnType<typeof setTimeout>;
-      function onResize() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(updateSeparators, 100);
-      }
-
-      updateSeparators();
-      window.addEventListener('resize', onResize);
-    } else {
-      applyNavHeight();
+  if (isMobile) {
+    // Mobile: spacer clears the logo overflow + small breathing room
+    spacer.style.height = '72px';
+  } else if (isNavOnly) {
+    // navOnly mode (desktop): sticky navbar is always visible at the top
+    const nav = banner.querySelector('.sticky-navbar') as HTMLElement;
+    if (nav) {
+      const navHeight = nav.offsetHeight;
+      spacer.style.height = navHeight + 'px';
     }
   } else {
     // Desktop: the navbar is hidden inside the banner and becomes sticky only
@@ -451,74 +500,203 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     }
   }
 
+  /* Mobile navigation bar - hidden on desktop */
+  .mobile-nav-bar {
+    display: none;
+  }
+
+  .mobile-drawer {
+    display: none;
+  }
+
   /* Mobile */
   @media (max-width: 768px) {
-    /* Fixed navigation bar at top on page load */
+    /* Hide desktop sticky navbar on mobile */
     .sticky-navbar {
+      display: none !important;
+    }
+
+    /* Mobile navigation bar */
+    .mobile-nav-bar {
       display: flex;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      background-color: var(--color-nav-bg);
-      padding: 0.5rem 1rem;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 0.75rem 1rem;
+      min-height: 96px;
       z-index: 200;
-      gap: 0.5rem 0.8rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mobile-nav-link {
+      font-family: 'Bellefair', serif;
+      font-size: 1.875rem;
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      background-color: rgba(51, 51, 51, 0.5);
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .mobile-nav-link:hover {
+      opacity: 0.8;
+    }
+
+    .mobile-nav-logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
       align-items: center;
     }
 
-    /* Hide desktop banner nav */
+    .mobile-nav-logo img {
+      width: 141px;
+      height: 141px;
+      object-fit: contain;
+      margin-bottom: -56px;
+    }
+
+    .mobile-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 1;
+      background-color: rgba(51, 51, 51, 0.5);
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .mobile-action-icon {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+
+    .mobile-action-icon:hover {
+      opacity: 0.8;
+    }
+
+    /* Mobile drawer */
+    .mobile-drawer {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 85vw;
+      background-color: var(--color-nav-bg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      z-index: 300;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text);
+      min-width: 44px;
+      min-height: 44px;
+      transition: opacity 0.2s;
+    }
+
+    .drawer-close:hover {
+      opacity: 0.7;
+    }
+
+    .drawer-menu {
+      list-style: none;
+      padding: 5rem 2rem 2rem;
+      margin: 0;
+    }
+
+    .drawer-menu li {
+      margin-bottom: 0.5rem;
+    }
+
+    .drawer-menu li a {
+      display: block;
+      padding: 1rem 0;
+      font-family: 'Bellefair', serif;
+      font-size: 1.5rem;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .drawer-menu li a:hover {
+      color: var(--color-orange);
+    }
+
+    .drawer-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      padding: 1rem 0;
+    }
+
+    .drawer-social a {
+      display: flex !important;
+      padding: 0 !important;
+      transition: transform 0.2s;
+    }
+
+    .drawer-social a:hover {
+      transform: scale(1.1);
+    }
+
+    /* Hide desktop banner nav and logo on mobile */
     .banner-nav {
       display: none;
     }
 
-    /* Banner: photo background with centered logo */
+    .logo {
+      display: none;
+    }
+
+    /* Banner: needs height to push content below fixed nav bar */
     .banner {
-      padding: 1rem;
-      padding-top: calc(var(--mobile-nav-height, 3rem) + 0.5rem);
-      padding-bottom: 0;
-      margin-bottom: -0.3125rem;
+      padding: 0;
+      padding-top: 85px; /* Logo visible height (141 - 56) */
+      background-image: none !important;
+      box-shadow: none;
     }
 
     .banner-container {
-      justify-content: center;
-    }
-
-    .logo img {
-      width: 160px;
-      height: 160px;
-      margin-bottom: -64px;
-    }
-
-    .navbar-logo {
-      width: 56px;
-      height: 56px;
-      margin-bottom: 0;
+      max-width: none;
+      padding: 0;
+      margin: 0;
     }
 
     .banner--nav-only {
       padding: 0;
       box-shadow: none;
-    }
-
-    .navbar-link {
-      font-size: 1.36rem;
-    }
-
-    .navbar-separator {
-      font-size: 1.36rem;
-    }
-
-    .navbar-sep--phone,
-    .navbar-link--phone {
-      display: inline;
-    }
-
-    .navbar-social svg {
-      width: 20px;
-      height: 20px;
     }
   }
 
