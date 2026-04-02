@@ -185,24 +185,15 @@ Both are optional. The lightbox trigger only renders when **both** are present.
 
 ## Mobile Behavior (max-width: 768px)
 
-On mobile, the banner is a **purely visual element** — all navigation is handled by the sticky
-navbar (see `context/front_sticky_nav.md`).
+On mobile, the banner element serves only as a container — navigation is handled by a dedicated
+mobile nav bar (see `context/front_mobile_nav.md`).
 
 ### Layout Changes
-- **Banner nav hidden**: `display: none`. These links are available in the sticky navbar.
-- **Logo centered**: `.banner-container` uses `justify-content: center`.
-- **Padding clears the fixed nav**: `padding-top: calc(var(--mobile-nav-height, 3rem) + 0.5rem)`.
-  The `3rem` fallback prevents layout flash before JS sets the variable. `0.5rem` adds
-  breathing room between the fixed nav and the logo below.
-- **Bottom gap removed**: `padding-bottom: 0` + `margin-bottom: -0.3125rem` so the
-  announcement bar sits almost flush with the logo bottom.
-- **Spacer set to 64px** by JS (the logo's overflow amount) — just enough to clear the
-  overflowing logo so the announcement bar is not covered. On navOnly pages the spacer is
-  set to `navHeight` instead (banner has no visible content).
-
-### Logo (mobile)
-- Sized at 160x160px
-- `margin-bottom: -64px` — same proportional overflow as desktop
+- **Banner nav hidden**: `display: none`. These links are available in desktop sticky navbar.
+- **Logo hidden**: Desktop banner logo is hidden; mobile logo lives in the mobile nav bar.
+- **Banner element**: `padding-top: 85px` pushes content below the fixed mobile nav bar (logo visible height). `padding: 0` otherwise, `background-image: none`.
+- **Banner container**: `max-width: none`, `padding: 0`, `margin: 0` — minimal styling.
+- **Spacer set to 72px** by JS (56px logo overflow + 16px breathing room) — prevents announcement bar from being covered by the overflowing mobile nav logo.
 
 ---
 
@@ -214,8 +205,10 @@ navbar (see `context/front_sticky_nav.md`).
   inner pages.
 - **Banner and sticky nav share one `<header>` element** — switching states is handled by CSS
   classes (`.sticky`, `.banner--nav-only`), not by rendering two separate elements.
-- **Conditional Strapi fetch in frontmatter** — `navOnly ? null : await fetchStrapiData(...)`
-  avoids a network round-trip on every inner page build.
+- **Banner photo always fetched** — `await getImage({ src: bannerSrc, width: 1920 })` on all pages
+  for consistent mobile nav background across all routes. Announcement bar fetch remains
+  conditional: `navOnly ? null : await fetchStrapiData(...)` to avoid unnecessary network
+  round-trips on inner pages.
 - **Logo kept as PNG** since it's a static asset that rarely changes (not CMS-managed).
 - **Banner served as JPEG** (no transparency needed) for much smaller file size.
 - **`getImage()` for the banner** (needed as a CSS `background-image` URL); `<Image />` for
@@ -223,5 +216,3 @@ navbar (see `context/front_sticky_nav.md`).
 - **Plain white stroke on banner nav social icons** — the gradient is reserved for the sticky
   navbar where it displays on a light grey background. Against the dark banner photo, plain
   white is simpler and equally legible.
-- **On mobile, the banner has no interactive elements** — navigation is fully delegated to the
-  sticky navbar, avoiding duplicate links.

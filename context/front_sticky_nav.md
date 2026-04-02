@@ -129,59 +129,14 @@ On each scroll event (`passive: true` listener):
 
 ---
 
-## Mode 2: Mobile — Always Visible
+## Mode 2: Mobile (≤768px)
 
-### CSS (`@media (max-width: 768px)`)
+On mobile, the sticky navbar is **completely hidden** (`display: none !important`).
 
-The sticky navbar is always visible and fixed at the top, regardless of scroll position:
+Mobile navigation uses a dedicated fixed app bar with slide-in drawer menu — see
+`context/front_mobile_nav.md` for full implementation details.
 
-- `display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 200`
-- `background-color: var(--color-nav-bg)`
-- `padding: 0.5rem 1rem`
-- `flex-wrap: wrap; justify-content: center; align-items: center`
-- `gap: 0.5rem 0.8rem`
-
-In addition, `.banner--nav-only` gets `padding: 0; box-shadow: none` on mobile — the banner
-element has no visible content on these pages, so removing its padding prevents a double gap
-above the page content (the spacer already provides clearance).
-
-### JavaScript (mobile branch)
-
-`applyNavHeight()` measures the navbar's rendered height, exposes it as `--mobile-nav-height`,
-and sets the spacer:
-
-```js
-function applyNavHeight() {
-  const navHeight = nav.offsetHeight;
-  document.documentElement.style.setProperty('--mobile-nav-height', navHeight + 'px');
-  // navOnly: banner has no height, spacer provides full clearance.
-  // Full-banner pages: banner is in flow; spacer clears only the 64px logo overflow.
-  spacer.style.height = isNavOnly ? navHeight + 'px' : '64px';
-}
-```
-
-`updateSeparators()` hides any `.navbar-separator` whose next sibling has wrapped to a new
-flex line (compared via vertical midpoints, not tops, since `align-items: center` means
-elements on the same line can have different `.top` values). After hiding, it calls
-`applyNavHeight()` since collapsing a line changes the nav height.
-
-```js
-function updateSeparators() {
-  const seps = nav.querySelectorAll('.navbar-separator');
-  seps.forEach(sep => { sep.style.display = ''; });
-  seps.forEach(sep => {
-    const next = sep.nextElementSibling;
-    if (!next) return;
-    const sepMid = sep.getBoundingClientRect().top + sep.getBoundingClientRect().height / 2;
-    const nextMid = next.getBoundingClientRect().top + next.getBoundingClientRect().height / 2;
-    if (Math.abs(sepMid - nextMid) > 10) sep.style.display = 'none';
-  });
-  applyNavHeight();
-}
-```
-
-The resize handler debounces at 100ms before re-running `updateSeparators`. No scroll
-listener is attached on mobile.
+The sticky navbar HTML remains in the DOM but is never displayed on mobile viewports.
 
 ---
 
@@ -236,15 +191,16 @@ adequate breathing room beneath it.
 
 ## Comparison Table
 
-| | Desktop normal | Mobile | navOnly (desktop) |
+| | Desktop normal | Mobile (≤768px) | navOnly (desktop) |
 |---|---|---|---|
-| Initial nav state | Hidden | Fixed at top | Fixed at top |
-| Trigger | Scroll past banner | Always from page load | Always from page load |
-| Set by | JS class toggle (`.sticky`) | CSS `@media` | CSS class `.banner--nav-only` (build time) |
-| Background | `.banner.sticky` (the header) | `.sticky-navbar` (the nav) | `.banner--nav-only` (the header) |
+| Sticky navbar | Hidden → shows on scroll | Hidden (see `front_mobile_nav.md`) | Fixed at top |
+| Initial nav state | Hidden | N/A (mobile nav bar used) | Fixed at top |
+| Trigger | Scroll past banner | N/A | Always from page load |
+| Set by | JS class toggle (`.sticky`) | CSS `@media` hides navbar | CSS class `.banner--nav-only` (build time) |
+| Background | `.banner.sticky` (the header) | N/A | `.banner--nav-only` (the header) |
 | Slide-down animation | Yes | No | No |
-| Spacer height set by JS | Yes (on scroll entry) | Yes (on load) | Yes (on load) |
-| Banner photo/logo | Visible until sticky | Visible (scrolls away) | Not rendered |
+| Spacer height set by JS | Yes (on scroll entry) | Yes (72px on load) | Yes (on load) |
+| Banner photo/logo | Visible until sticky | Hidden (logo in mobile nav bar) | Not rendered |
 | Scroll listener | Yes | No | No |
 
 ---
@@ -275,14 +231,8 @@ adequate breathing room beneath it.
   `position: sticky` would only pin it while the parent is in view. `position: fixed` pins it
   to the viewport for the entire page.
 - **Spacer div** prevents layout jumps when the header leaves normal flow. Set to `bannerHeight`
-  on desktop sticky entry; set to `navHeight` for navOnly; set to `64px` on mobile full-banner
-  pages (home, contact) — just enough to clear the logo's 64px overflow below the banner.
-- **Separator line-break detection** — `updateSeparators()` hides any `|` whose next sibling
-  has wrapped to the next flex line, preventing a dangling separator at line end. Comparison
-  uses vertical midpoints (not tops) because `align-items: center` means items on the same
-  line can have different `.top` values. Runs on load and on a debounced resize handler.
-  After hiding separators, `applyNavHeight()` re-measures the nav since collapsing a line
-  changes its height.
+  on desktop sticky entry; set to `navHeight` for navOnly (desktop); set to `72px` on mobile
+  (56px logo overflow + 16px breathing room) — see `context/front_mobile_nav.md`.
 - **`passive: true`** on the scroll listener for better scroll performance.
 - **`FADE_THRESHOLD = 0.7`** extracted as a named constant for self-documentation.
 - **`matchMedia` gate at page load** — the mode branch is chosen once. Device rotation is an
