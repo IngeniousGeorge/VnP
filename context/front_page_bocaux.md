@@ -195,6 +195,9 @@ Poker card ratio 5:7 → **350px tall**.
 **Card photo:**
 - `.card-photo`: `width: 100%`, `height: 100%`, `object-fit: cover`, `display: block`, `border-radius: 12px`
 
+### Mobile (max-width: 768px)
+- `.le-menu`: `padding-top: 5rem` — increased from `4rem` to provide adequate clearance below the overflowing mobile nav logo
+
 ### Card Image Optimization
 
 Uses Astro's `<Image>` with `inferSize` and `width={500}` (2× retina for the 250px display size).
