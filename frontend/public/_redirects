@@ -1,0 +1,7 @@
+# Netlify redirects - old site URLs to new structure
+
+/coffrets-gourmand-craon-mayenne.html           /coffrets    301
+/produits-regionaux.html                        /            301
+/bocaux-plats-cuisines-a-emporter.html          /bocaux      301
+/caviste-craon-mayenne.html                     /            301
+/uploads/pdf/menu-saint-valentin-2023.pdf       /            301
