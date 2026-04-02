@@ -30,7 +30,7 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
   </defs>
 </svg>
 
-<header class:list={['banner', { 'banner--nav-only': navOnly }]} style={bannerBg ? `background-image: url(${bannerBg.src});` : ''}>
+<header class:list={['banner', { 'banner--nav-only': navOnly }]} style={`background-image: url(${bannerBg.src});`}>
   <div class="banner-container">
     {!navOnly && (
       <Fragment>
