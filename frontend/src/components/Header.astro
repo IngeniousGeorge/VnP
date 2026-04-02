@@ -88,7 +88,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
 
     <!-- Mobile navigation bar (≤768px only) -->
     <nav class="mobile-nav-bar" style={`background-image: url(${bannerBg.src});`}>
-      <a href="/bocaux" class="mobile-nav-link">Bocaux</a>
       <a href="/" class="mobile-nav-logo">
         <Image src={logo} alt="Verre et Papilles" width={282} height={282} />
       </a>
@@ -121,10 +120,10 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
   </button>
   <ul class="drawer-menu">
     <li><a href="/">Verre et Papilles</a></li>
-    <li><a href="/bocaux">Les bocaux</a></li>
-    <li><a href="/crottin">Le crottin</a></li>
-    <li><a href="/coffrets">Les coffrets</a></li>
-    <li><a href="/contact">Contact & infos</a></li>
+    <li><a href="/bocaux">Les Bocaux du Jour</a></li>
+    <li><a href="/crottin">Le Crottin Craonnais</a></li>
+    <li><a href="/coffrets">Les Coffrets Gourmands</a></li>
+    <li><a href="/contact">Contact & Infos</a></li>
     <li><a href="tel:+33243078905">02 43 07 89 05</a></li>
     <li class="drawer-social">
       <a href="https://www.instagram.com/verre_et_papilles" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -533,25 +532,7 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
       justify-content: space-between;
     }
 
-    .mobile-nav-link {
-      font-family: 'Bellefair', serif;
-      font-size: 1.875rem;
-      color: white;
-      text-decoration: none;
-      transition: opacity 0.2s;
-      background-color: rgba(51, 51, 51, 0.5);
-      padding: 0.125rem 0.5rem;
-      border-radius: 0.25rem;
-    }
-
-    .mobile-nav-link:hover {
-      opacity: 0.8;
-    }
-
     .mobile-nav-logo {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
       display: flex;
       align-items: center;
     }
@@ -568,9 +549,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
       align-items: center;
       gap: 1rem;
       z-index: 1;
-      background-color: rgba(51, 51, 51, 0.5);
-      padding: 0.125rem 0.5rem;
-      border-radius: 0.25rem;
     }
 
     .mobile-action-icon {
@@ -635,12 +613,22 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     }
 
     .drawer-menu li {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
+      position: relative;
+    }
+
+    .drawer-menu li:not(:last-child):not(.drawer-social)::after {
+      content: '';
+      display: block;
+      width: 80%;
+      height: 1px;
+      background-color: var(--color-separator);
+      margin: 0.25rem auto 0;
     }
 
     .drawer-menu li a {
       display: block;
-      padding: 1rem 0;
+      padding: 0.5rem 0;
       font-family: 'Bellefair', serif;
       font-size: 1.5rem;
       color: var(--color-text);
