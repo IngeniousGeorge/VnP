@@ -141,22 +141,6 @@ const imageUrl       = buildPhotoUrl(annonce?.Image);
     </li>
   </ul>
 </nav>
-
-{!navOnly && (texteHtml ? (
-  <div class="announcement-bar">
-    <div class="announcement-content">
-      <div class="announcement-text" set:html={texteHtml} />
-      {lienLibelle && lienUrl && (
-        <a href={lienUrl} class="announcement-link">{lienLibelle}</a>
-      )}
-      {texteImage && imageUrl && (
-        <button class="announcement-lightbox-btn" data-src={imageUrl}>{texteImage}</button>
-      )}
-    </div>
-  </div>
-) : (
-  <div class="announcement-spacer"></div>
-))}
   </div>
 </header>
 <div class="banner-spacer"></div>
